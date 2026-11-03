@@ -1,0 +1,3 @@
+openai>=1.40
+# stdlib-only for stats/plots; add matplotlib if you want to plot:
+# matplotlib
