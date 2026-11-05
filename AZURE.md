@@ -43,7 +43,7 @@ cd agent-toolpoison-redteam
 ## 4. One-shot setup
 
 ```bash
-bash azure_setup.sh
+bash setup_gpu.sh
 source .venv/bin/activate
 ```
 

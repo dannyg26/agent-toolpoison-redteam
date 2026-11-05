@@ -39,7 +39,9 @@ an agent is executing tools.
 | `run_agents.py`     | Runs the **safeguards axis** across models × reasoning × framings; writes `results/`. |
 | `stats_exec.py`     | Bootstrap 95% CIs: safeguards effect, reasoning effect, per-model rates. |
 | `test_offline.py`   | Full-pipeline self-test — **no GPU/API** needed. |
-| `SERVE.md`          | How to serve the models on a GPU (vLLM), with pinned revisions and sizing. |
+| `setup_gpu.sh`      | One-shot vLLM + deps install for any Ubuntu + NVIDIA GPU box. |
+| `RUNPOD.md`         | Cheapest path: run on a per-minute GPU host (RunPod/Vast/Lambda). |
+| `SERVE.md` / `AZURE.md` | General serving notes; Azure-specific runbook. |
 
 ## Quick start
 
@@ -49,7 +51,7 @@ pip install -r requirements.txt
 # 1) Verify everything offline (no GPU, no API key):
 python test_offline.py
 
-# 2) Serve the models on a GPU (see SERVE.md), then run the safeguards axis:
+# 2) Serve the models on a GPU (see RUNPOD.md for the cheapest path), then run the safeguards axis:
 export OPENAI_BASE_URL=http://localhost:8000/v1
 export OPENAI_API_KEY=EMPTY
 python run_agents.py \
