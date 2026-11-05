@@ -8,8 +8,13 @@ server speaks the **OpenAI-compatible** API, so the runner needs no changes: jus
 
 | Model | GPU needed | Example instances |
 |-------|-----------|-------------------|
-| `gpt-oss-20b` (BF16, ~21B) | one 48–80 GB GPU (A100 80GB, or L40S/A10 48GB with a quant) | Azure `Standard_NC24ads_A100_v4`; AWS `g6e.xlarge` / `p4d` |
-| `gpt-oss-120b` | 2× A100/H100 80GB | Azure ND A100 v4; AWS `p4d.24xlarge` |
+| 20B pair in **BF16** (recommended, precision-matched) | one **A100 80GB** (BF16 weights ~42GB each) | Azure `Standard_NC24ads_A100_v4`; AWS `p4d` |
+| `openai/gpt-oss-20b` in **MXFP4** (cheaper, but confounds the comparison) | one 16GB+ GPU (T4/A10) | Azure `Standard_NC4as_T4_v3`; AWS `g5.xlarge` |
+| 120B pair | 2× A100/H100 80GB | Azure ND A100 v4; AWS `p4d.24xlarge` |
+
+> **Precision note:** the abliterated model is BF16, so match it with the BF16 baseline
+> `unsloth/gpt-oss-20b-BF16` (requires vLLM ≥ 0.10). The default `openai/gpt-oss-20b` is MXFP4 and
+> fits in 16GB — fine for a cheap smoke test, but do not mix precisions in the real comparison.
 
 Rent **spot / low-priority** and **shut it down when idle** — an idle A100 is the only thing that
 makes this expensive. Expect roughly **$5–15 for a pilot**, **$20–40 for a full run**, at the 20B
@@ -22,8 +27,8 @@ Pin the exact Hugging Face revision with `--revision` so the run is reproducible
 ```bash
 pip install vllm
 
-# A) Safeguarded baseline:
-vllm serve openai/gpt-oss-20b \
+# A) Safeguarded baseline (BF16, precision-matched to the abliterated model):
+vllm serve unsloth/gpt-oss-20b-BF16 \
   --revision <COMMIT_HASH> \
   --port 8000 --enable-auto-tool-choice
 
@@ -43,7 +48,7 @@ export OPENAI_BASE_URL=http://localhost:8000/v1
 export OPENAI_API_KEY=EMPTY
 
 # Serve the safeguarded model, then:
-python run_agents.py --models "safeguarded=openai/gpt-oss-20b@<HASH>" \
+python run_agents.py --models "safeguarded=unsloth/gpt-oss-20b-BF16@<HASH>" \
   --reasoning-toggle gptoss_effort --framing all --repeats 4 --include-clean
 
 # Swap to the abliterated model on the same endpoint, then:

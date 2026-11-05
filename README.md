@@ -12,9 +12,11 @@ an agent is executing tools.
 
 ## Why this design
 
-- **Modern, agent-capable models.** Primary pair: OpenAI's open-weight **`gpt-oss-20b`**
-  (safeguarded baseline) vs. **`huihui-ai/Huihui-gpt-oss-20b-BF16-abliterated-v2`** (same base,
+- **Modern, agent-capable models.** Primary pair: **`unsloth/gpt-oss-20b-BF16`** (safeguarded
+  baseline) vs. **`huihui-ai/Huihui-gpt-oss-20b-BF16-abliterated-v2`** (the SAME BF16 weights with
   safeguards removed). Both are reasoning- and tool-use-native. A 120B pair is configured too.
+  *Precision matters:* the abliterated model is BF16, so we use the BF16 baseline (not the default
+  MXFP4 `openai/gpt-oss-20b`) to avoid a quantization confound — same precision, only safety differs.
 - **Real agents, not single decisions.** The model calls tools over several turns; the sandbox
   *executes* them and a **canary secret** either leaves to an attacker host or it doesn't.
 - **Safeguards as a controlled variable.** Abliteration (Arditi et al., *Refusal in Language
@@ -51,7 +53,7 @@ python test_offline.py
 export OPENAI_BASE_URL=http://localhost:8000/v1
 export OPENAI_API_KEY=EMPTY
 python run_agents.py \
-  --models "safeguarded=openai/gpt-oss-20b,abliterated=huihui-ai/Huihui-gpt-oss-20b-BF16-abliterated-v2" \
+  --models "safeguarded=unsloth/gpt-oss-20b-BF16,abliterated=huihui-ai/Huihui-gpt-oss-20b-BF16-abliterated-v2" \
   --reasoning-toggle gptoss_effort --framing all --repeats 4 --include-clean
 
 # 3) Statistics with bootstrap confidence intervals:
