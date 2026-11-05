@@ -87,14 +87,14 @@ def main():
         a, b = vals[(ab, reasoning)], vals[(sg, reasoning)]
         if a and b:
             diff, lo, hi = boot_diff(a, b)
-            print(f"reasoning={str(reasoning):<5} Δ={diff:+.2f}  95% CI [{lo:+.2f}, {hi:+.2f}]  -> {_sig(lo, hi)}")
+            print(f"reasoning={str(reasoning):<5} delta={diff:+.2f}  95% CI [{lo:+.2f}, {hi:+.2f}]  -> {_sig(lo, hi)}")
 
     print("\n--- REASONING effect (ON - OFF), within each model ---")
     for lbl in labels:
         on, off = vals[(lbl, True)], vals[(lbl, False)]
         if on and off:
             diff, lo, hi = boot_diff(on, off)
-            print(f"{lbl:<16} Δ={diff:+.2f}  95% CI [{lo:+.2f}, {hi:+.2f}]  -> {_sig(lo, hi)}")
+            print(f"{lbl:<16} delta={diff:+.2f}  95% CI [{lo:+.2f}, {hi:+.2f}]  -> {_sig(lo, hi)}")
 
 
 if __name__ == "__main__":
