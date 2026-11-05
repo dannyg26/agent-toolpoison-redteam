@@ -58,6 +58,15 @@ def extract_json_call(text: str) -> tuple[str | None, dict]:
     return found if found else (None, {})
 
 
+_SPECIAL_TOKEN = re.compile(r"<\|[^|>]*\|>")
+
+
+def _strip_special(s: str) -> str:
+    """Remove harmony/chat control tokens (e.g. <|end|>, <|call|>) emitted as literal text,
+    which otherwise make the server's tokenizer reject the echoed message on the next turn."""
+    return _SPECIAL_TOKEN.sub("", s) if s else s
+
+
 class OpenAICompatClient:
     """Any OpenAI-compatible /chat/completions endpoint.
 
@@ -163,14 +172,15 @@ class OpenAICompatClient:
             calls.append({"id": tc.id, "name": tc.function.name, "args": args})
         cot = getattr(msg, "reasoning_content", None) or getattr(msg, "reasoning", None) or ""
         # Echo a CLEAN assistant message (role/content/tool_calls only) — do not send the reasoning
-        # channel back, which some servers reject on input.
+        # channel back, and STRIP harmony control tokens (e.g. <|end|>) that some models emit as
+        # literal text; left in, they make the tokenizer reject the message on the next request.
         am: dict = {"role": "assistant"}
         if msg.content:
-            am["content"] = msg.content
+            am["content"] = _strip_special(msg.content)
         if getattr(msg, "tool_calls", None):
             am["tool_calls"] = [{"id": tc.id, "type": "function",
                                  "function": {"name": tc.function.name,
-                                              "arguments": tc.function.arguments or "{}"}}
+                                              "arguments": _strip_special(tc.function.arguments or "{}")}}
                                 for tc in msg.tool_calls]
         finish = getattr(resp.choices[0], "finish_reason", "") or ""
         return ToolTurn(assistant_message=am, tool_calls=calls, content=msg.content or "",

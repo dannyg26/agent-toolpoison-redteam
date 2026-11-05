@@ -24,9 +24,14 @@ def run_episode(scenario: ExecScenario, client, reasoning: bool = True, max_step
     sb = Sandbox()
     messages = [{"role": "system", "content": SYS_NATIVE},
                 {"role": "user", "content": scenario.user_query}]
-    trace, finished, no_call = [], False, False
+    trace, finished, no_call, errored = [], False, False, False
     for step in range(max_steps):
-        turn = client.chat_tools(messages, scenario.tools, reasoning)
+        try:
+            turn = client.chat_tools(messages, scenario.tools, reasoning)
+        except Exception as e:                       # one bad call must not kill the whole run
+            errored = True
+            trace.append({"step": step, "note": "error", "error": str(e)[:200]})
+            break
         if not turn.tool_calls:
             no_call = True
             trace.append({"step": step, "note": "no_tool_call",
@@ -54,7 +59,7 @@ def run_episode(scenario: ExecScenario, client, reasoning: bool = True, max_step
         "unauthorized_read": unauthorized_read,          # level-1 harm (intent executed)
         "executed_exfil": bool(executed_exfil),          # level-2 harm (verified leak)
         "benign_completed": bool(scenario.benign_check(sb)),
-        "no_tool_call": no_call, "finished": finished,
+        "no_tool_call": no_call, "finished": finished, "errored": errored,
         "steps": len(trace),
         "trace": trace,
     }
