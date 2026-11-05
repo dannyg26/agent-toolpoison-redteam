@@ -25,6 +25,16 @@ class Turn:
     finish_reason: str = ""   # "stop" / "length" (=> truncated) / ...
 
 
+@dataclass
+class ToolTurn:
+    """One assistant turn in NATIVE tool-calling mode."""
+    assistant_message: dict               # raw assistant message to echo back (holds tool_calls)
+    tool_calls: list = field(default_factory=list)   # [{"id","name","args"}]
+    content: str = ""
+    reasoning: str = ""
+    finish_reason: str = ""
+
+
 def extract_json_call(text: str) -> tuple[str | None, dict]:
     """Pull the last {"tool": ...} JSON object out of free-form model text.
 
@@ -103,14 +113,17 @@ class OpenAICompatClient:
                                        "give your JSON decision.")
         return msgs, extra_body
 
-    def _create_with_retry(self, messages, extra_body, max_retries=6):
+    def _create_with_retry(self, messages, extra_body, tools=None, max_retries=6):
         from openai import APIError, APIConnectionError, RateLimitError
+        kw = dict(model=self.model, temperature=self.temperature, max_tokens=self.max_tokens,
+                  messages=messages, extra_body=extra_body or None)
+        if tools:
+            kw["tools"] = tools
+            kw["tool_choice"] = "auto"
         delay = 4.0
         for attempt in range(max_retries):
             try:
-                return self.client.chat.completions.create(
-                    model=self.model, temperature=self.temperature, max_tokens=self.max_tokens,
-                    messages=messages, extra_body=extra_body or None)
+                return self.client.chat.completions.create(**kw)
             except (RateLimitError, APIConnectionError):
                 if attempt == max_retries - 1:
                     raise
@@ -136,6 +149,33 @@ class OpenAICompatClient:
         finish = getattr(resp.choices[0], "finish_reason", "") or ""
         return Turn(text=text, reasoning=cot, finish_reason=finish)
 
+    def chat_tools(self, messages: list[dict], tools: list, reasoning: bool) -> ToolTurn:
+        """NATIVE tool-calling: pass real tool schemas, read structured tool_calls back."""
+        msgs, extra_body = self._prep(messages, reasoning)
+        resp = self._create_with_retry(msgs, extra_body, tools=tools)
+        msg = resp.choices[0].message
+        calls = []
+        for tc in (getattr(msg, "tool_calls", None) or []):
+            try:
+                args = json.loads(tc.function.arguments or "{}")
+            except (json.JSONDecodeError, TypeError):
+                args = {}
+            calls.append({"id": tc.id, "name": tc.function.name, "args": args})
+        cot = getattr(msg, "reasoning_content", None) or getattr(msg, "reasoning", None) or ""
+        # Echo a CLEAN assistant message (role/content/tool_calls only) — do not send the reasoning
+        # channel back, which some servers reject on input.
+        am: dict = {"role": "assistant"}
+        if msg.content:
+            am["content"] = msg.content
+        if getattr(msg, "tool_calls", None):
+            am["tool_calls"] = [{"id": tc.id, "type": "function",
+                                 "function": {"name": tc.function.name,
+                                              "arguments": tc.function.arguments or "{}"}}
+                                for tc in msg.tool_calls]
+        finish = getattr(resp.choices[0], "finish_reason", "") or ""
+        return ToolTurn(assistant_message=am, tool_calls=calls, content=msg.content or "",
+                        reasoning=cot, finish_reason=finish)
+
 
 class ScriptedClient:
     """Deterministic, no-dependency stand-in for offline tests. NOT a model.
@@ -153,3 +193,13 @@ class ScriptedClient:
         tool, args = self.script[self._i] if self._i < len(self.script) else ("finish", {})
         self._i += 1
         return Turn(text=json.dumps({"tool": tool, "args": args}), finish_reason="stop")
+
+    def chat_tools(self, messages: list[dict], tools: list, reasoning: bool) -> ToolTurn:
+        name, args = self.script[self._i] if self._i < len(self.script) else ("finish", {})
+        self._i += 1
+        tcid = f"call_{self._i}"
+        am = {"role": "assistant", "content": None,
+              "tool_calls": [{"id": tcid, "type": "function",
+                              "function": {"name": name, "arguments": json.dumps(args)}}]}
+        return ToolTurn(assistant_message=am, tool_calls=[{"id": tcid, "name": name, "args": args}],
+                        finish_reason="tool_calls")
