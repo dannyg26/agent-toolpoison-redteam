@@ -1,6 +1,7 @@
 # When removing safeguards makes agents *safer*: an adversary-dependent account of tool-poisoning robustness
 
-**Draft — results consolidated so far. Pending items are marked ⏳ (need compute).**
+**Draft — R1 + R2 are complete and measured. R3's continuous dial and the gpt-oss-120b headline are
+future work (see Open problems), and are not prerequisites for the core claim.**
 
 ## Thesis (one sentence)
 
