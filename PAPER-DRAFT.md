@@ -3,6 +3,24 @@
 **Draft — R1 + R2 are complete and measured. R3's continuous dial and the gpt-oss-120b headline are
 future work (see Open problems), and are not prerequisites for the core claim.**
 
+## Abstract
+
+Large language models are increasingly deployed as tool-using **agents** through protocols such as MCP,
+which expands their attack surface to the *tool descriptions* they read — untrusted text that can carry
+injected instructions (**tool poisoning**, a form of indirect prompt injection). Benchmarks report high
+hijack rates and *inverse scaling*: more capable, more obedient models are **more** vulnerable. This
+unsettles the field's default assumption that safety alignment is uniformly protective. We ask whether
+removing a model's safety alignment makes an *agent* more or less dangerous, and show the effect is
+**adversary-dependent**. Using a single open base model (gpt-oss-20b) changed by one targeted edit —
+abliteration of the refusal direction — we find that against a **malicious user**, alignment helps (the
+aligned model refuses 98% of openly harmful requests; the ablated model answers 95%), whereas against a
+**third-party injection**, alignment *hurts* (the aligned model exfiltrates a planted secret 50% of the
+time; the ablated model, 0%). We measure *verified* leakage (a canary actually reaching an attacker
+endpoint), not refusal intent, and we control for capability: conditioned on having read the secret, the
+ablated model still exfiltrates 0/41 versus the aligned model's 69%, while remaining capable of
+multi-step tool use elsewhere. Both directions reduce to one variable — **instruction-following** — the
+same trait alignment suppresses and a third-party injection exploits.
+
 ## Thesis (one sentence)
 
 Removing a model's safety alignment has an **adversary-dependent** effect on agent security, and both
