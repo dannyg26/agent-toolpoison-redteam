@@ -100,30 +100,48 @@ def refusal_dirs(harmful_h, harmless_h):
     return diff / diff.norm(dim=-1, keepdim=True).clamp_min(1e-8)    # [L+1, d] unit rows
 
 
-def _project_out(W, d, alpha, on_rows):
-    """Remove alpha * (component along unit vector d) from weight W.
-    on_rows=True  -> W writes to residual along its OUTPUT dim (rows): W -= alpha * d d^T W
-    on_rows=False -> W writes to residual along its INPUT dim (cols):  W -= alpha * W d d^T
-    """
+def _proj_last_axis(W, d, alpha):
+    """Remove alpha * component along unit d from the LAST axis of W (residual dim = last).
+    Works for 1D [D] (bias), 2D [E, D] (expert bias / embed), 3D [E, k, D] (fused experts)."""
     d = d.to(W.dtype).to(W.device)
-    if on_rows:
-        return W - alpha * torch.outer(d, d) @ W
-    return W - alpha * W @ torch.outer(d, d)
+    coef = W @ d                       # contraction over last axis -> W.shape[:-1]
+    return W - alpha * coef.unsqueeze(-1) * d
 
 
-def abliterate_(model, d, alpha, patterns=("o_proj", "down_proj", "embed_tokens")):
-    """In-place: remove the direction from every residual-writing matrix. Returns #matrices edited.
-    o_proj / down_proj write to the residual on their OUTPUT dim (rows). embed_tokens stores one
-    d_model vector per token on its INPUT dim relative to the residual (cols)."""
+def _proj_first_axis(W, d, alpha):
+    """Remove alpha * component along unit d from the FIRST axis (rows) of a 2D matrix W [D, in]
+    whose OUTPUT (residual) dim is the rows (nn.Linear weight: out_features x in_features)."""
+    d = d.to(W.dtype).to(W.device)
+    coef = torch.tensordot(d, W, dims=([0], [0]))   # [in]
+    return W - alpha * torch.outer(d, coef)
+
+
+def abliterate_(model, d, alpha, patterns=None):
+    """In-place: remove the refusal direction from every weight/bias that WRITES to the residual
+    stream, scaled by alpha. Returns #tensors edited. Handles both dense Linear layers and the
+    gpt-oss mixture-of-experts fused tensors (experts.down_proj / _bias).
+
+    Residual-writing tensors:
+      *o_proj.weight        [d_model, d_in]      -> project rows (first axis)
+      *down_proj.weight      [d_model, d_in]      -> project rows (dense MLP)
+      *experts.down_proj     [E, k, d_model]      -> project last axis (MoE fused)
+      *experts.down_proj_bias[E, d_model]         -> project last axis
+      *o_proj.bias           [d_model]            -> project last axis
+      *embed_tokens.weight   [vocab, d_model]     -> project last axis
+    """
     n = 0
-    for name, mod in model.named_modules():
-        if not hasattr(mod, "weight") or mod.weight is None or mod.weight.dim() != 2:
+    for name, p in model.named_parameters():
+        W = p.data
+        if name.endswith("o_proj.weight") or name.endswith("down_proj.weight"):
+            new = _proj_first_axis(W, d, alpha)
+        elif (name.endswith("experts.down_proj") or name.endswith("experts.down_proj_bias")
+              or name.endswith("o_proj.bias") or name.endswith("embed_tokens.weight")):
+            new = _proj_last_axis(W, d, alpha)
+        else:
             continue
-        if any(p in name for p in patterns):
-            on_rows = "embed" not in name
-            with torch.no_grad():
-                mod.weight.copy_(_project_out(mod.weight.data, d, alpha, on_rows))
-            n += 1
+        with torch.no_grad():
+            p.copy_(new)
+        n += 1
     return n
 
 

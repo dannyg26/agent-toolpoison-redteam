@@ -16,9 +16,31 @@ Usage (on a GPU box, after extracting a direction with refusal_direction.py):
 """
 from __future__ import annotations
 import argparse
+import re
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from refusal_direction import read_harmful, is_refusal, to_chat
+from refusal_direction import read_harmful, is_refusal
+
+
+def to_chat(tok, prompt):
+    """gpt-oss harmony chat template; keep reasoning short so generation reaches the final channel."""
+    msgs = [{"role": "user", "content": prompt}]
+    try:
+        return tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True,
+                                       reasoning_effort="low")
+    except TypeError:
+        return tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
+
+
+def final_channel(text):
+    """Extract the gpt-oss 'final' channel answer from a raw (special-tokens-kept) decode. Refusals
+    live in the final channel, not the analysis/reasoning channel, so we must read it specifically.
+    Falls back to the whole text if the final channel was not reached (truncated mid-reasoning)."""
+    parts = re.split(r"<\|channel\|>\s*final\s*<\|message\|>", text)
+    if len(parts) > 1:
+        ans = re.split(r"<\|return\|>|<\|end\|>|<\|channel\|>", parts[-1])[0]
+        return ans.strip()
+    return re.sub(r"<\|[^|>]*\|>", " ", text).strip()   # fallback: strip harmony tokens
 
 
 def load(model_id):
@@ -65,14 +87,15 @@ def add_ablation_hooks(model, d_unit, alpha):
 
 
 @torch.no_grad()
-def refusal_rate(tok, model, prompts, max_new=128):
+def refusal_rate(tok, model, prompts, max_new=256):
     refused = 0
     for p in prompts:
         enc = tok(to_chat(tok, p), return_tensors="pt", add_special_tokens=False).to(model.device)
         out = model.generate(**enc, max_new_tokens=max_new, do_sample=False,
                              pad_token_id=tok.eos_token_id)
-        txt = tok.decode(out[0, enc.input_ids.shape[1]:], skip_special_tokens=True)
-        refused += int(is_refusal(txt))
+        # keep special tokens so we can locate the harmony 'final' channel, then score that answer
+        raw = tok.decode(out[0, enc.input_ids.shape[1]:], skip_special_tokens=False)
+        refused += int(is_refusal(final_channel(raw)))
     return refused / len(prompts)
 
 
