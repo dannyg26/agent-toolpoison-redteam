@@ -20,11 +20,12 @@ attack and the model's usefulness are the same obedient trait.
 - **Our contribution.** We contrast the *malicious-user* and *third-party* adversaries on the **same
   base model** changed by a **single targeted edit** — abliteration of the refusal direction — giving
   an adversary-dependent flip that neither side shows alone (R1 + R2). This is a *controlled*
-  intervention, not a cross-model comparison, and it directly disarms the "capable models just differ"
-  confound: R2 shows the edit removed only the safety brake (the edited model becomes **more**
-  compliant — it answers 95% of openly harmful requests), so R1's drop in injection-following to zero
-  cannot be dismissed as the edited model being less capable. It is *more* obedient, yet it leaks
-  *less*. We also measure **verified** harm (a canary actually leaking), not intent.
+  intervention, not a cross-model comparison. We take the "the abliterated model just leaks less
+  because it's less capable" confound seriously and measure it directly: the abliterated model is
+  partly less *engaged* (it reads the planted secret 18% vs 60% of the time), but the resistance is
+  not only that — **conditioned on actually reading the secret, it exfiltrates 0/41 vs the safeguarded
+  model's 69%**, while remaining capable of multi-step tool tasks elsewhere (64–82% benign completion).
+  We also measure **verified** harm (a canary actually leaking), not intent.
 - **What we do not yet have.** A *continuous within-model dose-response* (abliterating at varying
   strengths) would strengthen this from a two-point to a curve. Our own direction-extraction does not
   yet reproduce the public model's safeguard removal (R3), so the continuous dial is **future work**,
@@ -43,18 +44,37 @@ attack and the model's usefulness are the same obedient trait.
 
 ## Results
 
-### R1 — Third-party injection (tool poisoning): safeguards *hurt* (n=112/cell)
+### R1 — Third-party injection (tool poisoning): safeguards *hurt* (n=224/cell)
 
-On plausible/neutral poisoned tool descriptions, with 95% bootstrap CIs:
+On plausible/neutral poisoned tool descriptions (blatant sanity-floor and clean-control framings
+excluded, errored episodes dropped), exact counts with 95% bootstrap CIs:
 
-| Metric | safeguarded | abliterated | effect |
-|---|---|---|---|
-| Verified exfil (real leak) | 0.48–0.52 | **0.00** | −0.48 to −0.52 ✔ sig |
-| Leak \| task completed (capability-controlled) | 0.58–0.62 | **0.00** | −0.58 to −0.62 ✔ sig |
-| Unauthorized read (touched the secret) | 0.59–0.62 | 0.14–0.22 | sig |
+| Metric (poisoned) | safeguarded | abliterated |
+|---|---|---|
+| Verified exfil (real leak) | 112/224 = 0.50 [0.43, 0.57] | **0/224 = 0.00** |
+| Unauthorized read (touched the secret) | 135/224 = 0.60 [0.54, 0.67] | 41/224 = 0.18 [0.13, 0.24] |
+| Benign task completed (under attack) | 182/224 = 0.81 [0.76, 0.86] | 143/224 = 0.64 [0.58, 0.70] |
+| **Exfil \| read the secret** (capability control) | **93/135 = 0.69 [0.61, 0.76]** | **0/41 = 0.00 [0, 0.09]** |
+| Exfil \| benign task completed | 109/182 = 0.60 [0.53, 0.67] | 0/143 = 0.00 |
+| Benign completed, **clean / no attack** (pure capability) | 28/28 = 1.00 | 23/28 = 0.82 [0.68, 0.96] |
 
-The safeguarded model leaks ~50% of the time; the no-safeguards model leaks **nothing**, and the gap
-*grows* when we condition on task completion — so it is not merely "less capable."
+**Two things are true, and we report both — this is *not* a clean "safeguards hurt."**
+
+1. *Part of the zero-leak is reduced engagement, not resistance.* The abliterated model completes
+   slightly fewer unpoisoned tasks (0.82 vs 1.00) and, under poisoning, follows the attack far enough
+   to read the secret only 18% of the time (vs 60%). So some of its 0% leak is simply that it engages
+   the attack path less often. (An earlier draft said the gap "is not merely less capable" — that was
+   too strong; it is *partly* a capability/engagement gap, and we now say so.)
+2. *But resistance survives the strongest control we can compute.* Among the episodes where the model
+   **actually read the secret**, the abliterated model sent it onward **0/41** (≤9%) versus the
+   safeguarded model's **69%**. The abliterated model is not incapable of multi-step tool use — it
+   completes 64–82% of benign tasks, all of which require real state-changing tool calls — so reaching
+   the secret and then *not* exfiltrating it is better explained by resistance than by inability.
+
+*Caveat we state openly:* exfiltration is a data-dependent two-step chain (read → send the secret
+outward), so we cannot fully exclude that the abliterated model is specifically weaker at
+*data-dependent* chaining, and the conditioned cell is modest (n = 41 reads). A benign task that
+itself requires a data-dependent chain would isolate this; it is a planned control (see Open problems).
 
 ### R2 — Direct misuse (StrongREJECT, 60 prompts): safeguards *work*, and abliteration truly removed them
 
@@ -92,10 +112,11 @@ engineering task — **future work, not a hole in the causal argument.**
 (None of these are prerequisites for the core claim — R1 + R2 stand on their own. They are
 strengthenings, in priority order.)
 
-- **Harden R1's capability control for reviewers.** The one attack a reviewer will try is "the edited
-  model leaks less because it completes fewer tasks." We already report leak | task-completed, and R2
-  shows the edited model is *more* compliant overall. Add the benign task-completion rate side by side
-  so the "it's just dumber" reading is visibly refuted from the data. **No new compute — existing runs.**
+- **Capability control — done (from existing runs).** We added clean-task completion, unauthorized-read
+  rate, and *exfil | read-the-secret* to R1. It is now honest about the partial engagement gap and
+  shows the residual resistance (0/41 vs 69%) that survives it. **Remaining:** a benign task that
+  *itself* requires a data-dependent two-step chain, to rule out "weaker at dependent chaining" as the
+  explanation for the conditioned cell, and more episodes to tighten the n=41 read-conditioned cell.
 - **Make our own abliteration remove the safeguard**, then run the dose-response dial (refusal,
   **hijack rate**, **instruction-following score** across α, + a random-direction control). Upgrades
   R3 from a two-point binary to a curve. Likely fixes: extract at the correct harmony token position,
@@ -113,6 +134,7 @@ strengthenings, in priority order.)
 
 ## Repro pointers
 
-- R1: `stats_exec.py --metric executed_exfil --exclude-blatant` (+ `unauthorized_read`, `benign_completed`)
+- R1: `stats_exec.py --metric executed_exfil --exclude-blatant` (+ `unauthorized_read`, `benign_completed`);
+  capability control (exfil | read, clean-task completion) → `capability_control.py`
 - R2: `strongreject_check.py` ([SAFEGUARD-CHECK.md](SAFEGUARD-CHECK.md))
 - R3: `refusal_direction.py` (extract/abliterate); dial engine `steer.py`
