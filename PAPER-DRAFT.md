@@ -71,14 +71,14 @@ generality is a planned extension.
 
 ## 2. Related work
 
-*(Citation keys below are placeholders pending a bibliography pass — see "Citations to verify".)*
+*(Full bibliographic details, verified against primary sources, are in §References.)*
 
 **Indirect prompt injection and tool poisoning.** Greshake et al. [greshake2023] introduced *indirect*
 prompt injection, where the adversarial instruction arrives through content the model retrieves rather
 than the user's prompt, and it is catalogued as the top risk (LLM01) in the OWASP Top 10 for LLM
 Applications [owasp-llm]. Tool poisoning is the agentic instance: the malicious instruction lives in a
 tool's *description* or schema. It was disclosed for MCP by Invariant Labs (April 2025) [invariant2025]
-and benchmarked at scale by **MCPTox** [mcptox] (45 live servers, 353 tools, 1,348 cases, 20 models),
+and benchmarked at scale by **MCPTox** [mcptox] (45 live servers, 353 tools, 1,312 cases, 20 models),
 which reports 36.5% average / 72.8% peak attack success, <3% refusal, and *inverse scaling* with
 capability. MCPTox establishes that the threat is real and widespread but compares off-the-shelf
 models, so its capability–vulnerability link is **correlational**. We complement it with a *controlled*
@@ -209,24 +209,38 @@ strengthenings, in priority order.)
   not released, which is also *why* gpt-oss is the vehicle here.
 - "Reasoning off/on" in R1 = gpt-oss effort low/high, not CoT absent/present.
 
-## Citations to verify (before submission)
+## References
 
-Keys used in §1–§2. I am confident these works exist and say what I attribute to them, but the exact
-authors / venue / year / id must be confirmed in a bibliography pass (I can run a web-search pass on
-request):
+*Verified against primary sources (arXiv / proceedings / vendor pages), 2026-11-08. Where a peer-reviewed
+venue could not be confirmed from a primary source, only the arXiv entry is given.*
 
-| key | work (as I understand it) | confidence |
-|---|---|---|
-| `mcptox` | MCPTox, tool-poisoning benchmark, arXiv 2508.14925 (user-provided) | high |
-| `greshake2023` | Greshake et al., "Not what you've signed up for: … Indirect Prompt Injection", arXiv 2302.12173 | high |
-| `arditi2024` | Arditi et al., "Refusal in Language Models Is Mediated by a Single Direction", arXiv 2406.11717 (NeurIPS 2024) | high |
-| `strongreject` | Souly et al., "A StrongREJECT for Empty Jailbreaks", arXiv 2402.10260 | high |
-| `wmdp` | "The WMDP Benchmark", arXiv 2403.03218 | high |
-| `agentharm` | Andriushchenko et al., "AgentHarm", arXiv 2410.09024 | high |
-| `owasp-llm` | OWASP Top 10 for LLM Applications, LLM01: Prompt Injection | high (confirm year/version) |
-| `invariant2025` | Invariant Labs MCP tool-poisoning disclosure, Apr 2025 (blog) | medium (confirm exact citation form) |
-| `harmbench` | Mazeika et al., "HarmBench" | medium (confirm author list/venue) |
-| `sorrybench` | "SORRY-Bench" | medium (confirm authors/venue) |
+- [greshake2023] K. Greshake, S. Abdelnabi, S. Mishra, C. Endres, T. Holz, M. Fritz. "Not What You've
+  Signed Up For: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection."
+  arXiv:2302.12173, 2023.
+- [owasp-llm] OWASP. "OWASP Top 10 for LLM Applications" — LLM01: Prompt Injection (ranked #1), 2025.
+- [invariant2025] Invariant Labs. "Tool Poisoning Attacks." Blog post, April 2025. (PoC: a benign-looking
+  tool whose description instructs the agent to read `~/.ssh/id_rsa`, demonstrated against Cursor.)
+- [mcptox] Z. Wang, Y. Gao, Y. Wang, S. Liu, H. Sun, H. Cheng, G. Shi, H. Du, X. Li. "MCPTox: A
+  Benchmark for Tool Poisoning Attack on Real-World MCP Servers." arXiv:2508.14925, 2025. (45 servers,
+  353 tools, 1,312 cases, 20 agents; peak ASR 72.8% on o1-mini.)
+- [arditi2024] A. Arditi, O. Obeso, A. Syed, D. Paleka, N. Panickssery, W. Gurnee, N. Nanda. "Refusal
+  in Language Models Is Mediated by a Single Direction." NeurIPS 2024. arXiv:2406.11717.
+- [strongreject] A. Souly, Q. Lu, D. Bowen, T. Trinh, E. Hsieh, S. Pandey, P. Abbeel, J. Svegliato,
+  S. Emmons, O. Watkins, S. Toyer. "A StrongREJECT for Empty Jailbreaks." NeurIPS 2024. arXiv:2402.10260.
+- [harmbench] M. Mazeika, L. Phan, X. Yin, A. Zou, Z. Wang, N. Mu, E. Sakhaee, N. Li, S. Basart, B. Li,
+  D. Forsyth, D. Hendrycks. "HarmBench: A Standardized Evaluation Framework for Automated Red Teaming
+  and Robust Refusal." ICML 2024 (PMLR 235). arXiv:2402.04249.
+- [sorrybench] T. Xie, X. Qi, Y. Zeng, Y. Huang, U. M. Sehwag, K. Huang, L. He, B. Wei, D. Li, Y. Sheng,
+  R. Jia, B. Li, K. Li, D. Chen, P. Henderson, P. Mittal. "SORRY-Bench: Systematically Evaluating Large
+  Language Model Safety Refusal." ICLR 2025. arXiv:2406.14598.
+- [wmdp] N. Li, A. Pan, A. Gopal, S. Yue, D. Berrios, et al. (52 authors). "The WMDP Benchmark:
+  Measuring and Reducing Malicious Use with Unlearning." arXiv:2403.03218, 2024.
+- [agentharm] M. Andriushchenko, et al. (14 authors). "AgentHarm: A Benchmark for Measuring Harmfulness
+  of LLM Agents." ICLR 2025. arXiv:2410.09024.
+
+*Notes for final submission:* confirm MCPTox's peer-reviewed venue (arXiv only as of this check — an
+AAAI'26 acceptance was mentioned earlier but not reconfirmed here); confirm the OWASP edition to cite
+(a 2026 edition now exists alongside 2025); WMDP/AgentHarm full author lists to be expanded from arXiv.
 
 ## Repro pointers
 
