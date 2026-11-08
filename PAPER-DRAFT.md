@@ -10,28 +10,105 @@ directions trace to a single variable — **instruction-following**: against a *
 increases harm, but against a *third-party injection* (tool poisoning) it *reduces* harm, because the
 attack and the model's usefulness are the same obedient trait.
 
-## Why this is novel vs. prior work
+## 1. Introduction
 
-- **MCP tool poisoning** was disclosed by Invariant Labs (Apr 2025) and benchmarked at scale by
-  **MCPTox** (AAAI 2026; 45 live servers, 353 tools, 1348 cases, 20 models): average attack success
-  36.5%, up to 72.8%, refusal rate <3%. MCPTox shows *inverse scaling* — more capable models are
-  **more** hijackable — and attributes it to instruction-following, but the evidence is
-  **correlational** (comparing 20 off-the-shelf models).
-- **Our contribution.** We contrast the *malicious-user* and *third-party* adversaries on the **same
-  base model** changed by a **single targeted edit** — abliteration of the refusal direction — giving
-  an adversary-dependent flip that neither side shows alone (R1 + R2). This is a *controlled*
-  intervention, not a cross-model comparison. We take the "the abliterated model just leaks less
-  because it's less capable" confound seriously and measure it directly: the abliterated model is
-  partly less *engaged* (it reads the planted secret 18% vs 60% of the time), but the resistance is
-  not only that — **conditioned on actually reading the secret, it exfiltrates 0/41 vs the safeguarded
-  model's 69%**, while remaining capable of multi-step tool tasks elsewhere (64–82% benign completion).
-  We also measure **verified** harm (a canary actually leaking), not intent.
-- **What we do not yet have.** A *continuous within-model dose-response* (abliterating at varying
-  strengths) would strengthen this from a two-point to a curve. Our own direction-extraction does not
-  yet reproduce the public model's safeguard removal (R3), so the continuous dial is **future work**,
-  not a gap in the causal claim — the binary same-base intervention already carries it.
+Large language models are increasingly deployed not as chatbots but as **agents**: they are given a
+set of tools and left to call them in a loop to accomplish a task. The Model Context Protocol (MCP)
+has made this concrete and widespread — an agent connects to third-party *servers*, each advertising
+*tools* described in natural language, and the model decides which to invoke. This design quietly
+moves a large part of the agent's input out of the user's hands: the **tool descriptions themselves**
+are untrusted data, authored by whoever wrote the server, yet they flow into the same context the
+model reasons over. A malicious or compromised server can therefore embed instructions in a tool's
+description — a **tool-poisoning attack**, a species of *indirect prompt injection* in which the
+adversary is neither the user nor the model but a third party in the data supply chain.
 
-## Methods
+Recent benchmarks make the threat concrete. MCPTox evaluates 20 models across 45 live servers and
+finds attack success rates averaging 36.5% and reaching 72.8%, with models refusing in under 3% of
+cases. Strikingly, it reports **inverse scaling**: *more capable* models are *more* hijackable, and
+attributes this to their stronger instruction-following. This sits uneasily beside the field's
+default assumption — that safety alignment (refusal training) is uniformly protective, so that
+stripping it (via open-weight "uncensored" fine-tunes, or **abliteration** of the refusal direction)
+can only make a deployment more dangerous. If capability and obedience *increase* an agent's exposure
+to injection, it is no longer obvious that the safety-aligned model is the safer *agent*.
+
+**We ask a direct question: does removing a model's safety alignment make an agent more or less
+dangerous?** We show the answer is **adversary-dependent**, and that both directions trace to a
+single underlying variable — **instruction-following**:
+
+- Against a **malicious user** who asks for harm openly, safety alignment works and removing it is
+  dangerous: the no-safeguards model answers 95% of openly harmful requests (R2).
+- Against a **third-party injection** (tool poisoning), removing safety alignment *reduces* verified
+  harm: the safety-aligned model leaks a planted secret 50% of the time; the no-safeguards model
+  leaks it 0% (R1).
+
+The reconciliation is that the attack and the model's usefulness are the *same obedient trait*. Safety
+alignment, as a refusal reflex trained on **who is asking**, does not distinguish a legitimate user
+instruction from one smuggled in through a tool description; what it reliably does is make the model a
+more willing instruction-follower, which the injection then exploits.
+
+**Contributions.**
+
+1. **An adversary-dependent account of safeguard value.** On a single model pair we show safety
+   alignment *helps* against a malicious user (R2) and *hurts* against a third-party injection (R1) —
+   a sign flip that neither adversary reveals alone, unifying them under instruction-following.
+2. **A controlled, same-base-model intervention.** Prior evidence for the capability/obedience story
+   is correlational (comparing off-the-shelf models that differ in many ways). We instead take **one
+   base model** and apply **one targeted edit** — abliteration of the refusal direction — so the only
+   thing that changes is the safety brake.
+3. **Verified harm, and an honest capability control.** We measure a canary *actually leaking* to an
+   attacker endpoint, not refusal-string intent. We take the "it just leaks less because it is less
+   capable" confound seriously and measure it: the no-safeguards model *is* partly less engaged (it
+   reaches the secret 18% vs 60% of the time), but resistance survives the control — **conditioned on
+   actually reading the secret, it exfiltrates 0/41 vs the aligned model's 69%**, while remaining
+   capable of multi-step tool use elsewhere (64–82% benign-task completion).
+
+**Scope and honesty.** A *continuous within-model dose-response* (abliterating at varying strengths)
+would upgrade the causal claim from a two-point contrast to a curve. Our own direction-extraction does
+not yet reproduce the public abliteration's safeguard removal (R3), so the dial is **future work**;
+the binary same-base intervention already carries the causal argument. We study one model family with
+simulated tools — the within-family and capability-controlled results are robust; cross-family
+generality is a planned extension.
+
+## 2. Related work
+
+*(Citation keys below are placeholders pending a bibliography pass — see "Citations to verify".)*
+
+**Indirect prompt injection and tool poisoning.** Greshake et al. [greshake2023] introduced *indirect*
+prompt injection, where the adversarial instruction arrives through content the model retrieves rather
+than the user's prompt, and it is catalogued as the top risk (LLM01) in the OWASP Top 10 for LLM
+Applications [owasp-llm]. Tool poisoning is the agentic instance: the malicious instruction lives in a
+tool's *description* or schema. It was disclosed for MCP by Invariant Labs (April 2025) [invariant2025]
+and benchmarked at scale by **MCPTox** [mcptox] (45 live servers, 353 tools, 1,348 cases, 20 models),
+which reports 36.5% average / 72.8% peak attack success, <3% refusal, and *inverse scaling* with
+capability. MCPTox establishes that the threat is real and widespread but compares off-the-shelf
+models, so its capability–vulnerability link is **correlational**. We complement it with a *controlled*
+same-base-model intervention and with *verified* exfiltration rather than attack-success-by-judgment.
+
+**Safety alignment, refusal, and its removal.** Refusal behaviour in aligned models has a compact
+mechanistic basis: Arditi et al. [arditi2024] show it is mediated by a single direction in activation
+space and that **ablating ("abliterating") that direction removes refusals** while largely preserving
+capability. This makes safety alignment an unusually clean target for a causal intervention, and it is
+also how the open-weight community produces "uncensored" models. The prevailing framing treats such
+removal as strictly increasing danger; our results qualify that framing for the *agentic, third-party*
+threat model. We use abliteration not as a deployment but as a **laboratory instrument** — the smallest
+edit that isolates the safety brake on an otherwise fixed model.
+
+**Misuse benchmarks (the malicious-user axis).** A large literature measures whether models comply
+with *openly* harmful requests: StrongREJECT [strongreject], HarmBench [harmbench], SORRY-Bench
+[sorrybench], and, for dangerous-knowledge, WMDP [wmdp]. AgentHarm [agentharm] extends this to agentic
+misuse where the *user* is the adversary. These benchmarks define the axis on which safety alignment is
+clearly beneficial; our R2 uses StrongREJECT precisely to establish that benefit — and as the
+manipulation check that our no-safeguards model truly has no brakes — before showing the opposite sign
+on the third-party axis.
+
+**Instruction-following as the shared variable.** The thread connecting both axes is that the trait
+safety training suppresses (unconditional obedience) is the same trait an injection exploits. Inverse
+scaling of injection vulnerability [mcptox] and the observation that alignment is largely a
+who-is-asking reflex rather than a what-is-being-asked filter both point here. Our contribution is to
+make this *causal* on one model: turning the refusal reflex off with one edit flips the safeguard's
+effect from harmful (malicious user) to protective (third-party injection).
+
+## 3. Methods
 
 - **Models (matched BF16):** safeguarded = `unsloth/gpt-oss-20b-BF16`; no-safeguards =
   `huihui-ai/Huihui-gpt-oss-20b-BF16-abliterated-v2`. gpt-oss is OpenAI's open release — the most
@@ -42,7 +119,7 @@ attack and the model's usefulness are the same obedient trait.
   removed from the residual-writing weights (incl. the gpt-oss mixture-of-experts fused tensors),
   scaled by α ∈ [0,1] (abliteration) or applied live during generation (steering).
 
-## Results
+## 4. Results
 
 ### R1 — Third-party injection (tool poisoning): safeguards *hurt* (n=224/cell)
 
@@ -107,7 +184,7 @@ likely token-position / layer-selection in gpt-oss's harmony format). The *publi
 (R2: 5% refusal) proves proper abliteration is achievable on this base, so this is a tractable
 engineering task — **future work, not a hole in the causal argument.**
 
-## Open problems / next steps
+## 5. Open problems / next steps
 
 (None of these are prerequisites for the core claim — R1 + R2 stand on their own. They are
 strengthenings, in priority order.)
@@ -124,13 +201,32 @@ strengthenings, in priority order.)
   have, *not* load-bearing.
 - **Headline on gpt-oss-120b** (same family, bigger scale) for the final submission.
 
-## Limitations
+## 6. Limitations
 
 - One model family, one abliteration, simulated tools. The within-family, capability-controlled and
   causal results are robust; cross-family generality is untested (a planned extension). Closed
   frontier models (GPT-5/Claude/Gemini) cannot be tested on the no-safeguards side — their weights are
   not released, which is also *why* gpt-oss is the vehicle here.
 - "Reasoning off/on" in R1 = gpt-oss effort low/high, not CoT absent/present.
+
+## Citations to verify (before submission)
+
+Keys used in §1–§2. I am confident these works exist and say what I attribute to them, but the exact
+authors / venue / year / id must be confirmed in a bibliography pass (I can run a web-search pass on
+request):
+
+| key | work (as I understand it) | confidence |
+|---|---|---|
+| `mcptox` | MCPTox, tool-poisoning benchmark, arXiv 2508.14925 (user-provided) | high |
+| `greshake2023` | Greshake et al., "Not what you've signed up for: … Indirect Prompt Injection", arXiv 2302.12173 | high |
+| `arditi2024` | Arditi et al., "Refusal in Language Models Is Mediated by a Single Direction", arXiv 2406.11717 (NeurIPS 2024) | high |
+| `strongreject` | Souly et al., "A StrongREJECT for Empty Jailbreaks", arXiv 2402.10260 | high |
+| `wmdp` | "The WMDP Benchmark", arXiv 2403.03218 | high |
+| `agentharm` | Andriushchenko et al., "AgentHarm", arXiv 2410.09024 | high |
+| `owasp-llm` | OWASP Top 10 for LLM Applications, LLM01: Prompt Injection | high (confirm year/version) |
+| `invariant2025` | Invariant Labs MCP tool-poisoning disclosure, Apr 2025 (blog) | medium (confirm exact citation form) |
+| `harmbench` | Mazeika et al., "HarmBench" | medium (confirm author list/venue) |
+| `sorrybench` | "SORRY-Bench" | medium (confirm authors/venue) |
 
 ## Repro pointers
 
