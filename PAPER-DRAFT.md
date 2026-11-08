@@ -16,11 +16,12 @@ attack and the model's usefulness are the same obedient trait.
   36.5%, up to 72.8%, refusal rate <3%. MCPTox shows *inverse scaling* — more capable models are
   **more** hijackable — and attributes it to instruction-following, but the evidence is
   **correlational** (comparing 20 off-the-shelf models).
-- **Our contribution is causal and within-model.** We take one model and *intervene* on the
-  safeguard/instruction-following direction (abliteration; Arditi et al. 2024), and show the
-  hijackability moves with it — ruling out the "capable models just differ in many ways" confound.
-  We also contrast the *malicious-user* and *third-party* adversaries on the same models, giving the
-  adversary-dependent flip that neither side shows alone.
+- **Our contribution (what is actually supported).** We contrast the *malicious-user* and
+  *third-party* adversaries on the same model pair, giving the adversary-dependent flip that neither
+  side shows alone (R1 + R2), and we measure **verified** harm (a canary actually leaking), not intent.
+  The intended stronger claim — a *continuous within-model* intervention (our own abliteration dial)
+  that would rule out the "capable models just differ" confound outright — is **not yet working**
+  (R3); currently the controlled-intervention evidence is the *binary* public abliteration only.
 
 ## Methods
 
@@ -59,26 +60,34 @@ This is both a result (against a *malicious user*, safeguards matter: the no-saf
 95% of openly harmful requests) and the **manipulation check** for R1/R3: the abliterated model
 genuinely has no safety brakes, so its injection-robustness in R1 is not an artifact of a broken model.
 
-### R3 — Causal mechanism: the safeguard is a single, removable direction
+### R3 — Causal mechanism (ATTEMPTED — not working yet; earlier "success" was a measurement artifact)
 
-On the real gpt-oss-20b, we extract the refusal direction and remove it (97 tensors edited, including
-the MoE expert weights). Refusals on held-out harmful prompts drop:
+We tried to make the mechanism causal by extracting the refusal direction *ourselves* and removing
+it from gpt-oss-20b at varying strengths (a continuous "dial"). **This does not work yet under correct
+measurement.** An early run appeared to drop refusals 89%→33%, but that was a **measurement artifact**:
+the refusal detector was scoring the model's truncated internal reasoning channel instead of its final
+answer. Scoring the harmony *final* channel correctly, our abliteration — and inference-time steering
+— leaves refusals at ~0.98 across **all** removal strengths (α = 0…1). It does **not** remove the
+safeguard.
 
-**89% → 33%** (best layer, full removal)
+For contrast, the *publicly* abliterated model (R2: 5% refusal) genuinely has no safeguards, so proper
+abliteration is achievable; our own direction extraction is simply not correct yet (most likely the
+token position / layer selection in gpt-oss's harmony chat format). **This is an open engineering
+problem, not a result.** Until it is fixed, the causal claim rests only on the *binary* public
+abliteration (same base model, one targeted edit → safeguards gone in R2, injection-robustness up in
+R1), not on a within-model dose-response curve.
 
-This demonstrates the vulnerability and the safety behavior ride on the *same* single direction — the
-causal core of the thesis. Late-layer directions that "look" most separated do **not** work for
-ablation; a mid-depth direction (layer 13 of 24) does — consistent with Arditi et al.
+## Open problems / next steps
 
-## Pending (need compute — currently blocked on GPU budget)
-
-- ⏳ **Clean dose-response dial** via inference-time steering (`steer.py`, built + validated offline):
-  refusal rate, **hijack rate**, and an independent **instruction-following score** (IFEval) across
-  α ∈ {0,…,1}, on a large eval set. Expected: hijackability falls and direct-harm rises as α↑, both
-  tracking instruction-following — the money figure. *(A first attempt was cut off when the GPU
-  budget hit $0; only the α=0 point was captured and is not reliable.)*
-- ⏳ **Specificity control:** steering a *random* direction of equal norm changes nothing.
-- ⏳ **Headline on gpt-oss-120b** (same family, bigger scale).
+- ❗ **Make our own abliteration actually remove the safeguard** (prerequisite for R3). Our direction
+  extraction does not reduce real-answer refusals; the public abliterated model shows it is possible.
+  Likely fixes: extract at the correct token position for the harmony format, select the layer by
+  *measured* refusal reduction (not the artifact), use more harmful/harmless prompts, and validate
+  against the public model's ~5% as a target. **This is the blocker for the causal story — a method
+  fix, not just compute.**
+- ⏳ **Then** the dose-response dial: refusal, **hijack rate**, and an **instruction-following score**
+  (IFEval) across removal strength — the intended money figure — plus a random-direction control.
+- ⏳ **Headline on gpt-oss-120b** (same family, bigger scale), once the method works at 20B.
 
 ## Limitations
 
