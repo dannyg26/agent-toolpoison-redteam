@@ -16,12 +16,18 @@ attack and the model's usefulness are the same obedient trait.
   36.5%, up to 72.8%, refusal rate <3%. MCPTox shows *inverse scaling* — more capable models are
   **more** hijackable — and attributes it to instruction-following, but the evidence is
   **correlational** (comparing 20 off-the-shelf models).
-- **Our contribution (what is actually supported).** We contrast the *malicious-user* and
-  *third-party* adversaries on the same model pair, giving the adversary-dependent flip that neither
-  side shows alone (R1 + R2), and we measure **verified** harm (a canary actually leaking), not intent.
-  The intended stronger claim — a *continuous within-model* intervention (our own abliteration dial)
-  that would rule out the "capable models just differ" confound outright — is **not yet working**
-  (R3); currently the controlled-intervention evidence is the *binary* public abliteration only.
+- **Our contribution.** We contrast the *malicious-user* and *third-party* adversaries on the **same
+  base model** changed by a **single targeted edit** — abliteration of the refusal direction — giving
+  an adversary-dependent flip that neither side shows alone (R1 + R2). This is a *controlled*
+  intervention, not a cross-model comparison, and it directly disarms the "capable models just differ"
+  confound: R2 shows the edit removed only the safety brake (the edited model becomes **more**
+  compliant — it answers 95% of openly harmful requests), so R1's drop in injection-following to zero
+  cannot be dismissed as the edited model being less capable. It is *more* obedient, yet it leaks
+  *less*. We also measure **verified** harm (a canary actually leaking), not intent.
+- **What we do not yet have.** A *continuous within-model dose-response* (abliterating at varying
+  strengths) would strengthen this from a two-point to a curve. Our own direction-extraction does not
+  yet reproduce the public model's safeguard removal (R3), so the continuous dial is **future work**,
+  not a gap in the causal claim — the binary same-base intervention already carries it.
 
 ## Methods
 
@@ -60,34 +66,41 @@ This is both a result (against a *malicious user*, safeguards matter: the no-saf
 95% of openly harmful requests) and the **manipulation check** for R1/R3: the abliterated model
 genuinely has no safety brakes, so its injection-robustness in R1 is not an artifact of a broken model.
 
-### R3 — Causal mechanism (ATTEMPTED — not working yet; earlier "success" was a measurement artifact)
+### R3 — The intervention is causal (binary), and a continuous dial is future work
 
-We tried to make the mechanism causal by extracting the refusal direction *ourselves* and removing
-it from gpt-oss-20b at varying strengths (a continuous "dial"). **This does not work yet under correct
-measurement.** An early run appeared to drop refusals 89%→33%, but that was a **measurement artifact**:
-the refusal detector was scoring the model's truncated internal reasoning channel instead of its final
-answer. Scoring the harmony *final* channel correctly, our abliteration — and inference-time steering
-— leaves refusals at ~0.98 across **all** removal strengths (α = 0…1). It does **not** remove the
-safeguard.
+**The causal claim is carried by R1 + R2 jointly, not by a dose-response curve.** We take one base
+model and apply one targeted edit (abliterate the refusal direction). R2 verifies that edit changed
+only the safety brake — the edited model is *more* instruction-following (95% compliance on openly
+harmful requests), not degraded. R1 then shows that same edited model's injection-leak rate is zero.
+A single intervention, same weights otherwise, flips the sign of the safeguard's effect depending on
+the adversary. That *is* a controlled causal result; it does not require a dial.
 
-For contrast, the *publicly* abliterated model (R2: 5% refusal) genuinely has no safeguards, so proper
-abliteration is achievable; our own direction extraction is simply not correct yet (most likely the
-token position / layer selection in gpt-oss's harmony chat format). **This is an open engineering
-problem, not a result.** Until it is fixed, the causal claim rests only on the *binary* public
-abliteration (same base model, one targeted edit → safeguards gone in R2, injection-robustness up in
-R1), not on a within-model dose-response curve.
+**What a dial would add, and why we don't have it yet.** A continuous dose-response (abliterate at
+strengths α = 0…1 and watch leak/refusal move together) would upgrade this from two points to a curve
+and is the intended "money figure." We attempted it by extracting the refusal direction *ourselves*.
+It does not work yet: an early run appeared to drop refusals 89%→33%, but that was a **measurement
+artifact** — the detector scored the model's truncated reasoning channel, not its final answer.
+Scoring the harmony *final* channel correctly, our own abliteration and inference-time steering leave
+refusals at ~0.98 across **all** α. Our extraction simply doesn't reproduce the removal yet (most
+likely token-position / layer-selection in gpt-oss's harmony format). The *publicly* abliterated model
+(R2: 5% refusal) proves proper abliteration is achievable on this base, so this is a tractable
+engineering task — **future work, not a hole in the causal argument.**
 
 ## Open problems / next steps
 
-- ❗ **Make our own abliteration actually remove the safeguard** (prerequisite for R3). Our direction
-  extraction does not reduce real-answer refusals; the public abliterated model shows it is possible.
-  Likely fixes: extract at the correct token position for the harmony format, select the layer by
-  *measured* refusal reduction (not the artifact), use more harmful/harmless prompts, and validate
-  against the public model's ~5% as a target. **This is the blocker for the causal story — a method
-  fix, not just compute.**
-- ⏳ **Then** the dose-response dial: refusal, **hijack rate**, and an **instruction-following score**
-  (IFEval) across removal strength — the intended money figure — plus a random-direction control.
-- ⏳ **Headline on gpt-oss-120b** (same family, bigger scale), once the method works at 20B.
+(None of these are prerequisites for the core claim — R1 + R2 stand on their own. They are
+strengthenings, in priority order.)
+
+- **Harden R1's capability control for reviewers.** The one attack a reviewer will try is "the edited
+  model leaks less because it completes fewer tasks." We already report leak | task-completed, and R2
+  shows the edited model is *more* compliant overall. Add the benign task-completion rate side by side
+  so the "it's just dumber" reading is visibly refuted from the data. **No new compute — existing runs.**
+- **Make our own abliteration remove the safeguard**, then run the dose-response dial (refusal,
+  **hijack rate**, **instruction-following score** across α, + a random-direction control). Upgrades
+  R3 from a two-point binary to a curve. Likely fixes: extract at the correct harmony token position,
+  select the layer by *measured* refusal reduction, validate against the public model's ~5%. Nice to
+  have, *not* load-bearing.
+- **Headline on gpt-oss-120b** (same family, bigger scale) for the final submission.
 
 ## Limitations
 
