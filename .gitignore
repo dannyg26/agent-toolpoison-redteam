@@ -6,3 +6,20 @@ env/
 results/
 *.egg-info/
 .DS_Store
+
+# Red-team transcripts and scored outputs contain model-generated harmful text.
+# They are research artifacts: keep them local, never commit them.
+*_results.json
+*_scored.json
+*_raw.json
+*_ot.json
+label_rows.json
+rejudge.json
+calib.json
+adj/
+*_sheet_*.txt
+*_key.json
+*_labels.json
+judge_label_sheet.txt
+hb_new_pos.txt
+ot_sample*.txt
