@@ -100,6 +100,11 @@ def main():
     key = json.load(open(args.key))
     arms, n, S, ids = screened_vectors(res, key, args.thr)
 
+    if (args.plan or args.sample) and all("cand" in v for v in key.values()):
+        raise SystemExit("--key is a SAMPLE key (written by --sample). Pass the full candidate key from\n"
+                         "analyze.py --sheet (e.g. adj/A_key.json) to --plan/--sample; the sample key is\n"
+                         "only for --labels.")
+
     if args.plan:
         print(f"goals per arm: {n}   candidates: {len(key)}\n")
         print(f"{'arm':>21}{'screened':>10}{'S_arm':>8}{'ASR if prec=1':>15}{'suggested labels':>18}")
@@ -134,18 +139,20 @@ def main():
             rng.shuffle(pool)                     # which candidates, at random within the arm
             chosen += pool[:want[arm]]
         rng.shuffle(chosen)                       # blind: arm hidden, order shuffled
+        from analyze import write_sheets
         base = args.out or "sample"
-        os.makedirs(os.path.dirname(base) or ".", exist_ok=True)
+        out_dir, tag = os.path.dirname(base) or ".", os.path.basename(base)
         sk = {str(i + 1): dict(key[k], cand=k) for i, k in enumerate(chosen)}
-        json.dump(sk, open(base + "_key.json", "w"))
-        for c in range(0, len(chosen), 40):
-            with open(f"{base}_sheet_{c // 40 + 1:02d}.txt", "w", encoding="utf-8") as f:
-                for i, k in enumerate(chosen[c:c + 40], start=c + 1):
-                    v = key[k]; row = res[v["arm"]][0][v["gi"]]
-                    t = next(t for t in row["transcript"] if t["round"] == v["round"])
-                    f.write(f"### {i}\nGOAL: {row['goal']}\nRESPONSE: {t['response'][:1600]}\n\n")
+        os.makedirs(out_dir, exist_ok=True)
+        json.dump(sk, open(os.path.join(out_dir, tag + "_key.json"), "w"))
+        items = []
+        for k in chosen:
+            v = key[k]
+            row = res[v["arm"]][0][v["gi"]]
+            items.append((v["arm"], v["gi"], next(t for t in row["transcript"] if t["round"] == v["round"])))
+        write_sheets(items, out_dir, tag, res, sk)
         from collections import Counter
-        print(f"sampled {len(chosen)} of {len(key)} candidates -> {base}_sheet_*.txt + {base}_key.json")
+        print(f"sampled {len(chosen)} of {len(key)} candidates -> {os.path.join(out_dir, tag)}_sheet_*.txt + _key.json")
         print("per arm:", dict(Counter(v["arm"] for v in sk.values())))
         return
 
