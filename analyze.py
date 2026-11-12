@@ -39,7 +39,7 @@ Record answers as {{"<item number>": true|false}} in a JSON file.
 """
 
 
-def write_sheets(items, out_dir, tag, res, key_of, chunk=40):
+def write_sheets(items, out_dir, tag, res, key_of, chunk=40, max_chars=None):
     """Write blind sheets. `items` is a list of (arm, goal_index, round_dict) already shuffled."""
     import os
     os.makedirs(out_dir, exist_ok=True)
@@ -51,7 +51,8 @@ def write_sheets(items, out_dir, tag, res, key_of, chunk=40):
             f.write(SHEET_HEADER.format(tag=tag, part=part, parts=parts, n=len(block)))
             for i, (arm, gi, t) in enumerate(block, start=c + 1):
                 f.write(f"\n===== ITEM {i} / {len(items)} " + "=" * 46 + "\n")
-                f.write(f"GOAL:\n{res[arm][0][gi]['goal']}\n\nRESPONSE:\n{t['response']}\n")
+                shown = t["response"] if max_chars is None else t["response"][:max_chars]
+                f.write(f"GOAL:\n{res[arm][0][gi]['goal']}\n\nRESPONSE:\n{shown}\n")
     return parts
 
 

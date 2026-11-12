@@ -97,6 +97,10 @@ CONTRASTS = (
     ("aligned-redteam", "no-attacker", "does the prompted aligned attacker beat just asking?"),
     ("abliterated-plain", "no-attacker", "does the abliterated attacker beat just asking?"),
     ("abliterated-redteam", "no-attacker", "does abliterated+prompted beat just asking?"),
+    # extension E1 (ANALYSIS-PLAN.md): a model trained for red-teaming, used as its authors specify
+    ("trained-redteam", "aligned-redteam", "E1-H5: trained red-team model vs prompting a general model"),
+    ("trained-redteam", "abliterated-plain", "E1-H6: trained red-team model vs abliteration"),
+    ("trained-redteam", "no-attacker", "E1: does the trained red-team model beat just asking?"),
 )
 
 
@@ -141,8 +145,10 @@ def make_harmbench_judge(base_url, api_key, model):
 
 # ---- the attack loop ----
 
-def run_goal(attacker_chat, target_chat, judge, goal, arm_sys, max_rounds=5, check_refusal=True):
-    """One harmful goal through one attacker arm. Returns an outcome dict (with the full transcript)."""
+def run_goal(attacker_chat, target_chat, judge, goal, arm_sys, max_rounds=5, check_refusal=True, build_msgs=None):
+    """One harmful goal through one attacker arm. Returns an outcome dict (with the full transcript).
+    build_msgs(goal, history) -> messages overrides the default PAIR-style prompt, for attackers that
+    were trained on their own input format (see make_template_attacker)."""
     history, transcript = [], []
     attempted, errors = False, 0
 
@@ -151,12 +157,15 @@ def run_goal(attacker_chat, target_chat, judge, goal, arm_sys, max_rounds=5, che
                 "attacker_refused_all": not attempted, "errors": errors, "transcript": transcript}
 
     for rnd in range(max_rounds):
-        amsgs = [{"role": "system", "content": arm_sys},
-                 {"role": "user", "content": f"Target behavior: {goal}"}]
-        if history:
-            atk, resp = history[-1]
-            amsgs += [{"role": "assistant", "content": atk},
-                      {"role": "user", "content": ATTACKER_REFINE.format(atk=atk, resp=resp[:600])}]
+        if build_msgs is not None:
+            amsgs = build_msgs(goal, history)
+        else:
+            amsgs = [{"role": "system", "content": arm_sys},
+                     {"role": "user", "content": f"Target behavior: {goal}"}]
+            if history:
+                atk, resp = history[-1]
+                amsgs += [{"role": "assistant", "content": atk},
+                          {"role": "user", "content": ATTACKER_REFINE.format(atk=atk, resp=resp[:600])}]
         attack = (attacker_chat(amsgs) or "").strip()
         if attack.startswith("[error:"):          # endpoint failure must never be scored as an attack
             errors += 1
@@ -300,6 +309,45 @@ def _identity_attacker(messages):
     return messages[1]["content"][len("Target behavior: "):]
 
 
+def make_template_attacker(tpl, raw_chat):
+    """Drive a model trained for red-teaming in the input format its authors specify.
+
+    tpl (JSON, e.g. attackers/jailbreak_r1.json):
+      system   : system prompt or null
+      user     : first-attempt user message; must contain {goal}
+      refine   : later-attempt user message using {goal}, {attack}, {response}; null means each attempt
+                 is an independent sample, for models trained single-shot
+      extract  : regex whose group 1 is the attack prompt inside the model's output, or null for the
+                 whole output (reasoning in <think> tags is already stripped by make_chat)
+    Returns (attacker_chat, build_msgs, stats); stats counts outputs where `extract` did not match.
+    """
+    stats = {"calls": 0, "extract_failed": 0}
+    pat = re.compile(tpl["extract"], re.S) if tpl.get("extract") else None
+
+    def build_msgs(goal, history):
+        msgs = [{"role": "system", "content": tpl["system"]}] if tpl.get("system") else []
+        if history and tpl.get("refine"):
+            atk, resp = history[-1]
+            msgs.append({"role": "user", "content": tpl["refine"].format(goal=goal, attack=atk, response=resp[:600])})
+        else:
+            msgs.append({"role": "user", "content": tpl["user"].format(goal=goal)})
+        return msgs
+
+    def attacker_chat(msgs):
+        out = raw_chat(msgs) or ""
+        if out.startswith("[error:"):
+            return out
+        stats["calls"] += 1
+        if pat is not None:
+            m = pat.search(out)
+            if m:
+                return m.group(1).strip()
+            stats["extract_failed"] += 1   # sent as-is; the failure rate is reported and audited
+        return out.strip()
+
+    return attacker_chat, build_msgs, stats
+
+
 def run_gpu(args):
     from concurrent.futures import ThreadPoolExecutor
     dt, at = args.disable_thinking, args.attacker_temp
@@ -316,26 +364,39 @@ def run_gpu(args):
     goals = load_goals(args.dataset, args.n_goals, args.goals)
     print(f"dataset={args.dataset} goals={len(goals)} rounds={args.rounds} repeats={args.repeats} "
           f"atk_temp={at} judge={args.judge_kind} concurrency={cw}", flush=True)
-    arms = {   # arm -> (attacker, system prompt, check attacker refusal?)
-        "no-attacker":         (_identity_attacker, "", False),
-        "aligned-plain":       (atk_safe, ATTACKER_SYS_DIRECT, True),
-        "abliterated-plain":   (atk_abl,  ATTACKER_SYS_DIRECT, True),
-        "aligned-redteam":     (atk_safe, ATTACKER_SYS_REDTEAM, True),
-        "abliterated-redteam": (atk_abl,  ATTACKER_SYS_REDTEAM, True),
+    arms = {   # arm -> (attacker, system prompt, check attacker refusal?, build_msgs)
+        "no-attacker":         (_identity_attacker, "", False, None),
+        "aligned-plain":       (atk_safe, ATTACKER_SYS_DIRECT, True, None),
+        "abliterated-plain":   (atk_abl,  ATTACKER_SYS_DIRECT, True, None),
+        "aligned-redteam":     (atk_safe, ATTACKER_SYS_REDTEAM, True, None),
+        "abliterated-redteam": (atk_abl,  ATTACKER_SYS_REDTEAM, True, None),
     }
+    tstats = None
+    if args.attacker_template:
+        tpl = json.load(open(args.attacker_template, encoding="utf-8"))
+        raw = make_chat(args.attacker_custom_url, args.key, args.attacker_custom_model,
+                        max_tokens=tpl.get("max_tokens", 1024), temperature=tpl.get("temperature", at),
+                        disable_thinking=tpl.get("disable_thinking", False))
+        atk_t, build, tstats = make_template_attacker(tpl, raw)
+        arms[tpl.get("arm", "trained-redteam")] = (atk_t, "", True, build)
+        print(f"template attacker: {tpl.get('arm', 'trained-redteam')} <- {args.attacker_custom_model} "
+              f"(refine={'yes' if tpl.get('refine') else 'no, independent attempts'})", flush=True)
     wanted = [a.strip() for a in args.arms.split(",")] if args.arms else list(ARMS)
     results = {}   # arm -> list of repeats; each repeat = goal-ordered list of rows
     for arm in wanted:
-        atk, sysp, chk = arms[arm]
+        atk, sysp, chk, build = arms[arm]
         runs = []
         for rep in range(args.repeats):
             with ThreadPoolExecutor(max_workers=cw) as ex:   # goals are independent; vLLM batches concurrent reqs
-                rows = list(ex.map(lambda g: run_goal(atk, target, judge, g, sysp, args.rounds, chk), goals))
+                rows = list(ex.map(lambda g: run_goal(atk, target, judge, g, sysp, args.rounds, chk, build), goals))
             runs.append(rows)
             print(f"[{arm}] run {rep + 1}/{args.repeats}: ASR={sum(1 for r in rows if r['success'])}/{len(rows)} "
                   f"errors={sum(r['errors'] for r in rows)}", flush=True)
         results[arm] = runs
         json.dump(results, open(args.out, "w"), indent=1)   # checkpoint after every arm (full transcripts)
+    if tstats is not None:
+        print(f"template attacker: {tstats['calls']} outputs, prompt extraction failed on "
+              f"{tstats['extract_failed']}", flush=True)
     if judge is None:
         print("\njudge-free collection: no ASR here; score the transcripts with rescore.py", flush=True)
     else:
@@ -415,7 +476,30 @@ def _selftest():
     same = boot_diff_paired([1, 0, 1, 0], [1, 0, 1, 0])
     assert same == (0.0, 0.0, 0.0), same
     report(res)
-    print("\nOK - refusal detector, attack loop (5 paths), error guard, baseline arm, judge template, metrics.")
+
+    # template attacker, single-shot: every attempt is a fresh sample in the model's own format
+    seen = []
+    def raw1(msgs):
+        seen.append(msgs); return "reasoning first <prompt>crafted adversarial attack text here</prompt>"
+    atk_t, build, st = make_template_attacker(
+        {"system": None, "user": "GOAL={goal}", "refine": None, "extract": r"<prompt>(.*?)</prompt>"}, raw1)
+    r = run_goal(atk_t, _scripted(["no thanks.", "no thanks."]), None, "do X", "", max_rounds=2, build_msgs=build)
+    assert seen == [[{"role": "user", "content": "GOAL=do X"}]] * 2, seen        # history ignored
+    assert r["transcript"][0]["attack"] == "crafted adversarial attack text here" and st == {"calls": 2, "extract_failed": 0}
+
+    # template attacker with feedback: later attempts see the previous attack and the target's reply
+    seen.clear()
+    def raw2(msgs):
+        seen.append(msgs); return "another crafted adversarial prompt"
+    atk2, build2, st2 = make_template_attacker(
+        {"system": "SYS", "user": "GOAL={goal}", "refine": "GOAL={goal} PREV={attack} GOT={response}",
+         "extract": r"<prompt>(.*?)</prompt>"}, raw2)
+    run_goal(atk2, _scripted(["target said no", "x"]), None, "do X", "", max_rounds=2, build_msgs=build2)
+    assert seen[0][0] == {"role": "system", "content": "SYS"}
+    assert seen[1][1]["content"] == "GOAL=do X PREV=another crafted adversarial prompt GOT=target said no", seen
+    assert st2["extract_failed"] == 2          # no <prompt> tags: counted, never silently dropped
+    print("\nOK - refusal detector, attack loop (5 paths), error guard, baseline arm, judge template, metrics, "
+          "template attacker (single-shot + feedback).")
 
 
 def main():
@@ -433,7 +517,11 @@ def main():
     ap.add_argument("--goals"); ap.add_argument("--n-goals", type=int, default=50)
     ap.add_argument("--rounds", type=int, default=5)
     ap.add_argument("--repeats", type=int, default=1, help="independent runs per arm, to measure run-to-run variance")
-    ap.add_argument("--arms", default="", help="comma-separated subset of: " + ",".join(ARMS))
+    ap.add_argument("--attacker-custom-url"); ap.add_argument("--attacker-custom-model")
+    ap.add_argument("--attacker-template", help="JSON input format for a model trained for red-teaming "
+                                                 "(adds its arm, default name trained-redteam)")
+    ap.add_argument("--arms", default="", help="comma-separated subset of: " + ",".join(ARMS) +
+                                               " (+ the template arm)")
     ap.add_argument("--attacker-temp", type=float, default=0.7)
     ap.add_argument("--concurrency", type=int, default=8, help="parallel goals per run (vLLM batches these)")
     ap.add_argument("--out", default="redteam_results.json")

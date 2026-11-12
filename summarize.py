@@ -19,7 +19,8 @@ from __future__ import annotations
 import argparse, json
 from redteam import boot_mean, boot_diff_paired, CONTRASTS, fmt
 
-ARM_ORDER = ["no-attacker", "aligned-plain", "abliterated-plain", "aligned-redteam", "abliterated-redteam"]
+ARM_ORDER = ["no-attacker", "aligned-plain", "abliterated-plain", "aligned-redteam", "abliterated-redteam",
+             "trained-redteam"]
 
 
 def cell_flags(res, thr):
