@@ -1,3 +1,10 @@
 openai>=1.40
-# stdlib-only for stats/plots; add matplotlib if you want to plot:
+# analysis: estimate.py, reproduce_results.py, summarize.py
+numpy>=1.24
+scipy>=1.10
+# StrongREJECT judge (sr_judge.py / rescore.py), GPU only:
+# torch
+# transformers
+# peft
+# optional, for plots:
 # matplotlib

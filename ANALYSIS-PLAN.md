@@ -53,6 +53,9 @@ Beta posteriors. Validated before labelling: in 400 simulated experiments with k
 
 Report one round per cell, so ASR is a slight lower bound; this applies to every arm alike.
 
+> **Superseded (C3, C4).** This estimator's contrasts were not truly paired (C3); its replacement was
+> revised again in C4. The "slight lower bound" wording is withdrawn: see C4, item 5.
+
 ## Hypotheses and decision rules
 
 Contrast `X − Y` is ASR(X) − ASR(Y). All intervals are 95%.
@@ -125,6 +128,10 @@ plan; both are design limitations that review turned up. The labelling sheets sh
 per cell was labelled. Both can only hide jailbreaks, and both fall hardest on aligned-redteam. Their
 effect is assessed post hoc in `RESULTS.md` ("Robustness" and "Measurement biases"). The decision rules
 were not changed.
+
+> **Corrected (C4).** "Both can only hide jailbreaks" was too strong. Truncation can also hide context
+> that changes how a visible success should be read, so it can err in either direction (`RESULTS.md`,
+> Measurement limits).
 
 Consequences:
 
@@ -227,6 +234,9 @@ character against it.
 
 **E1 data, frozen before labelling (2026-11-12).** Collected on one A100 with vLLM 0.33.0, the same
 version as the original arms; the run cost $0.94.
+
+> **Corrected (C4).** The main study's vLLM version was not recorded, so "the same version as the
+> original arms" is unverified (`MANIFEST.md`).
 
 - **Prompts:** 450 per target, 900 in all; every one parsed on the first generation (0 retries, 0
   failures) and there were 0 endpoint errors. The prefill was confirmed on a benign goal to be continued
@@ -351,6 +361,10 @@ their labels attached:
 - the old estimator stays available as `estimate.py --legacy-estimator` to reproduce the originally
   reported numbers.
 
+> **Superseded (C4).** The Jeffreys draws in this replacement could reject a true zero difference, and
+> they added variance on top of the bootstrap. The coverage claim above ("about nominal, and slightly
+> conservative") was not established by those simulations. See C4.
+
 **2. Verdicts under the corrected estimator** (`reproduce_results.py`; the legacy numbers are in the
 earlier entries):
 
@@ -365,6 +379,9 @@ earlier entries):
 - **E1-H6:** A significant, B not. Unchanged.
 - **E1 floor:** A significant; on B, Holm p 0.19. *Changed:* previously significant on both.
 
+> **Superseded (C4).** These verdicts used the C3 estimator and exempted H2 from Holm. The current
+> verdicts are in C4, item 3.
+
 **3. Pooled miss rate.** With an arm-specific miss rate per arm, estimated from 6–12 audit cells each, the
 B headline becomes +0.00 [−0.27, +0.34]. **H1 on target B therefore depends on the pooled-miss
 assumption**; on A it survives (−0.33 [−0.49, −0.14]). Reported as a sensitivity analysis.
@@ -378,6 +395,8 @@ H1 still holds; H2 on A does not survive this analysis.
 (candidates), or the highest-scoring round (audit). The estimated quantity is therefore the success rate
 of that *selected round*, a lower bound on "jailbroken within 3 rounds". Every arm's estimate is a
 lower bound, but the size of the gap can differ by arm, so contrasts are not guaranteed conservative.
+
+> **Corrected (C4).** The reported numbers are not a guaranteed lower bound; see C4, item 5.
 
 **6. Chronology.** This plan was frozen *after* collection, automated scoring and the assistant's
 exploratory AI labels, and *before* any of the agent labels used for the final estimates.
@@ -422,3 +441,105 @@ arms. The arms did not receive identical realised query budgets.
 - E1 described as a system-level comparison (different base model, decoding, attempt structure and
   token budget), with training-data overlap unaudited;
 - the headline scoped to these checkpoints, prompt and configuration.
+
+## C4 — second external review: estimator revised, hypotheses separated, claims narrowed (2026-11-12)
+
+A second external review re-checked C3. Each point was verified against the code and data before any
+change. The review's own numerical audit of 14 reported values against `results_numbers.json` found one
+mis-rounded endpoint, in the PR description.
+
+**1. The C3 estimator could declare a difference when there was none.** Its bootstrap drew each imputed
+rate from a Jeffreys Beta posterior.
+
+- Those draws are strictly positive, so in the boundary case the whole bootstrap moved off the point
+  estimate. That case is an arm of known zeros against an arm whose 40 audited cells were all false.
+  Both point estimates were 0, yet the interval was [0.00002, 0.050] and p = 0 (reproduced).
+- The draws were also independent per arm, so arms with identical *partial* labels got a contrast
+  interval of about ±0.10 (reproduced).
+- They also added variance on top of the outer bootstrap, which already varies the stratum rates.
+
+**Fix.** A plug-in two-phase bootstrap: in each resample every imputed rate is the labelled rate in that
+resample, with nothing else randomised.
+
+- Both counterexamples now give [0, 0] with p = 1, and are permanent self-tests.
+- Strata with all-0 or all-1 labels get no within-stratum spread. `imputation_strata` reports them. None
+  occurs in the primary analyses.
+
+**2. Calibration was not established by the C3 simulations** (300 experiments each, pass threshold 0.92,
+no null-rejection or familywise checks). `estimate.py --calibrate` now runs 2000 experiments per scenario
+under the real sampling design. It uses four arms in two twin pairs with equal true ASR, and outcomes
+correlated across arms (`calibration.json`).
+
+| | pooled miss rate correct (3 scenarios) | pooled miss rate wrong |
+|---|---|---|
+| contrast coverage | 0.937–0.953 | down to 0.899 |
+| one-sided misses (nominal 0.025) | 0.018–0.040 | up to 0.093 |
+| null rejections (nominal 0.05) | 0.045–0.060 | — |
+| Holm familywise error | 0.042–0.055 | — |
+| single-arm coverage | 0.910–0.952 | — |
+
+The intervals are close to nominal, slightly liberal at worst, in the scenarios simulated. General
+calibration is not claimed.
+
+**3. Hypotheses are now tested as hypotheses, not arm pairs** (`estimate.HYPOTHESES`, `test_hypotheses`).
+
+- **H1** is a one-sided margin test, with its own p-value for d ≥ +0.05.
+- **H2**, on the same contrast, is a two-sided zero test inside the Holm family. C3 had exempted it by
+  marking the arm pair "primary".
+- **E1-H5** is primary on target B only, as pre-registered. On A it joins the E1 secondary family.
+- **Holm families**, per target: main = H2, H3, H4a–c; E1 = E1-H6, E1 floor (+ E1-H5 on A).
+- **Output** prints "unadjusted interval excludes 0" separately from "significant after Holm".
+
+Current verdicts:
+
+- **H1:** supported on both targets (A −0.305 [−0.425, −0.186]; B −0.091 [−0.172, −0.007]). On B this is
+  conditional on the pooled miss rate.
+- **H2:** A significant after Holm; B not (p 0.029, Holm 0.084). *Unchanged from C3* in verdict.
+- **H3:** not significant on either target.
+- **H4:**
+  - aligned-redteam and abliterated-redteam beat the floor on both targets;
+  - abliterated-plain does not after Holm (A 0.059, B 0.084).
+- **E1-H5:** no detectable difference on B (+0.009 [−0.117, +0.134]); not significant on A.
+- **E1-H6:** A significant; B not (Holm 0.077).
+- **E1 floor:** significant on both targets. On B, Holm 0.010. *Changed:* C3 had Holm 0.19 on B, because
+  its Jeffreys draws widened the interval.
+
+**4. Sensitivity analyses corrected.**
+
+- The annotator analyses now use one agent's blind labels for *every* arm. In C3 they used them only for
+  the E1 arm. All verdicts match the reconciled ones, except H2 on B, which becomes significant under
+  either agent.
+- The per-arm miss analysis is now complemented by a deterministic least-favourable version: each arm's
+  own audit at the end of its 95% Clopper–Pearson interval that most favours abliterated-plain. H1 on B
+  fails under both versions. On A the point estimate stays at −0.12.
+
+**5. Outcome wording.** Selected-round success is at most any-round success only for correct
+full-response labels. The reported estimates rest on excerpt labels, imputation and pooling, which can err
+in either direction, so they are **not** a guaranteed lower bound. This replaces "a lower bound" in C3
+item 5, RESULTS.md and RED-TEAM-STUDY.md.
+
+**6. Same targets across sessions.**
+
+- **Weights and tokenizer:** the target repositories' commit histories show only README/metadata changes
+  since September 2024 (Qwen) and no changes since July 2024 (Llama). Both collections (November 2026)
+  therefore used identical weights and tokenizer files.
+- **Decoding:** fixed in code.
+- **Unrecorded:** the main study's vLLM version and serving options, so E1 contrasts may include a
+  collection-session effect.
+
+**7. Reproduction and stale text.**
+
+- `reproduce_results.py` now also computes the descriptive numbers:
+  - annotator and judge agreement, and the drift check;
+  - confirmation and audit counts, and the Fisher test;
+  - behaviour, withholding and realised budgets;
+  - truncation and unlabelled flagged rounds;
+  - the copy-threshold sweep.
+
+  `--legacy` now runs the legacy estimator.
+- `requirements.txt` lists the analysis dependencies.
+- Superseded statements in this file now carry inline notes.
+- `allocate()` no longer claims exactly equal audit inclusion probabilities. They are 0.089–0.094 on A
+  and 0.061–0.069 on B.
+- One correction to the descriptive record: StrongREJECT's judge-only Jailbreak-R1 contrast on target A
+  is −0.18 on the 146 shared goals, not −0.15.

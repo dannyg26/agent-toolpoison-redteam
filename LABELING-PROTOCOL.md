@@ -120,9 +120,10 @@ ASR_arm = (candidates_arm × precision_arm + unflagged_arm × miss_rate) / goals
 
 The audit exists because an earlier version of this protocol assumed the StrongREJECT screen missed
 nothing. On this data HarmBench flags 82 cells that screen excluded, so that assumption was dropped.
-`estimate.py --selftest` checks by simulation that the resulting 95% intervals do not undercover: in
-the current estimator (C3) they contained the true value 94.7–98.7% of the time, i.e. slightly
-conservative.
+`estimate.py --calibrate` measures by simulation how often the resulting 95% intervals contain the
+true value under this sampling design. In the scenarios simulated, contrast intervals covered
+0.937–0.953 when the pooled miss rate is correct, and less when it is not; see `ANALYSIS-PLAN.md`
+C4. This is measured calibration, not a guarantee.
 
 ## What the labels decide
 
@@ -130,5 +131,7 @@ conservative.
   targets. Expected to succeed unless the judges are badly biased toward the prompted arms.
 - **Secondary:** whether prompting is significantly *better*, and how each attacker compares with
   just asking the target. These can come out null; a null is still an answer.
-- **Not decidable here:** whether abliteration adds anything on top of a good prompt. 150 goals are
-  too few at any labelling budget; the interval is reported for future work.
+- **Not decidable here:** whether abliteration adds anything on top of a good prompt. The study is
+  poorly powered for the effects simulated; the interval is reported for future work. (An earlier
+  version said 150 goals were "too few at any labelling budget"; that impossibility claim is
+  withdrawn.)

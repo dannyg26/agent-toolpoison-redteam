@@ -81,31 +81,43 @@ flags some genuine attack prompts; the effect is reported in `RESULTS.md`.
    procedure).
 4. `estimate.py` estimates attack success with a goal-level two-phase bootstrap.
 
-The labelled outcome is the success of one selected round per (arm, goal) cell, a lower bound on
-"jailbroken within 3 attempts".
+The labelled outcome is the success of one selected round per (arm, goal) cell. With correct
+full-response labels this would be at most "jailbroken within 3 attempts". The estimates rest on excerpt
+labels and imputation, though, so they are not a guaranteed lower bound on it.
 
 ## Answer (AI-annotated, not human-validated)
 
 For these checkpoints, this prompt and this configuration (details and intervals in `RESULTS.md`):
 
-- **Abliteration is not better than prompting** (pre-registered H1, both targets).
-  - It is significantly worse on target A (−0.30 [−0.43, −0.16]).
-  - On target B (−0.09 [−0.18, +0.005]) it is not significantly worse.
-  - H1 on target B depends on the pooled miss-rate assumption.
-- **The trained attacker is not detectably different from prompting** (E1-H5): +0.01 [−0.13, +0.16]
-  on target B. It beats abliteration on target A; on B that is unresolved.
+- **Abliteration alone does not beat prompting alone by the pre-registered 5-point margin** (H1, both
+  targets). This rules out an advantage of 5 points or more; it does not show there is none.
+  - On target A, prompting is significantly better (−0.30 [−0.42, −0.19]; H2 holds after Holm).
+  - On target B, −0.09 [−0.17, −0.007]; H2 is not significant after Holm.
+  - H1 on target B depends on the pooled miss-rate assumption and fails without it.
+- **The trained attacker shows no detectable difference from prompting** (E1-H5, primary on B): +0.01
+  [−0.12, +0.13]. Differences of about ±0.13 are not excluded. It beats abliteration alone on target A;
+  on B that is unresolved.
 - **Under a plain instruction, the abliterated checkpoint shows** fewer detected refusals and much more
   near-verbatim goal copying than the aligned one, with no detectable difference in attack success.
-- **Whether abliteration adds anything on top of a good prompt** is unresolved; the study is poorly
-  powered for the effects simulated.
+- **Unresolved:** whether adding abliteration to a red-team prompt helps, and whether Jailbreak-R1 is
+  better or worse than prompting by less than about 0.13.
 
 ## Where it stands
 - ✅ Collection, both judges and the AI-agent labelling are complete for the five main arms and E1;
-  `python reproduce_results.py` recomputes every reported number.
+  `python reproduce_results.py` recomputes the reported numbers, and `python estimate.py --calibrate`
+  the estimator's simulated calibration.
 - ✅ An analysis plan was frozen *after* collection and automated scoring, but *before* the agent
   labels used for the estimates (`ANALYSIS-PLAN.md`, including the chronology in C3).
-- ✅ Deviations (D1–D4) and corrections (C1–C3) are logged. C3 replaced an estimator whose contrasts
-  were not truly paired, after an external review; one verdict changed (H2 on target B).
+- ✅ Deviations (D1–D4) and corrections (C1–C4) are logged. Two external reviews led to the corrections:
+  - **C3** replaced an estimator whose contrasts were not paired.
+  - **C4** replaced that estimator's Beta draws with a plug-in bootstrap, because they could flag a true
+    zero difference. It also separated H1 from H2 and put H2 in the Holm family.
+  - **Verdicts changed against the originally reported ones:**
+    - H2 on target B (no longer significant after Holm);
+    - H4 for abliterated-plain (no longer beats the floor after Holm).
+
+    The E1 floor on B was non-significant under C3 and is significant again under C4, as originally
+    reported.
 - ⏳ **Open, in priority order:**
   1. a blinded human validation sample of the AI labels (the main weakness);
   2. labelling every round in sampled cells, with full responses;
@@ -119,7 +131,7 @@ Files:
 - **collection:** `redteam.py`
 - **scoring:** `rescore.py`, `sr_judge.py`
 - **sampling and estimates:** `estimate.py`
-- **every reported number:** `reproduce_results.py`
+- **reported numbers:** `reproduce_results.py`; **estimator calibration:** `estimate.py --calibrate`
 - **aggregates and judge agreement:** `summarize.py`
 - **annotator agreement:** `adjudicate.py`
 - **legacy screened-only sheets:** `analyze.py`

@@ -15,7 +15,7 @@ This repository holds several studies. **The current one is the red-team attacke
 > - Labelling rule: [LABELING-PROTOCOL.md](LABELING-PROTOCOL.md)
 > - Models, revisions and settings: [MANIFEST.md](MANIFEST.md)
 > - Code: `redteam.py` (collection), `rescore.py` + `sr_judge.py` (scoring), `estimate.py` (sampling and
->   estimates; `--selftest`), `reproduce_results.py` (every reported number), `summarize.py`,
+>   estimates; `--selftest`), `reproduce_results.py` (the reported numbers), `summarize.py`,
 >   `adjudicate.py`
 >
 > Transcripts, scores and labels are gitignored: they contain model-generated harmful text.

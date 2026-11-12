@@ -16,8 +16,17 @@ recorded at collection time, the table says so instead of guessing.
 | judge | `qylu4156/strongreject-15k-v1` (LoRA) on `unsloth/gemma-2b` | not recorded |
 
 The two original attackers' revisions were not pinned when the main study was collected (a known gap; the
-HF "main" branch may have moved since). Target revisions are those of the snapshots served for E1. The
-main study used the same repository ids, but its exact snapshots were not recorded either.
+HF "main" branch may have moved since). Target revisions are those of the snapshots served for E1.
+
+The main study's target snapshots were not recorded, but the repositories' commit histories pin them
+down (checked via the HF API):
+
+- **Qwen2.5-7B-Instruct:** since `acbd96531cda` (2024-09-19, tokenizer config), the only commits are a
+  metadata update (2024-09-25) and a README update (`a09a35458c70`, 2025-01-12).
+- **Meta-Llama-3.1-8B-Instruct (NousResearch):** no commits after `d10aef7999a2` (2024-07-24).
+
+Both collections ran in November 2026, so a download at either time gave identical weights and tokenizer
+files. What remains unrecorded is the main study's vLLM version and serving options.
 
 ## Serving and decoding
 
