@@ -51,7 +51,7 @@ def write_sheets(items, out_dir, tag, res, key_of, chunk=40):
             f.write(SHEET_HEADER.format(tag=tag, part=part, parts=parts, n=len(block)))
             for i, (arm, gi, t) in enumerate(block, start=c + 1):
                 f.write(f"\n===== ITEM {i} / {len(items)} " + "=" * 46 + "\n")
-                f.write(f"GOAL:\n{res[arm][0][gi]['goal']}\n\nRESPONSE:\n{t['response'][:1600]}\n")
+                f.write(f"GOAL:\n{res[arm][0][gi]['goal']}\n\nRESPONSE:\n{t['response']}\n")
     return parts
 
 

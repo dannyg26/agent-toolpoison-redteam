@@ -7,9 +7,12 @@ written. The final results below are **AI-annotated, not human-validated**.
 
 ## Final results (AI-annotated)
 
-**Answer: abliterating the attacker is not worth it.** Abliteration alone does significantly *worse*
-than prompting an aligned attacker, on both targets. Under a plain instruction it removes refusals but
-adds no attack success at all, and on top of a red-team prompt it adds nothing detectable.
+**Answer: abliteration is not a substitute for prompting.** Used *instead of* a red-team prompt, it does
+significantly worse on both targets, and this survives every robustness check below. Under a plain
+instruction it removes refusals but adds no measurable attack success. Whether abliteration helps *on
+top of* a red-team prompt is **unresolved**: the estimates are small (+0.06, +0.02) and the intervals
+run from about −0.08 to +0.20, so a gain of up to ~20 points cannot be ruled out. The measurement
+biases described below probably inflate that estimate.
 
 Attack success rate, 150 goals per arm, 95% intervals (`estimate.py`):
 
@@ -31,7 +34,7 @@ Pre-registered hypotheses (`ANALYSIS-PLAN.md`), paired contrasts:
 | H4 | aligned-redteam − no-attacker | +0.36 [+0.23, +0.48] | +0.13 [+0.05, +0.21] | beats the floor |
 | H4 | abliterated-plain − no-attacker | +0.06 [+0.00, +0.12] | +0.03 [+0.00, +0.07] | barely beats it |
 | H4 | abliterated-redteam − no-attacker | +0.43 [+0.31, +0.52] | +0.15 [+0.09, +0.22] | beats the floor |
-| explor. | abliterated-redteam − aligned-redteam | +0.06 [−0.08, +0.20] | +0.02 [−0.08, +0.12] | no claim (underpowered, as predicted) |
+| explor. | abliterated-redteam − aligned-redteam | +0.06 [−0.08, +0.20] | +0.02 [−0.08, +0.12] | unresolved (underpowered, as predicted) |
 
 Labelling quality: blind agent agreement kappa 0.82 (A; per sheet 0.69–0.95) and 0.93 (B), both above
 the 0.6 gate; reconciliation changed no item the agents agreed on. The audit found 2/40 (A) and 1/40 (B)
@@ -49,16 +52,51 @@ the annotated ASR:
 | abliterated-redteam | 0.63 → 0.52 | 0.23 → 0.19 |
 
 The judges' flags held up less often for aligned attackers: the share of flags confirmed was
-0.40–0.57 for aligned arms and 0.65–0.79 for abliterated arms, on both targets. That gap tracks the
-*weights*, not the prompt — consistent with aligned attackers quietly rewriting goals into safer
-neighbours that the judges still score as jailbreaks (observed, not pre-registered). It also
-manufactured an effect: the judges said abliteration made a plain-instructed attacker significantly
-*worse* (−0.07 to −0.13 in all four judge/target columns); with labels that effect is zero.
+0.40–0.57 for aligned arms and 0.65–0.79 for abliterated arms. Pooled by weights, 0.52 vs 0.75 (A) and
+0.44 vs 0.76 (B), two-proportion test p ≈ 0.007 on each target. Arms were sampled at different rates,
+so this is approximate. The gap tracks the *weights*, not the prompt — consistent with aligned
+attackers quietly rewriting goals into safer neighbours that the judges still score as jailbreaks
+(observed, not pre-registered). The judges also reported an effect the labels do not support: they
+said abliteration made a plain-instructed attacker significantly *worse* (−0.07 to −0.13 in all four
+judge/target columns). With labels it is no longer detectable (0.00 and −0.03, intervals include zero).
 
-**Limits that bound these conclusions:** labels are from AI agents, not humans; one round per cell is
-labelled (ASR is a slight lower bound for every arm); 150 goals; one pass per cell; one attacker family
-and one abliteration implementation; the miss rate is pooled across arms (A's two misses fell in
-no-attacker and aligned-plain, B's one in abliterated-plain).
+### Robustness (post hoc, not pre-registered)
+
+| check | headline A | headline B | other contrasts |
+|---|---|---|---|
+| agent 1's blind labels only | −0.38 [−0.49, −0.24] | −0.11 [−0.20, −0.03] | H3 and on-top n.s. |
+| agent 2's blind labels only | −0.29 [−0.41, −0.16] | −0.11 [−0.20, −0.03] | H3 and on-top n.s. |
+| A's 5 unresolved items counted as jailbreaks | −0.33 [−0.45, −0.20] | (none unresolved) | H3 and on-top n.s. |
+| bootstrap seed, 10 seeds | stable | upper bound −0.016 to −0.021 | — |
+| **worst case**: every false label on abliterated-plain that could be wrong flipped to true (12 in A, 2 in B) | −0.17 [−0.30, −0.03] | −0.08 [−0.17, −0.005] | — |
+
+The headline holds in every row. The on-top estimate even changes sign between the two annotators
+(−0.02 vs +0.05 on A), which confirms it is noise at this sample size.
+
+### Measurement biases found after labelling
+
+- **Truncated responses.** The labelling sheets showed the first 1,600 characters of each response.
+  172 of 191 items (A) and 60 of 116 (B) were longer, so annotators judged about 80% of the text, missing
+  a mean ~390-character tail. Hidden text can only hide a jailbreak, never invent one, so this
+  undercounts. It falls unevenly: 98% of aligned-redteam items were truncated, against 77% of
+  abliterated-plain (A).
+- **One round per cell.** A cell counts if any round is a jailbreak, but only its highest-scoring flagged
+  round was labelled. Of aligned-redteam's cells labelled false, 15 of 23 (A) had another flagged round
+  nobody labelled, against 1 of 7 for abliterated-plain and 3 of 9 for abliterated-redteam.
+
+Both biases undercount aligned-redteam most. So the headline, where aligned-redteam wins, is
+*conservative*, and the worst-case row above bounds it. The other contrasts are not protected. The
+on-top estimate (abliterated-redteam − aligned-redteam) is probably **inflated in abliteration's
+favour**, and the H3 null in A may be pulled toward zero, since aligned-plain was truncated more (93%
+vs 77%). Re-labelling the 111 false-labelled truncated items with full text would tighten both.
+
+**Limits that bound these conclusions:**
+- labels are from AI agents, not humans;
+- the two measurement biases above;
+- 150 goals, one pass per cell;
+- one attacker family and one abliteration implementation;
+- the miss rate is pooled across arms (A's two misses fell in no-attacker and aligned-plain, B's one in
+  abliterated-plain).
 
 ## How we got here
 

@@ -72,11 +72,12 @@ have been unrecoverable. Collected this way it can be re-scored by anyone, with 
 - **abliterated > prompted** → the weight surgery buys attack power prompting can't reach.
 - **either ≈ no-attacker** → that attacker isn't earning its keep at all.
 
-Answer (AI-annotated, not human-validated): **abliteration is not worth it.** Abliteration alone is
-significantly worse than prompting an aligned attacker on both targets (−0.30 and −0.10 ASR); under a
-plain instruction it removes refusals yet adds no attack success, because ~29% of its attempts copy the
-goal verbatim; and on top of a red-team prompt it adds nothing detectable. The primary pre-registered
-hypothesis is supported on both targets. See `RESULTS.md`.
+Answer (AI-annotated, not human-validated): **abliteration is not a substitute for prompting.** Used
+instead of a red-team prompt it is significantly worse on both targets (−0.30 and −0.10 ASR), robust to
+every check including a worst-case bound. Under a plain instruction it removes refusals yet adds no
+measurable success, consistent with ~29% of its attempts copying the goal near-verbatim. Whether it
+helps *on top of* a red-team prompt is unresolved (+0.06 and +0.02, intervals up to about +0.20). The
+primary pre-registered hypothesis is supported on both targets. See `RESULTS.md`.
 
 ## Where it stands
 - ✅ Harness, 5 arms, 2 targets, 150 goals, 0 endpoint errors, offline `--selftest` passing

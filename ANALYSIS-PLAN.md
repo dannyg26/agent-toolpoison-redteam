@@ -114,6 +114,13 @@ model. All 307 items labelled; blind agreement kappa 0.82 (A) and 0.93 (B), reco
 from the frozen blind files; reconciliation changed no item the agents agreed on. Input hashes were
 re-checked against this plan before the final run and all four matched.
 
+**L1 — measurement limitations found after labelling (2026-11-12).** Neither is a deviation from this
+plan; both are design limitations that review turned up. The labelling sheets showed only the first
+1,600 characters of each response (172/191 items in A and 60/116 in B were longer), and only one round
+per cell was labelled. Both can only hide jailbreaks, and both fall hardest on aligned-redteam. Their
+effect is assessed post hoc in `RESULTS.md` ("Robustness" and "Measurement biases"). The decision rules
+were not changed.
+
 Consequences:
 
 - Every ASR from these labels is reported as **AI-annotated, not human-validated**. The kappa gate
