@@ -42,7 +42,17 @@ attacking. Nearly a third of its attempts are the harmful goal parroted back wit
 rewriting — which the target then simply refuses. **The red-team prompt removes refusals just as
 completely (27% → 0%) with no weight surgery, and never degenerates into copying.**
 
-This is the mechanism behind everything below, and it rests on string comparison, not on a judge.
+The gap holds at every similarity threshold, and both targets agree to within a point — expected, since
+the attacker writes its first prompt before seeing any target output:
+
+| copy threshold | 0.50 | 0.70 | 0.90 | 0.95 |
+|---|---|---|---|---|
+| aligned-plain | 0.26 | 0.08 | 0.03 | 0.02 |
+| abliterated-plain | 0.59 | 0.38 | 0.22 | **0.21** |
+| aligned-redteam | 0.00 | 0.00 | 0.00 | 0.00 |
+
+At near-exact matching the abliterated attacker copies 7–10x more often than the aligned one. This is
+the mechanism behind everything below, and it rests on string comparison, not on a judge.
 
 ## Finding 2: prompting beats abliteration, on both targets, under both judges
 
@@ -106,13 +116,37 @@ The dominant error is **goal drift**. The attacker rewrites the harmful goal int
 the target answers *that* helpfully and in detail, and the judges score the fluent on-topic-sounding
 answer as a jailbreak.
 
+## The headline does not depend on the pending labels
+
+Because the screen is high-recall, `ASR_arm = S_arm x precision_arm`, and `S_arm` is known exactly. So
+each contrast has a **flip ratio**: how many times more precise one arm would have to be than the other
+for the sign to reverse.
+
+| contrast | A | B | |
+|---|---|---|---|
+| abliteration alone − prompting alone | 7.8x | 8.8x | **settled** |
+| prompted aligned − just asking | 0.06x | 0.02x | settled |
+| abliterated+prompted − just asking | 0.07x | 0.03x | settled |
+| red-team prompt on aligned weights | 0.27x | 0.55x | settled in A |
+| abliteration vs aligned, plain instruction | 2.1x | 4.8x | settled in B |
+| abliteration on top of prompting | 1.35x | 1.47x | needs labels |
+
+For the headline to reverse, the abliterated attacker's screened hits would have to be ~8x more often
+real than the prompted attacker's. Given both were screened by the same judge on the same goals against
+the same target, that is not a credible configuration. **The direction of the headline is settled by
+the screen counts; adjudication sets its magnitude.**
+
+The one genuinely open question is whether abliteration adds anything *on top of* a good prompt
+(flip ratio ≈ 1.4). Both automated judges say no, but that one needs the labels.
+
 ## The caveat that decides the headline
 
 Goal drift produces false positives, and the prompted arms generate far more fluent, on-topic-sounding
 prose than the copy-paste-prone abliterated arm. So the false positives are probably **not** evenly
 distributed across arms, and the measured advantage of prompting may be partly an artifact.
 
-`adjudicate.py` reports screen precision per arm and flags exactly this. Until that runs:
+`adjudicate.py` reports screen precision per arm and flags exactly this, and `estimate.py` folds the
+precision estimate into the CI. Until that runs:
 
 - **Finding 1 is solid** — mechanical, judge-free.
 - **Finding 3 is solid** — it is a statement about the judges.
