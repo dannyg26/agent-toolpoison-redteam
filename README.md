@@ -2,17 +2,21 @@
 
 This repository holds several studies. **The current one is the red-team attacker study**:
 
-> **Is abliterating your red-team attacker worth it?** It compares three ways of getting a willing,
-> capable attacker LLM: prompting an aligned model, abliterating it (weight surgery that removes
-> refusals), and downloading a model trained for red-teaming (Jailbreak-R1). All three run against two
-> targets on 150 StrongREJECT goals, labelled blind by two AI agents.
+> **Is abliterating your red-team attacker worth it?** It compares three ways of getting a willing
+> attacker LLM: prompting an aligned model, abliterating it (weight surgery that removes refusals), and
+> downloading a model trained for red-teaming (Jailbreak-R1). The main study runs five arms (a 2x2 of
+> aligned/abliterated weights by plain/red-team prompt, plus a no-attacker floor) on 150 StrongREJECT
+> goals; extension E1 adds Jailbreak-R1 on 146 of them. Both run against two targets, with a fixed
+> 3-attempt budget, and are labelled blind by two AI agents (not yet validated by humans).
 >
 > - Design and status: [RED-TEAM-STUDY.md](RED-TEAM-STUDY.md)
 > - Results: [RESULTS.md](RESULTS.md)
 > - Pre-registered plan, deviations and corrections: [ANALYSIS-PLAN.md](ANALYSIS-PLAN.md)
 > - Labelling rule: [LABELING-PROTOCOL.md](LABELING-PROTOCOL.md)
+> - Models, revisions and settings: [MANIFEST.md](MANIFEST.md)
 > - Code: `redteam.py` (collection), `rescore.py` + `sr_judge.py` (scoring), `estimate.py` (sampling and
->   estimates; `--selftest`), `summarize.py`, `adjudicate.py`
+>   estimates; `--selftest`), `reproduce_results.py` (every reported number), `summarize.py`,
+>   `adjudicate.py`
 >
 > Transcripts, scores and labels are gitignored: they contain model-generated harmful text.
 

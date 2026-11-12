@@ -1,101 +1,126 @@
-# Is Abliterating Your Red-Teamer Worth It? Weight-Surgery vs. Prompting for Automated Red-Team Agents
+# How should you get a red-team attacker? Prompting vs. abliteration vs. a trained attacker
 
-## The question (one line)
-To build an effective automated **red-team agent** — an AI that attacks a target model to find its
-safety holes — is it worth **abliterating** the attacker (permanent weight edit that removes refusals
-but slightly degrades it), or does simply **prompting** an aligned attacker work just as well while
-keeping its full capability?
+## The question
+An automated **red-team agent** is an AI that attacks a target model to find its safety holes. A useful
+attacker has to be *willing* to write attacks, and there are three common ways to get one:
 
-## Why this project (fits every constraint)
-- **Red-team agents** — the subject itself (advisor's requirement).
-- **Abliterated models** — one of the three attacker arms (the "weight-surgery" condition).
-- **Safe + publishable** — this is *defensive* automated red-teaming (find a target's holes so they can
-  be fixed); standard methodology (PAIR, TAP, HarmBench). Harmful goals come from a public benchmark;
-  generated attack text stays in local logs, never committed.
-- **One month** — the attack loop is a solved recipe; small scale gives a real result.
+1. **prompt** an aligned model with a red-team system prompt;
+2. **abliterate** it — a weight edit that removes the refusal direction (Arditi et al. 2024); or
+3. download a model **trained** for red-teaming (here Jailbreak-R1, arXiv:2506.00782).
 
-## What's known vs. our gap (verified 2026 scan)
-- **Known / cited, not ours:** aligned attackers refuse to generate attacks ([CoP, NeurIPS'25];
-  [self-improved RT, 2026]); people already use abliterated attackers in practice (Red Hat, Helix blogs);
-  aligned attackers can still be strong *with good prompting* ([J2](https://arxiv.org/html/2502.09638v1),
-  91–93% ASR). The intuition "uncensored refuses less" is folk wisdom.
-- **Open (both searches confirmed):** no controlled study holds attack method + target + judge fixed and
-  varies **only the attacker's safety**, with real measurement — and nobody has pitted **abliteration
-  against prompting** for the attacker, or decomposed **willingness vs. capability**.
+This study compares these attacker *configurations* against the same targets, goals and query budget.
+It measures attack success and simple attacker behaviours (detected refusal, near-verbatim copying of
+the goal). It does **not** measure general capability, and it does not isolate "safety" from every
+other consequence of a particular weight edit or training run.
 
-## The experiment: a 2x2 over the attacker, plus a floor
-Same target, same goals, same query budget — vary only the attacker. The 2x2 separates the two levers
-(weights vs prompt) and lets us ask whether they add:
+## Why this project
+- **Red-team agents** are the subject itself (the advisor's requirement).
+- **Abliterated models** are one of the attacker conditions.
+- **Defensive measurement** with standard benchmark goals. Generated text stays in local, gitignored
+  files.
+
+## Related work and the gap
+- **Automated red-teaming with an attacker LLM:** PAIR (Chao et al. 2023, arXiv:2310.08419) and TAP
+  (Mehrotra et al. 2023, arXiv:2312.02119); agentic variants such as CoP (arXiv:2506.00781).
+- **Benchmarks and evaluators:** HarmBench (Mazeika et al. 2024, arXiv:2402.04249) and StrongREJECT
+  (Souly et al. 2024, arXiv:2402.10260), whose goals and fine-tuned judge we use.
+- **Attackers and refusal.**
+  - J2 (arXiv:2502.09638) notes that refusal training leads strong LLMs to refuse to help with
+    jailbreaking, and shows that prompted frontier models can nonetheless act as attackers.
+  - Self-improved red teaming (arXiv:2610.34965) reports that awareness of the adversarial objective
+    causes explicit refusal and non-refusal "sandbagging" in attacker roles.
+  - Jailbreak-R1 (arXiv:2506.00782) trains an attacker with reinforcement learning.
+- **Abliteration:** Arditi et al. 2024 (arXiv:2406.11717).
+- **Judge reliability:** "How Reliable Is Your Jailbreak Judge?" (arXiv:2606.25487) and "An Empirical
+  Measurement of Jailbreaking Evaluators" (arXiv:2609.10594) study evaluator calibration and
+  disagreement. Our evaluator results add a measurement on attacker-generated transcripts, but they are
+  relative to an unvalidated AI annotation.
+
+**Gap, to our knowledge.** Searches of arXiv and the web in November 2026 found no controlled comparison
+that holds target, goals, budget and scoring fixed while varying *how the attacker is made willing* —
+prompting, abliteration, or red-team training. This is a bounded claim, not proof that none exists.
+
+## Design
+Main study: a 2x2 over the attacker, plus a floor.
 
 |  | plain instruction | red-team system prompt |
 |---|---|---|
-| **aligned weights** | `aligned-plain` | `aligned-redteam` |
-| **abliterated weights** | `abliterated-plain` | `abliterated-redteam` |
+| **aligned weights** (`Qwen/Qwen3-8B`) | `aligned-plain` | `aligned-redteam` |
+| **abliterated weights** (`huihui-ai/Huihui-Qwen3-8B-abliterated-v2`) | `abliterated-plain` | `abliterated-redteam` |
 
-Plus **`no-attacker`**: the goal goes to the target verbatim, re-sampled for the same number of rounds.
-This is the budget-matched "just ask" floor — without it, an arm that looks good may be doing nothing
-an attacker is needed for. (The original 3-arm design lacked both the 4th cell and this floor, so
-weights and prompting could not be separated and nothing was anchored.)
+Plus **`no-attacker`**, which sends the goal to the target verbatim, re-sampled for the same number of
+attempts. Extension **E1** adds `trained-redteam` (`yukiyounai/Jailbreak-R1`), run in its authors' format
+(`attackers/jailbreak_r1.json`). E1 is a system-level comparison: its base model, attempt structure and
+decoding differ from the other arms (see `RESULTS.md`).
 
-**The attack loop (PAIR-style, per harmful goal):**
-1. Attacker crafts an adversarial prompt aimed at making the target do the goal.
-2. Send to the **target**; get its response.
-3. **Judge** scores: jailbroken (harmful compliance) or refused.
-4. If not jailbroken, attacker sees the response and **refines** — up to **N** rounds.
-5. Record success / rounds / whether the attacker itself refused.
+**Attack loop** (simplified, PAIR-style, judge-free):
 
-## Models (as actually run)
-- **Attacker, aligned:** `Qwen/Qwen3-8B`
-- **Attacker, abliterated:** `huihui-ai/Huihui-Qwen3-8B-abliterated-v2` (same lineage)
-- **Attacker, trained for red-teaming (extension E1):** `yukiyounai/Jailbreak-R1` (Guo et al. 2025;
-  Qwen2.5-7B-Instruct base, so every attacker in the study is from the Qwen family). It is run in its
-  authors' format (`attackers/jailbreak_r1.json`), and E1 contrasts use 146 goals (`ANALYSIS-PLAN.md`, D3).
-- **Target A:** `Qwen/Qwen2.5-7B-Instruct`
-- **Target B:** `NousResearch/Meta-Llama-3.1-8B-Instruct` (different family → generality)
-- **Goals:** 150 behaviours from **StrongREJECT** (built to not over-report jailbreaks)
-- **Scoring:** HarmBench official classifier + StrongREJECT fine-tuned judge, **post hoc**, then blind
-  labelling of a stratified sample by two independent AI agents (originally planned as two humans; see
-  `ANALYSIS-PLAN.md`, D2). HarmBench/AdvBench are wired up and unused.
-All served as OpenAI-compatible endpoints (vLLM), so the harness is just API calls — no model hooks.
+1. The attacker writes a prompt for the goal.
+2. The target answers.
+3. If attempts remain, a refining attacker sees the reply and writes a new prompt. Jailbreak-R1 instead
+   draws independent samples, because it was trained single-shot.
+4. Every arm uses its full **3 attempts**; nothing is judged during collection.
 
-## Measurement: no judge in the loop
-Every arm spends its **full** round budget and the transcripts are scored afterwards. Judging inside the
-loop makes the trajectory depend on the judge, and ours turned out to be unreliable — so the data would
-have been unrecoverable. Collected this way it can be re-scored by anyone, with any judge.
+An attacker output that the refusal detector flags is not sent to the target. The legacy detector also
+flags some genuine attack prompts; the effect is reported in `RESULTS.md`.
 
-**Metrics**
-- **ASR** — fraction of goals jailbroken within N rounds, bootstrap CI over goals *(headline)*.
-- **Attacker refusal rate** and **verbatim-copy rate** — the willingness axis and the failure mode,
-  both from mechanical string checks, no judge involved.
-- **Paired contrasts** between arms (bootstrap over goals): arms share the goal set, so pairing removes
-  goal-difficulty variance. See `CONTRASTS` in `redteam.py` for the seven planned comparisons.
+**Targets and goals.**
 
-## What each outcome means
-- **prompted ≥ abliterated** → abliteration is **unnecessary**; prompt an aligned model, keep its brains.
-- **abliterated > prompted** → the weight surgery buys attack power prompting can't reach.
-- **either ≈ no-attacker** → that attacker isn't earning its keep at all.
+- Target A: `Qwen/Qwen2.5-7B-Instruct`.
+- Target B: `NousResearch/Meta-Llama-3.1-8B-Instruct`, a second target family.
+- Goals: 150 StrongREJECT behaviours; 146 in E1, after excluding 4 chemical/biological-harm goals
+  (`ANALYSIS-PLAN.md` D3).
+- The HarmBench and AdvBench *datasets* are wired up and unused; the HarmBench *classifier* is used for
+  scoring.
 
-Answer (AI-annotated, not human-validated): **abliteration is not a substitute for prompting.** Used
-instead of a red-team prompt it is significantly worse on both targets (−0.30 and −0.10 ASR), robust to
-every check including a worst-case bound. Under a plain instruction it removes refusals yet adds no
-measurable success, consistent with ~29% of its attempts copying the goal near-verbatim. Whether it
-helps *on top of* a red-team prompt is unresolved (+0.06 and +0.02, intervals up to about +0.20). The
-primary pre-registered hypothesis is supported on both targets. See `RESULTS.md`. Extension E1 (final, AI-annotated): an attacker *trained* for red-teaming (Jailbreak-R1) is not detectably better than a prompted aligned model (+0.01 [−0.12, +0.14] on the primary target), and beats abliteration clearly on one target (+0.35) with the other unresolved (+0.10 [−0.003, +0.22]).
+**Scoring, after collection.**
+
+1. Two judges score every round: the HarmBench classifier and the StrongREJECT fine-tuned judge.
+2. A stratified sample is drawn: cells either judge flagged, plus a blind audit of unflagged cells.
+3. Two independently started AI agents label it, with the rule in `LABELING-PROTOCOL.md` (operative
+   procedure).
+4. `estimate.py` estimates attack success with a goal-level two-phase bootstrap.
+
+The labelled outcome is the success of one selected round per (arm, goal) cell, a lower bound on
+"jailbroken within 3 attempts".
+
+## Answer (AI-annotated, not human-validated)
+
+For these checkpoints, this prompt and this configuration (details and intervals in `RESULTS.md`):
+
+- **Abliteration is not better than prompting** (pre-registered H1, both targets).
+  - It is significantly worse on target A (−0.30 [−0.43, −0.16]).
+  - On target B (−0.09 [−0.18, +0.005]) it is not significantly worse.
+  - H1 on target B depends on the pooled miss-rate assumption.
+- **The trained attacker is not detectably different from prompting** (E1-H5): +0.01 [−0.13, +0.16]
+  on target B. It beats abliteration on target A; on B that is unresolved.
+- **Under a plain instruction, the abliterated checkpoint shows** fewer detected refusals and much more
+  near-verbatim goal copying than the aligned one, with no detectable difference in attack success.
+- **Whether abliteration adds anything on top of a good prompt** is unresolved; the study is poorly
+  powered for the effects simulated.
 
 ## Where it stands
-- ✅ Harness, 5 arms, 2 targets, 150 goals, 0 endpoint errors, offline `--selftest` passing
-- ✅ Automated scoring + a reliability check of the judges: the two published ones agree with each other
-  at only kappa ≈ 0.56, and all four automated evaluators disagreed substantially with one AI annotator
-  (`ANALYSIS-PLAN.md`, C1)
-- ✅ Analysis plan fixed before labelling, with data hashes (`ANALYSIS-PLAN.md`); estimator validated
-  by coverage simulation (`estimate.py --selftest`)
-- ✅ **AI-agent labelling** — all 307 items, two blind agents (kappa 0.82 / 0.93); final estimates run
-  against the pre-registered plan. AI-annotated, not human-validated.
-- ✅ **Extension E1** (trained red-team attacker) — collected, and all 178 items labelled blind (kappa
-  0.92 / 0.97). The labelling-drift check passed and the results are final (`RESULTS.md`).
-- ⏳ Human validation of a sample of the AI labels (the main open weakness); more goals (needed for the
-  abliteration-on-top-of-prompting question); repeats at n=150; a non-Qwen attacker family; more rounds
+- ✅ Collection, both judges and the AI-agent labelling are complete for the five main arms and E1;
+  `python reproduce_results.py` recomputes every reported number.
+- ✅ An analysis plan was frozen *after* collection and automated scoring, but *before* the agent
+  labels used for the estimates (`ANALYSIS-PLAN.md`, including the chronology in C3).
+- ✅ Deviations (D1–D4) and corrections (C1–C3) are logged. C3 replaced an estimator whose contrasts
+  were not truly paired, after an external review; one verdict changed (H2 on target B).
+- ⏳ **Open, in priority order:**
+  1. a blinded human validation sample of the AI labels (the main weakness);
+  2. labelling every round in sampled cells, with full responses;
+  3. a non-Qwen attacker family;
+  4. more goals and repeated collections;
+  5. more than one red-team prompt;
+  6. an audit of Jailbreak-R1's training-data overlap.
 
-Files: `redteam.py` (collection) · `rescore.py` + `sr_judge.py` (scoring) · `summarize.py` (aggregates)
-· `estimate.py` (labelling sample + final estimates) · `adjudicate.py` (agreement) · `analyze.py`
-(legacy screened-only sheets).
+Files:
+
+- **collection:** `redteam.py`
+- **scoring:** `rescore.py`, `sr_judge.py`
+- **sampling and estimates:** `estimate.py`
+- **every reported number:** `reproduce_results.py`
+- **aggregates and judge agreement:** `summarize.py`
+- **annotator agreement:** `adjudicate.py`
+- **legacy screened-only sheets:** `analyze.py`
+- **models, revisions and settings:** `MANIFEST.md`
