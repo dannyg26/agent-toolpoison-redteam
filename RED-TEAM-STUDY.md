@@ -71,15 +71,21 @@ have been unrecoverable. Collected this way it can be re-scored by anyone, with 
 - **abliterated > prompted** → the weight surgery buys attack power prompting can't reach.
 - **either ≈ no-attacker** → that attacker isn't earning its keep at all.
 
-Current answer (provisional, pending adjudication): **prompting wins on both targets under both judges,
-and abliteration makes a plain-instructed attacker measurably worse.** See `RESULTS.md`.
+Current answer (pending adjudication): under both automated judges prompting scores above abliteration
+on both targets, but those judges failed validation. Settled without them: abliteration removes attacker
+refusals but ~29% of its attempts copy the goal verbatim. What the labels decide, and what they cannot,
+is fixed in advance in `ANALYSIS-PLAN.md`. See `RESULTS.md`.
 
 ## Where it stands
 - ✅ Harness, 5 arms, 2 targets, 150 goals, 0 endpoint errors, offline `--selftest` passing
 - ✅ Automated scoring + a validity test of the judges (all four failed; the two standard ones agree at
   kappa ≈ 0.56)
-- ⏳ **Human adjudication** — the headline number. Two annotators, see `LABELING-PROTOCOL.md`
-- ⏳ Repeats at n=150 for run-to-run variance; a 2nd attacker family; more rounds
+- ✅ Analysis plan fixed before labelling, with data hashes (`ANALYSIS-PLAN.md`); estimator validated
+  by coverage simulation (`estimate.py --selftest`)
+- ⏳ **Human adjudication** — 307 items, two annotators, see `LABELING-PROTOCOL.md`
+- ⏳ More goals (needed for the abliteration-on-top-of-prompting question); repeats at n=150;
+  a 2nd attacker family; more rounds
 
 Files: `redteam.py` (collection) · `rescore.py` + `sr_judge.py` (scoring) · `summarize.py` (aggregates)
-· `analyze.py` (blind sheets) · `adjudicate.py` (final numbers + agreement).
+· `estimate.py` (labelling sample + final estimates) · `adjudicate.py` (agreement) · `analyze.py`
+(legacy screened-only sheets).

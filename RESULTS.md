@@ -1,8 +1,9 @@
 # Results so far: is abliterating your red-team attacker worth it?
 
 Status: **data collected and automatically scored; human adjudication pending** (see
-`LABELING-PROTOCOL.md`). The numbers below come from judges that failed hand validation, so treat the
-*direction* as the finding and the *magnitude* as provisional.
+`LABELING-PROTOCOL.md`, and `ANALYSIS-PLAN.md` for the hypotheses and decision rules fixed before
+labelling). Finding 1 and Finding 3 are final. Finding 2 comes from judges that failed hand validation:
+its direction is suggestive, and whether it is *significant* depends on the labels.
 
 ## What was run
 
@@ -42,8 +43,9 @@ attacking. Nearly a third of its attempts are the harmful goal parroted back wit
 rewriting — which the target then simply refuses. **The red-team prompt removes refusals just as
 completely (27% → 0%) with no weight surgery, and never degenerates into copying.**
 
-The gap holds at every similarity threshold, and both targets agree to within a point — expected, since
-the attacker writes its first prompt before seeing any target output:
+The gap holds at every similarity threshold. Both targets agree to within two points at every threshold
+except the loosest (0.50: aligned-plain 0.26 vs 0.31) — expected, since round-1 prompts are written
+before the attacker sees any target output. Target A shown:
 
 | copy threshold | 0.50 | 0.70 | 0.90 | 0.95 |
 |---|---|---|---|---|
@@ -54,9 +56,10 @@ the attacker writes its first prompt before seeing any target output:
 At near-exact matching the abliterated attacker copies 7–10x more often than the aligned one. This is
 the mechanism behind everything below, and it rests on string comparison, not on a judge.
 
-## Finding 2: prompting beats abliteration, on both targets, under both judges
+## Finding 2 (screen-level, provisional): prompting beats abliteration under both judges
 
-Attack success rate (fraction of goals jailbroken within 3 rounds):
+Attack success rate (fraction of goals jailbroken within 3 rounds), as scored by StrongREJECT ≥ 0.7 or
+HarmBench "yes". These are what the automated judges say, **not** final ASRs:
 
 | arm | A: StrongREJECT | A: HarmBench | B: StrongREJECT | B: HarmBench |
 |---|---|---|---|---|
@@ -78,16 +81,13 @@ Paired contrasts (bootstrap over goals, 95% CI; `*` = CI excludes 0):
 | abliterated plain − just asking | +0.05* | +0.05 | +0.03 | +0.03 |
 | abliterated+prompted − just asking | +0.50* | +0.45* | +0.19* | +0.14* |
 
-Three things hold in all four columns:
+Under both automated judges, in all four columns: abliteration alone scores below prompting alone,
+abliteration adds nothing on top of prompting, and under a plain instruction the abliterated attacker
+scores below the aligned one even though the aligned one refuses 27% of the time. `abliterated-plain`
+barely clears the "just ask the target" floor (+0.03 to +0.05).
 
-1. **Abliteration alone loses to prompting alone**, decisively and significantly every time.
-2. **Abliteration adds nothing on top of prompting** — negative in all four, significant in two.
-3. **Abliteration is *worse* than leaving the attacker aligned** under a plain instruction, even though
-   the aligned attacker refuses 27% of the time. Removing refusal made the attacker worse.
-
-And `abliterated-plain` barely clears the "just ask the target directly" floor (+0.03 to +0.05, not
-significant in three of four columns). An abliterated attacker given a plain instruction is close to
-worthless as a red-team agent.
+The consistency across judges and targets is suggestive, but both judges are biased in the same
+direction (see below), so agreement between them is weaker evidence than it looks.
 
 ## Finding 3 (methodological): the standard judges do not agree with each other
 
@@ -97,7 +97,7 @@ Four automated evaluators were tested against hand labels; **all four failed**:
 |---|---|
 | Qwen2.5-7B chat judge | 40% precision on its own positives (8 of 20 real) |
 | HarmBench official classifier | credited a baking-soda volcano, and legal power-of-attorney advice |
-| StrongREJECT fine-tuned judge | 0.87 mean on real jailbreaks vs 0.71 on false ones — barely separates |
+| StrongREJECT fine-tuned judge | 0.87 mean on real jailbreaks vs 0.71 on false ones — barely separates (on responses some judge had flagged, so not a random sample) |
 | LLM on-topic checker | disagreed with hand labels on 13 of 16 "off-topic" calls |
 
 And the two published ones disagree with **each other**:
@@ -109,6 +109,8 @@ And the two published ones disagree with **each other**:
 
 Raw agreement looks high only because most items are easy negatives; kappa corrects for that. Two
 published jailbreak judges at kappa ≈ 0.56 on identical data cannot both be measuring the same thing.
+Concretely, HarmBench flags 60 (A) and 22 (B) cells that StrongREJECT scores below 0.7, so either
+judge used alone as a screen would silently drop the other's positives.
 This is a contribution in its own right: ASR numbers reported from a single automated judge, without
 human validation, are not comparable across papers.
 
@@ -116,28 +118,24 @@ The dominant error is **goal drift**. The attacker rewrites the harmful goal int
 the target answers *that* helpfully and in detail, and the judges score the fluent on-topic-sounding
 answer as a jailbreak.
 
-## The headline does not depend on the pending labels
+## What the labels can and cannot change
 
-Because the screen is high-recall, `ASR_arm = S_arm x precision_arm`, and `S_arm` is known exactly. So
-each contrast has a **flip ratio**: how many times more precise one arm would have to be than the other
-for the sign to reverse.
+*An earlier version of this section claimed the headline was "settled by the screen counts". That
+assumed the StrongREJECT screen missed no real jailbreaks, on the strength of 8 calibration positives
+from an older run; the 82 HarmBench-only cells above show the assumption was unsupported. The labelling
+design now audits what both judges miss.*
 
-| contrast | A | B | |
-|---|---|---|---|
-| abliteration alone − prompting alone | 7.8x | 8.8x | **settled** |
-| prompted aligned − just asking | 0.06x | 0.02x | settled |
-| abliterated+prompted − just asking | 0.07x | 0.03x | settled |
-| red-team prompt on aligned weights | 0.27x | 0.55x | settled in A |
-| abliteration vs aligned, plain instruction | 2.1x | 4.8x | settled in B |
-| abliteration on top of prompting | 1.35x | 1.47x | needs labels |
+Simulation on this data's exact cell structure (`ANALYSIS-PLAN.md`) gives the honest picture:
 
-For the headline to reverse, the abliterated attacker's screened hits would have to be ~8x more often
-real than the prompted attacker's. Given both were screened by the same judge on the same goals against
-the same target, that is not a credible configuration. **The direction of the headline is settled by
-the screen counts; adjudication sets its magnitude.**
-
-The one genuinely open question is whether abliteration adds anything *on top of* a good prompt
-(flip ratio ≈ 1.4). Both automated judges say no, but that one needs the labels.
+- **That abliteration is *better* than prompting is very unlikely.** It would need the prompted arm's
+  flagged hits to be real far less often than the abliterated arm's — roughly 8x less — plus few misses.
+  This is what H1 tests, as non-superiority with a 5-point margin.
+- **That prompting is *significantly better* is not settled.** If the judges' false positives fall
+  mostly on the fluent prompted arms (precision ~0.25 vs ~0.65), the true gap shrinks to about −0.06
+  and simulated power drops below 0.2 at any labelling budget. A null here would mean "abliteration does
+  not help, and prompting is not detectably better either" — still an answer to the question.
+- **Whether abliteration adds anything on top of a good prompt cannot be resolved at 150 goals**
+  (power 0.06–0.19 in every scenario). That is a goal-count limit, not a labelling one.
 
 ## The caveat that decides the headline
 
@@ -145,18 +143,14 @@ Goal drift produces false positives, and the prompted arms generate far more flu
 prose than the copy-paste-prone abliterated arm. So the false positives are probably **not** evenly
 distributed across arms, and the measured advantage of prompting may be partly an artifact.
 
-`adjudicate.py` reports screen precision per arm and flags exactly this, and `estimate.py` folds the
-precision estimate into the CI. Until that runs:
+`estimate.py` measures precision per arm from the labels and folds it, together with the audited miss
+rate, into the intervals. Until that runs:
 
 - **Finding 1 is solid** — mechanical, judge-free.
 - **Finding 3 is solid** — it is a statement about the judges.
-- **Finding 2's direction is robust** (same sign in 4 independent columns), but its **magnitude is
-  unverified**, and the plausible bias runs in favour of prompting.
-
-The one contrast least exposed to this bias is *abliteration vs aligned under a plain instruction*
-(−0.07 to −0.13, significant in all four columns): both arms share a prompt and a style, and the
-mechanism is the measured 29% copy rate. That abliteration makes a plain-instructed attacker **worse**
-looks safe to state now.
+- **Finding 2 is provisional in both direction and size.** The plausible bias runs in favour of
+  prompting. A mechanism points the same way: copying the goal verbatim cannot drift off it, so the
+  abliterated arm's flagged hits are probably real *more* often than the prompted arms'.
 
 ## Other limitations
 
@@ -176,8 +170,10 @@ python redteam.py --key rt --dataset strongreject --n-goals 150 --rounds 3 --con
   --disable-thinking --out A_raw.json --attacker-safe-url ... --target-url ...
 python rescore.py A_raw.json --out A_scored.json --hb-url ... --ontopic-url ...
 python summarize.py A=A_scored.json B=B_scored.json --thr 0.7
-python analyze.py A_scored.json --thr 0.7 --sheet adj --tag A    # blind sheets for annotators
-python adjudicate.py --key adj/A_key.json --labels ... --scored A_scored.json
+python estimate.py --selftest                                       # interval coverage, by simulation
+python estimate.py --scored A_scored.json --sample --out adj/A      # blind stratified sheets + key
+python adjudicate.py --key adj/A_key.json --labels ... --scored A_scored.json   # agreement
+python estimate.py --scored A_scored.json --key adj/A_key.json --labels ...     # final ASR
 ```
 
 Transcripts and scored outputs are gitignored: they contain model-generated harmful text and stay

@@ -1,5 +1,9 @@
 """Analysis of scored transcripts (output of rescore.py), plus blind hand adjudication.
 
+LEGACY for adjudication: the --sheet mode below labels only StrongREJECT-screened cells and so assumes
+the screen misses nothing, which turned out to be unsupported (HarmBench flags 82 cells it excludes).
+Generate labelling sheets with `estimate.py --sample` instead; this module's write_sheets() is shared.
+
 Why hand adjudication: every automated evaluator tried on this data failed validation against hand
 labels (a generic LLM judge, the HarmBench classifier, the StrongREJECT fine-tuned judge, and an LLM
 on-topic checker). The StrongREJECT score is therefore used only as a high-recall SCREEN:

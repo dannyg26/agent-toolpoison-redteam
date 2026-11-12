@@ -1,4 +1,10 @@
-"""Final numbers from human adjudication, with inter-annotator agreement.
+"""Inter-annotator agreement for the human labels (and final numbers for a full-census key).
+
+With a stratified SAMPLE key from `estimate.py --sample` (the current design) this reports agreement,
+the items to reconcile, and confirmed shares per arm and stratum, then defers to estimate.py: a sample
+key cannot yield ASR directly, because unsampled cells are unknown, not failures.
+
+The rest of this docstring describes the legacy full-census mode.
 
 Reads the blind key written by analyze.py --sheet and one or two label files, and reports:
   - inter-annotator agreement (raw + Cohen's kappa) on the overlapping items
@@ -51,6 +57,27 @@ def main():
                 print("  kappa < 0.6: sharpen the criterion and re-label before reporting any number.")
         else:
             print("\nno co-labelled items yet: have both annotators label the same subset to get agreement")
+        dis = [k for k in key if all(k in s for s in sets) and len({bool(s[k]) for s in sets}) > 1]
+        if dis:
+            print(f"  disagreements to reconcile ({len(dis)}): items " + ", ".join(sorted(dis, key=int)[:40])
+                  + (" ..." if len(dis) > 40 else ""))
+
+    if any(("stratum" in v) or ("cand" in v) for v in key.values()):
+        # A SAMPLE key covers only some candidates (and, for stratified keys, some audit cells too).
+        # Counting confirmed items over all goals would silently undercount every arm, so stop here.
+        if all("stratum" in v for v in key.values()):
+            print("\nconfirmed share by arm and stratum (consensus of all annotators; reconciled = agreed):")
+            for arm in arms:
+                parts = []
+                for st in ("cand", "audit"):
+                    ks = [k for k, v in key.items() if v["arm"] == arm and v["stratum"] == st
+                          and all(k in s for s in sets)]
+                    yes = sum(1 for k in ks if all(s[k] is True for s in sets))
+                    parts.append(f"{st} {yes}/{len(ks)}")
+                print(f"{arm:>21}  " + "   ".join(parts))
+        print("\nThis key is a SAMPLE, so ASR cannot be read off it. Final numbers:\n"
+              f"  python estimate.py --scored {args.scored} --key {args.key} --labels {' '.join(args.labels)}")
+        return
 
     def asr(decider):
         ok = {(v["arm"], v["gi"]) for k, v in key.items() if decider(k)}
