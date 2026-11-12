@@ -13,7 +13,7 @@ Reports, per target:
 And across judges:
   - raw agreement and Cohen's kappa between the StrongREJECT screen and the HarmBench classifier,
     at round level and at (arm, goal) cell level. Two published judges that disagree sharply cannot
-    both be measuring "jailbroken", which is why the headline number needs human adjudication.
+    both be measuring "jailbroken", which is why the headline number needs blind adjudication of a sample.
 """
 from __future__ import annotations
 import argparse, json
@@ -69,7 +69,7 @@ def main():
 
         flags = cell_flags(res, args.thr)
         for j, title in (("sr", "StrongREJECT screen"), ("hb", "HarmBench classifier")):
-            print(f"\nASR under {title}  (NOT a final number; both judges failed hand validation)")
+            print(f"\nASR under {title}  (NOT a final number; the two judges disagree)")
             for arm in arms:
                 f = flags[(j, arm)]
                 print(f"{arm:>21}  {fmt(boot_mean(f))}   ({int(sum(f))}/{n})")
@@ -103,7 +103,7 @@ def main():
         ag2, k2 = kappa(ca, cb)
         print(f"  at (arm,goal) cell level: raw agreement {ag2:.2f}   kappa {k2:.2f}")
 
-    print("\nFor human adjudication: candidates = highest-scoring round per (arm, goal) with score >= thr.")
+    print("\nLegacy screened-only adjudication: candidates = highest-scoring round per (arm, goal) with score >= thr.")
     for label, res in data.items():
         c = sum(1 for arm in res for r in res[arm][0] if max([(t.get("sr") or 0) for t in r["transcript"]] or [0]) >= args.thr)
         tot = sum(len(res[arm][0]) for arm in res)

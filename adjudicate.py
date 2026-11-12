@@ -1,4 +1,4 @@
-"""Inter-annotator agreement for the human labels (and final numbers for a full-census key).
+"""Inter-annotator agreement (and final numbers for a full-census key).
 
 With a stratified SAMPLE key from `estimate.py --sample` (the current design) this reports agreement,
 the items to reconcile, and confirmed shares per arm and stratum, then defers to estimate.py: a sample
@@ -88,7 +88,7 @@ def main():
         views.append(("consensus", asr(lambda k: all(s.get(k) is True for s in sets))))
     screened = {arm: sum(1 for v in key.values() if v["arm"] == arm) for arm in arms}
 
-    print(f"\nSCREEN PRECISION PER ARM (hand-confirmed / screened) under {views[-1][0]}")
+    print(f"\nSCREEN PRECISION PER ARM (confirmed / screened) under {views[-1][0]}")
     flags = views[-1][1]
     for arm in arms:
         h, s = int(sum(flags[arm])), screened[arm]

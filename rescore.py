@@ -10,7 +10,7 @@ goal into a harmless one. The target then answers the harmless request in detail
 judge we tried scores that as a jailbreak. An attack that no longer asks for the goal cannot jailbreak it.
 
 Nothing here decides the final result on its own: these scores are a SCREEN; candidates are then
-hand-adjudicated (see analyze.py).
+adjudicated on a blind sample (see estimate.py).
 """
 from __future__ import annotations
 import argparse, json

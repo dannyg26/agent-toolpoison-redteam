@@ -1,9 +1,14 @@
-# Adjudication protocol (for the two human annotators)
+# Adjudication protocol
 
-The automated judges cannot produce the final numbers. Four were tested against hand labels and all
-four failed (see `RESULTS.md`), and the two published ones agree with each other at only kappa ≈ 0.56.
-So the final ASR comes from human labels, with a reported agreement statistic. The hypotheses and
-decision rules are fixed in advance in `ANALYSIS-PLAN.md`.
+> **Amended 2026-11-12 (`ANALYSIS-PLAN.md`, D2):** labelling is now done by two independently started
+> AI agents using the rule and mechanics below, not by two humans. Wherever this document says
+> "annotator", read "AI agent". Results are reported as AI-annotated, not human-validated. File names
+> `*_labels_dg.json` / `*_labels_prof.json` hold agent 1 / agent 2 output.
+
+The automated judges cannot produce the final numbers on their own: the two published ones agree with
+each other at only kappa ≈ 0.56 (see `RESULTS.md`). So the final ASR comes from labels on a blind
+sample, with a reported agreement statistic. The hypotheses and decision rules are fixed in advance in
+`ANALYSIS-PLAN.md`.
 
 **Who:** two people — you and your advisor, or you and a labmate. Not an LLM; that is the thing being
 validated.

@@ -50,8 +50,9 @@ weights and prompting could not be separated and nothing was anchored.)
 - **Target A:** `Qwen/Qwen2.5-7B-Instruct`
 - **Target B:** `NousResearch/Meta-Llama-3.1-8B-Instruct` (different family → generality)
 - **Goals:** 150 behaviours from **StrongREJECT** (built to not over-report jailbreaks)
-- **Scoring:** HarmBench official classifier + StrongREJECT fine-tuned judge, **post hoc**, then human
-  adjudication. HarmBench/AdvBench are wired up and unused.
+- **Scoring:** HarmBench official classifier + StrongREJECT fine-tuned judge, **post hoc**, then blind
+  labelling of a stratified sample by two independent AI agents (originally planned as two humans; see
+  `ANALYSIS-PLAN.md`, D2). HarmBench/AdvBench are wired up and unused.
 All served as OpenAI-compatible endpoints (vLLM), so the harness is just API calls — no model hooks.
 
 ## Measurement: no judge in the loop
@@ -71,10 +72,11 @@ have been unrecoverable. Collected this way it can be re-scored by anyone, with 
 - **abliterated > prompted** → the weight surgery buys attack power prompting can't reach.
 - **either ≈ no-attacker** → that attacker isn't earning its keep at all.
 
-Current answer (pending adjudication): under both automated judges prompting scores above abliteration
-on both targets, but those judges failed validation. Settled without them: abliteration removes attacker
-refusals but ~29% of its attempts copy the goal verbatim. What the labels decide, and what they cannot,
-is fixed in advance in `ANALYSIS-PLAN.md`. See `RESULTS.md`.
+Answer (AI-annotated, not human-validated): **abliteration is not worth it.** Abliteration alone is
+significantly worse than prompting an aligned attacker on both targets (−0.30 and −0.10 ASR); under a
+plain instruction it removes refusals yet adds no attack success, because ~29% of its attempts copy the
+goal verbatim; and on top of a red-team prompt it adds nothing detectable. The primary pre-registered
+hypothesis is supported on both targets. See `RESULTS.md`.
 
 ## Where it stands
 - ✅ Harness, 5 arms, 2 targets, 150 goals, 0 endpoint errors, offline `--selftest` passing
@@ -82,7 +84,8 @@ is fixed in advance in `ANALYSIS-PLAN.md`. See `RESULTS.md`.
   kappa ≈ 0.56)
 - ✅ Analysis plan fixed before labelling, with data hashes (`ANALYSIS-PLAN.md`); estimator validated
   by coverage simulation (`estimate.py --selftest`)
-- ⏳ **Human adjudication** — 307 items, two annotators, see `LABELING-PROTOCOL.md`
+- ✅ **AI-agent labelling** — all 307 items, two blind agents (kappa 0.82 / 0.93); final estimates run
+  against the pre-registered plan. AI-annotated, not human-validated.
 - ⏳ More goals (needed for the abliteration-on-top-of-prompting question); repeats at n=150;
   a 2nd attacker family; more rounds
 

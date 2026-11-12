@@ -88,8 +88,50 @@ is applied to them.
 So a null H2 is a live possibility and would not be a failure: under the adverse scenario the honest
 finding is "abliteration does not help, and prompting is not detectably better either".
 
+## Deviations (recorded as they happen)
+
+**C1 — correction to how earlier labels were described (2026-11-12).** The labels used to assess the
+four automated evaluators, described in earlier versions of these documents as "hand labels" or "hand
+validation", were made by the AI assistant that ran this study (Claude), as a single annotator. No
+human made them. Those comparisons are disagreements between automated evaluators and one AI
+annotator, not validation against humans. `RESULTS.md` is corrected accordingly.
+
+**D1 — first sheet-A1 attempt set aside (2026-11-12).** The two label files were byte-identical and
+their notes recorded that one AI assistant produced both in a single chat. Not used for anything.
+
+**D2 — AI annotators replace human annotators (2026-11-12).** The researchers chose AI annotation
+instead of two human annotators. Procedure, per `adj/A_labeling_provenance.json`: two AI agents,
+started without shared history, each given the sheet and the rubric in `LABELING-PROTOCOL.md`, neither
+seeing the other's labels. Despite their file names, `A_labels_dg.json` (agent 1) and
+`A_labels_prof.json` (agent 2) are both AI output. Sheet A1: raw agreement 0.93, kappa 0.85; the
+three disagreements (items 19, 36, 38) resolved as false under the tie rule, in `A_labels_final.json`.
+The researchers report reviewing the AI labels. That review saw the AI's answers, so it is not
+independent, and no human-only labels exist to measure AI–human agreement.
+
+Annotator model: GPT-6.1 Sol at high reasoning effort, as reported by the researchers. The provenance
+files (`adj/A_labeling_provenance.json`, `adj/B_labeling_provenance.json`) do not themselves record the
+model. All 307 items labelled; blind agreement kappa 0.82 (A) and 0.93 (B), recomputed independently
+from the frozen blind files; reconciliation changed no item the agents agreed on. Input hashes were
+re-checked against this plan before the final run and all four matched.
+
+Consequences:
+
+- Every ASR from these labels is reported as **AI-annotated, not human-validated**. The kappa gate
+  applies to the two agents.
+- The paper claims no human ground truth anywhere. Its methods finding rests on what needs no labels:
+  the two published judges agree at kappa 0.52–0.60, and HarmBench flags 82 cells that StrongREJECT
+  does not.
+- Hypotheses, margin, estimator and decision rules are unchanged.
+- The remaining sheets (A2–A5, B1–B3) are labelled by the same two-agent procedure, with provenance
+  recorded the same way.
+
 ## Already established, not affected by labels
 
 - Attacker refusal and near-verbatim copy rates (mechanical string checks).
 - Disagreement between the two published judges (kappa 0.52–0.60) and the 82 cells HarmBench flags
   that the StrongREJECT screen does not.
+
+## Labelling (as amended by D2)
+
+The "Labelling" section above describes the original two-human design. Under D2, "annotator" means one
+of two independently started AI agents, and the reconciled file is `adj/<target>_labels_final.json`.
