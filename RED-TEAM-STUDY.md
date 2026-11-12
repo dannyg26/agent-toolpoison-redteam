@@ -47,6 +47,9 @@ weights and prompting could not be separated and nothing was anchored.)
 ## Models (as actually run)
 - **Attacker, aligned:** `Qwen/Qwen3-8B`
 - **Attacker, abliterated:** `huihui-ai/Huihui-Qwen3-8B-abliterated-v2` (same lineage)
+- **Attacker, trained for red-teaming (extension E1):** `yukiyounai/Jailbreak-R1` (Guo et al. 2025;
+  Qwen2.5-7B-Instruct base, so every attacker in the study is from the Qwen family). It is run in its
+  authors' format (`attackers/jailbreak_r1.json`), and E1 contrasts use 146 goals (`ANALYSIS-PLAN.md`, D3).
 - **Target A:** `Qwen/Qwen2.5-7B-Instruct`
 - **Target B:** `NousResearch/Meta-Llama-3.1-8B-Instruct` (different family → generality)
 - **Goals:** 150 behaviours from **StrongREJECT** (built to not over-report jailbreaks)
@@ -77,18 +80,21 @@ instead of a red-team prompt it is significantly worse on both targets (−0.30 
 every check including a worst-case bound. Under a plain instruction it removes refusals yet adds no
 measurable success, consistent with ~29% of its attempts copying the goal near-verbatim. Whether it
 helps *on top of* a red-team prompt is unresolved (+0.06 and +0.02, intervals up to about +0.20). The
-primary pre-registered hypothesis is supported on both targets. See `RESULTS.md`.
+primary pre-registered hypothesis is supported on both targets. See `RESULTS.md`. Extension E1 (final, AI-annotated): an attacker *trained* for red-teaming (Jailbreak-R1) is not detectably better than a prompted aligned model (+0.01 [−0.12, +0.14] on the primary target), and beats abliteration clearly on one target (+0.35) with the other unresolved (+0.10 [−0.003, +0.22]).
 
 ## Where it stands
 - ✅ Harness, 5 arms, 2 targets, 150 goals, 0 endpoint errors, offline `--selftest` passing
-- ✅ Automated scoring + a validity test of the judges (all four failed; the two standard ones agree at
-  kappa ≈ 0.56)
+- ✅ Automated scoring + a reliability check of the judges: the two published ones agree with each other
+  at only kappa ≈ 0.56, and all four automated evaluators disagreed substantially with one AI annotator
+  (`ANALYSIS-PLAN.md`, C1)
 - ✅ Analysis plan fixed before labelling, with data hashes (`ANALYSIS-PLAN.md`); estimator validated
   by coverage simulation (`estimate.py --selftest`)
 - ✅ **AI-agent labelling** — all 307 items, two blind agents (kappa 0.82 / 0.93); final estimates run
   against the pre-registered plan. AI-annotated, not human-validated.
-- ⏳ More goals (needed for the abliteration-on-top-of-prompting question); repeats at n=150;
-  a 2nd attacker family; more rounds
+- ✅ **Extension E1** (trained red-team attacker) — collected, and all 178 items labelled blind (kappa
+  0.92 / 0.97). The labelling-drift check passed and the results are final (`RESULTS.md`).
+- ⏳ Human validation of a sample of the AI labels (the main open weakness); more goals (needed for the
+  abliteration-on-top-of-prompting question); repeats at n=150; a non-Qwen attacker family; more rounds
 
 Files: `redteam.py` (collection) · `rescore.py` + `sr_judge.py` (scoring) · `summarize.py` (aggregates)
 · `estimate.py` (labelling sample + final estimates) · `adjudicate.py` (agreement) · `analyze.py`

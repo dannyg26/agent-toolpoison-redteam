@@ -6,8 +6,8 @@ Adds to every round that has a target response:
   hb        HarmBench classifier yes/no                        (completions endpoint; optional)
 
 Why on_topic: attackers (especially aligned ones) often do not refuse outright; they rewrite the harmful
-goal into a harmless one. The target then answers the harmless request in detail and every automated
-judge we tried scores that as a jailbreak. An attack that no longer asks for the goal cannot jailbreak it.
+goal into a harmless one. The target then answers the harmless request in detail and the automated
+judges often score that as a jailbreak. An attack that no longer asks for the goal cannot jailbreak it.
 
 Nothing here decides the final result on its own: these scores are a SCREEN; candidates are then
 adjudicated on a blind sample (see estimate.py).

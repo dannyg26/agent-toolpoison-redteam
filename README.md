@@ -1,4 +1,26 @@
-# Do Safeguards Matter? Verified Data Leaks in Modern Tool-Using LLM Agents
+# Safety-removal studies on open-weight LLMs
+
+This repository holds several studies. **The current one is the red-team attacker study**:
+
+> **Is abliterating your red-team attacker worth it?** It compares three ways of getting a willing,
+> capable attacker LLM: prompting an aligned model, abliterating it (weight surgery that removes
+> refusals), and downloading a model trained for red-teaming (Jailbreak-R1). All three run against two
+> targets on 150 StrongREJECT goals, labelled blind by two AI agents.
+>
+> - Design and status: [RED-TEAM-STUDY.md](RED-TEAM-STUDY.md)
+> - Results: [RESULTS.md](RESULTS.md)
+> - Pre-registered plan, deviations and corrections: [ANALYSIS-PLAN.md](ANALYSIS-PLAN.md)
+> - Labelling rule: [LABELING-PROTOCOL.md](LABELING-PROTOCOL.md)
+> - Code: `redteam.py` (collection), `rescore.py` + `sr_judge.py` (scoring), `estimate.py` (sampling and
+>   estimates; `--selftest`), `summarize.py`, `adjudicate.py`
+>
+> Transcripts, scores and labels are gitignored: they contain model-generated harmful text.
+
+The rest of this README describes the earlier tool-poisoning study.
+
+---
+
+## Earlier study: Do Safeguards Matter? Verified Data Leaks in Modern Tool-Using LLM Agents
 
 A red-teaming framework that drives **modern, agent-capable open-weight models** through a
 **real multi-step tool-execution loop** under MCP **tool-poisoning** attacks (a malicious

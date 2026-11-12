@@ -288,3 +288,38 @@ Final E1 analysis, per target:
 `estimate.py --scored A_scored.json --key adj/A_key.json --labels adj/A_labels_final.json --extra-scored
 A_ext_scored.json --extra-key adj/A_ext_key.json --extra-labels adj/A_ext_labels_final.json
 --exclude-goals 15,80,112,141`
+
+**D4 — E1 labels cover 130 of 178 items; rule fixed before any E1 estimate was computed (2026-11-12).**
+The AI agents labelled items 1–80 (A) and 1–50 (B), the item counts of the superseded E1 design. They
+were given only sheets A1–A2 and B1–B2, so A3 and the second half of B2 were not labelled: 23 items (A)
+and 25 items (B), 48 in all.
+
+What holds for the labels that exist:
+
+- Blinding held: keys were read only after labelling, per the provenance files.
+- The labels were made from the current sheets; their source hashes were checked.
+- Blind agreement was kappa 0.95 (A) and 0.96 (B), with 3 disputes settled under the tie rule.
+- Because item order is a random shuffle, the unlabelled items are a random subset.
+
+**Rule, recorded before computing any E1 estimate:** the remaining 48 items are labelled with the same
+blind two-agent procedure, and the final E1 analysis uses all 178. An analysis of the 130 labelled
+items may be shown only as *interim*. If the remaining items cannot be labelled, the 130-item analysis
+becomes final, with this deviation stated. The interim result does not change this rule.
+
+**D4 outcome (2026-11-12).** The remaining 48 items were labelled with the same blind two-agent
+procedure. Blind agreement on them was kappa 0.83 (A) and 1.00 (B); keys were read only after
+labelling; and the 130 earlier labels are unchanged in the final files, checked against the archived
+interim set. As the D4 rule requires, the final E1 analysis uses all 178 items and the interim
+analysis is superseded.
+
+**C2 — corrections found in review (2026-11-12).** None affects a decision rule or a verdict.
+
+- The clear-refusal rates noted in the E1 data entry above ("about 24–27% (A) and 23–29% (B)") came
+  from a one-off script with an incomplete list of refusal openings. The project code now computes them
+  (`redteam.opens_like_refusal`, shown as column "clear" in `summarize.py`): 25% on both targets for
+  aligned-plain, with 27% (A) and 29% (B) as the upper bounds. abliterated-plain is 0% and
+  trained-redteam is 0%. The entry above is kept as written; these figures supersede it.
+- The H1 interval for target A was reported as −0.30 [−0.43, −0.16]. The exact lower bound is −0.4246,
+  so it rounds to [−0.42, −0.16].
+- `redteam.py` gains `--refusal-check strict` for future collections. The default, `legacy`, is
+  unchanged so that the frozen collections reproduce exactly.

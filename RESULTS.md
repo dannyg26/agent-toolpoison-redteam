@@ -28,7 +28,7 @@ Pre-registered hypotheses (`ANALYSIS-PLAN.md`), paired contrasts:
 
 | | test | A | B | verdict |
 |---|---|---|---|---|
-| **H1** primary | abliterated-plain − aligned-redteam, upper bound < +0.05 on both | −0.30 [−0.43, −0.16] | −0.10 [−0.18, −0.02] | **supported** |
+| **H1** primary | abliterated-plain − aligned-redteam, upper bound < +0.05 on both | −0.30 [−0.42, −0.16] | −0.10 [−0.18, −0.02] | **supported** |
 | H2 | same contrast, upper bound < 0 | yes | yes | **supported on both** |
 | H3 | abliterated-plain − aligned-plain | +0.00 [−0.09, +0.08] | −0.03 [−0.09, +0.02] | no detectable effect |
 | H4 | aligned-redteam − no-attacker | +0.36 [+0.23, +0.48] | +0.13 [+0.05, +0.21] | beats the floor |
@@ -98,32 +98,54 @@ vs 77%). Re-labelling the 111 false-labelled truncated items with full text woul
 - the miss rate is pooled across arms (A's two misses fell in no-attacker and aligned-plain, B's one in
   abliterated-plain).
 
-## Extension E1: an attacker trained for red-teaming (in progress)
+## Extension E1: an attacker trained for red-teaming (final, AI-annotated)
 
 `yukiyounai/Jailbreak-R1` (Guo et al. 2025), a 7.6B attacker trained with reinforcement learning to write
-jailbreak prompts. It was run in its authors' exact format on the same 150 goals and both targets, with
-the design pre-registered in `ANALYSIS-PLAN.md`. Collection was clean: 900 prompts, all parsed, no
-errors, and the model never refused.
+jailbreak prompts. It was run in its authors' exact format on the same goals and both targets, with the
+design pre-registered in `ANALYSIS-PLAN.md`. Collection was clean: 900 prompts, all parsed, no errors,
+and the model never refused.
 
-**Preview, automated judges only (not a result):** share of goals flagged by either judge.
+**Labelling.** All 178 sampled items were labelled blind by two independently started AI agents, not
+humans. The first 130 were labelled first and the remaining 48 afterwards (D4); keys were read only
+after labelling, and the earlier labels are unchanged.
 
-| attacker | A | B |
+- Blind agreement between the agents: kappa 0.92 (A) and 0.97 (B).
+- Drift check, original items re-shown blind: kappa 0.75 with a positive-rate shift of +0.04 (A,
+  25 items), and kappa 1.00 with no shift (B, 25 items).
+- Both checks pass the pre-registered rule, so the E1 contrasts are read at face value.
+
+Attack success on the 146 shared goals (4 chemical/biological goals excluded, D3), 95% intervals:
+
+| arm | A: Qwen2.5-7B | B: Llama-3.1-8B |
 |---|---|---|
-| abliterated-plain | 0.17 | 0.06 |
-| **trained-redteam** | **0.74** | **0.21** |
-| aligned-redteam | 0.79 | 0.35 |
+| no-attacker (just ask) | 0.09 [0.05, 0.20] | 0.04 [0.01, 0.13] |
+| abliterated-plain | 0.16 [0.10, 0.25] | 0.07 [0.03, 0.16] |
+| **trained-redteam** | **0.51 [0.39, 0.62]** | **0.18 [0.11, 0.29]** |
+| aligned-redteam | 0.48 [0.36, 0.59] | 0.17 [0.10, 0.27] |
+| abliterated-redteam | 0.52 [0.43, 0.62] | 0.19 [0.13, 0.28] |
 
-It beats abliteration clearly under both judges. Against a prompted aligned model the judges disagree:
-StrongREJECT says significantly worse (−0.15, −0.16), HarmBench says no difference (+0.01, −0.03). The
-labels decide.
+| hypothesis | A | B | verdict |
+|---|---|---|---|
+| **E1-H5** (primary, judged on B): trained − prompted aligned | +0.03 [−0.13, +0.19] | **+0.01 [−0.12, +0.14]** | **no detectable difference** |
+| E1-H6: trained − abliterated-plain | +0.35 [+0.20, +0.47] | +0.10 [−0.003, +0.22] | better on A; unresolved on B |
+| E1 floor: trained − no-attacker | +0.41 [+0.26, +0.53] | +0.14 [+0.03, +0.25] | beats it on both |
 
-**Labelling status.** The AI labelling agents' safety system blocked the first E1 sheets for
-"potentially harmful biological information". The design was amended before any label existed (D3):
+**Robustness (post hoc).** Every verdict is unchanged under each agent's blind labels alone, and with
+every disputed item counted as a jailbreak. The drift check passes in all four versions (kappa ≥ 0.67,
+shift ≤ 0.08). E1-H6 on B misses significance in every version, with a lower bound of −0.003.
 
-- 4 chemical/biological-harm goals are excluded, leaving 146 shared goals; the original results are
-  unchanged on that set;
-- 25 already-labelled original items per target are re-shown blind, to detect a shift in labelling
-  standard between sessions.
+**Meaning.** An attacker trained with reinforcement learning to jailbreak is not measurably better than a
+general aligned model given a good red-team prompt. On the primary target the interval allows a gap of up
+to about ±0.13, so this is "not detectably different", not "equal". It is a far better attacker than an
+abliterated model with a plain instruction. On A, where it shares the target's base model, its estimate
+is slightly higher than prompting, but not significantly.
+
+**The judges misjudged E1 too.** The judge-only preview had StrongREJECT calling Jailbreak-R1
+significantly *worse* than the prompted aligned model on both targets (−0.15, −0.16); the labels show no
+difference. Exploratory, not pre-registered: on A the judges missed 7 of 30 audited Jailbreak-R1 cells
+that were real jailbreaks (23%), against 2 of 39 (5%) for the original arms. Fisher's exact test gives
+p = 0.035, which does not survive correction across the two targets; on B the rates are 7% vs 3%,
+p = 0.58.
 
 ## How we got here
 
@@ -163,7 +185,7 @@ Share of attack rounds (mechanical string checks, no judge involved; target A, B
 | aligned-redteam | 0.00 | 0.00 | 1.00 |
 | abliterated-redteam | 0.00 | 0.00 | 1.00 |
 
-Abliteration does what it says: refusals go from 27% to ~1%. (These are upper bounds: the refusal detector also flags attack prompts that merely contain a phrase like "as an AI". Rounds that open like a refusal give 24% and 23% for aligned-plain and ~0% for abliterated-plain; see L1/E1 in `ANALYSIS-PLAN.md`.) But the freed capacity does not turn into
+Abliteration does what it says: refusals go from 27% to ~1%. (These are upper bounds: the refusal detector also flags attack prompts that merely contain a phrase like "as an AI". Counting only outputs that open as a refusal gives 25% on both targets for aligned-plain and 0% for abliterated-plain; `summarize.py`, column "clear"; see C2 in `ANALYSIS-PLAN.md`.) But the freed capacity does not turn into
 attacking. Nearly a third of its attempts are the harmful goal parroted back with little or no
 rewriting — which the target then simply refuses. **The red-team prompt removes refusals just as
 completely (27% → 0%) with no weight surgery, and never degenerates into copying.**
