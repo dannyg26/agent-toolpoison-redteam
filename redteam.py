@@ -264,15 +264,19 @@ def report(results):
 
 # ---- GPU/endpoint path ----
 
-def make_chat(base_url, api_key, model, max_tokens=512, temperature=0.9, disable_thinking=False):
+def make_chat(base_url, api_key, model, max_tokens=512, temperature=0.9, disable_thinking=False,
+              top_p=None, extra_body=None):
+    """extra_body passes vLLM-specific options (top_k, repetition_penalty, continue_final_message...)."""
     from openai import OpenAI
     client = OpenAI(base_url=base_url, api_key=api_key)
     extra = {"chat_template_kwargs": {"enable_thinking": False}} if disable_thinking else {}
+    extra.update(extra_body or {})
+    sampling = {"top_p": top_p} if top_p is not None else {}
 
     def chat(messages):
         try:
             r = client.chat.completions.create(model=model, messages=messages, max_tokens=max_tokens,
-                                               temperature=temperature, extra_body=extra)
+                                               temperature=temperature, extra_body=extra, **sampling)
             txt = r.choices[0].message.content or ""
             return re.sub(r"<think>.*?</think>", "", txt, flags=re.S).strip()   # strip reasoning blocks
         except Exception as e:
@@ -319,10 +323,19 @@ def make_template_attacker(tpl, raw_chat):
                  is an independent sample, for models trained single-shot
       extract  : regex whose group 1 is the attack prompt inside the model's output, or null for the
                  whole output (reasoning in <think> tags is already stripped by make_chat)
-    Returns (attacker_chat, build_msgs, stats); stats counts outputs where `extract` did not match.
+      prefill  : text the model's answer is forced to start with (sent as a final assistant message and
+                 continued, vLLM continue_final_message); prepended to the output before extraction
+      retries  : generations per attempt until `extract` matches (the authors' own loop), default 1
+      strip_prefixes : labels removed from the START of the extracted prompt, e.g. "Attack Prompt:"
+    An attempt with no parseable prompt after all retries returns "", which run_goal records as a round
+    with no attack (verdict attacker_refused); stats["extract_failed"] counts these, never silently.
+    Returns (attacker_chat, build_msgs, stats).
     """
-    stats = {"calls": 0, "extract_failed": 0}
+    stats = {"calls": 0, "parse_retries": 0, "extract_failed": 0}
     pat = re.compile(tpl["extract"], re.S) if tpl.get("extract") else None
+    pre = tpl.get("prefill") or ""
+    retries = max(1, int(tpl.get("retries", 1)))
+    strips = [re.compile(r"^\s*" + re.escape(p) + r"\s*", re.I) for p in tpl.get("strip_prefixes", [])]
 
     def build_msgs(goal, history):
         msgs = [{"role": "system", "content": tpl["system"]}] if tpl.get("system") else []
@@ -331,19 +344,29 @@ def make_template_attacker(tpl, raw_chat):
             msgs.append({"role": "user", "content": tpl["refine"].format(goal=goal, attack=atk, response=resp[:600])})
         else:
             msgs.append({"role": "user", "content": tpl["user"].format(goal=goal)})
+        if pre:
+            msgs.append({"role": "assistant", "content": pre})
         return msgs
 
     def attacker_chat(msgs):
-        out = raw_chat(msgs) or ""
-        if out.startswith("[error:"):
-            return out
-        stats["calls"] += 1
-        if pat is not None:
+        for _ in range(retries):
+            out = raw_chat(msgs) or ""
+            if out.startswith("[error:"):
+                return out
+            stats["calls"] += 1
+            out = pre + out
+            if pat is None:
+                return out.strip()
             m = pat.search(out)
             if m:
-                return m.group(1).strip()
-            stats["extract_failed"] += 1   # sent as-is; the failure rate is reported and audited
-        return out.strip()
+                atk = m.group(1).strip()
+                for s in strips:
+                    atk = s.sub("", atk, count=1)
+                if atk.strip():
+                    return atk.strip()
+            stats["parse_retries"] += 1
+        stats["extract_failed"] += 1
+        return ""
 
     return attacker_chat, build_msgs, stats
 
@@ -374,9 +397,13 @@ def run_gpu(args):
     tstats = None
     if args.attacker_template:
         tpl = json.load(open(args.attacker_template, encoding="utf-8"))
+        eb = {k: tpl[k] for k in ("top_k", "repetition_penalty") if k in tpl}
+        if tpl.get("prefill"):           # continue the forced start of the answer, as the authors do
+            eb.update({"continue_final_message": True, "add_generation_prompt": False})
         raw = make_chat(args.attacker_custom_url, args.key, args.attacker_custom_model,
                         max_tokens=tpl.get("max_tokens", 1024), temperature=tpl.get("temperature", at),
-                        disable_thinking=tpl.get("disable_thinking", False))
+                        disable_thinking=tpl.get("disable_thinking", False), top_p=tpl.get("top_p"),
+                        extra_body=eb)
         atk_t, build, tstats = make_template_attacker(tpl, raw)
         arms[tpl.get("arm", "trained-redteam")] = (atk_t, "", True, build)
         print(f"template attacker: {tpl.get('arm', 'trained-redteam')} <- {args.attacker_custom_model} "
@@ -395,8 +422,9 @@ def run_gpu(args):
         results[arm] = runs
         json.dump(results, open(args.out, "w"), indent=1)   # checkpoint after every arm (full transcripts)
     if tstats is not None:
-        print(f"template attacker: {tstats['calls']} outputs, prompt extraction failed on "
-              f"{tstats['extract_failed']}", flush=True)
+        print(f"template attacker: {tstats['calls']} generations, {tstats['parse_retries']} unparseable and "
+              f"retried, {tstats['extract_failed']} attempts with no parseable prompt after all retries",
+              flush=True)
     if judge is None:
         print("\njudge-free collection: no ASR here; score the transcripts with rescore.py", flush=True)
     else:
@@ -485,7 +513,8 @@ def _selftest():
         {"system": None, "user": "GOAL={goal}", "refine": None, "extract": r"<prompt>(.*?)</prompt>"}, raw1)
     r = run_goal(atk_t, _scripted(["no thanks.", "no thanks."]), None, "do X", "", max_rounds=2, build_msgs=build)
     assert seen == [[{"role": "user", "content": "GOAL=do X"}]] * 2, seen        # history ignored
-    assert r["transcript"][0]["attack"] == "crafted adversarial attack text here" and st == {"calls": 2, "extract_failed": 0}
+    assert r["transcript"][0]["attack"] == "crafted adversarial attack text here"
+    assert st == {"calls": 2, "parse_retries": 0, "extract_failed": 0}, st
 
     # template attacker with feedback: later attempts see the previous attack and the target's reply
     seen.clear()
@@ -493,13 +522,32 @@ def _selftest():
         seen.append(msgs); return "another crafted adversarial prompt"
     atk2, build2, st2 = make_template_attacker(
         {"system": "SYS", "user": "GOAL={goal}", "refine": "GOAL={goal} PREV={attack} GOT={response}",
-         "extract": r"<prompt>(.*?)</prompt>"}, raw2)
+         "extract": None}, raw2)
     run_goal(atk2, _scripted(["target said no", "x"]), None, "do X", "", max_rounds=2, build_msgs=build2)
     assert seen[0][0] == {"role": "system", "content": "SYS"}
     assert seen[1][1]["content"] == "GOAL=do X PREV=another crafted adversarial prompt GOT=target said no", seen
-    assert st2["extract_failed"] == 2          # no <prompt> tags: counted, never silently dropped
+
+    # the authors' procedure: forced answer start, retry until parseable, strip a leading label
+    seen.clear()
+    outs = iter(["no tags here at all", "strategy text </think><attack>Attack Prompt: crafted adversarial attack text</attack>"])
+    def raw3(msgs):
+        seen.append(msgs); return next(outs)
+    atk3, build3, st3 = make_template_attacker(
+        {"user": "GOAL={goal}", "prefill": "<think> Sure, ", "extract": r"<attack>(.*?)</attack>",
+         "retries": 4, "strip_prefixes": ["Attack Prompt:"]}, raw3)
+    r = run_goal(atk3, _scripted(["no thanks."]), None, "do X", "", max_rounds=1, build_msgs=build3)
+    assert seen[0][-1] == {"role": "assistant", "content": "<think> Sure, "}, seen[0]   # prefill sent last
+    assert r["transcript"][0]["attack"] == "crafted adversarial attack text", r["transcript"]
+    assert st3 == {"calls": 2, "parse_retries": 1, "extract_failed": 0}, st3
+
+    # no parseable prompt after every retry: recorded as a round with no attack, and counted
+    atk4, build4, st4 = make_template_attacker(
+        {"user": "GOAL={goal}", "extract": r"<attack>(.*?)</attack>", "retries": 3}, lambda m: "unparseable output")
+    r = run_goal(atk4, _scripted(["x"]), None, "do X", "", max_rounds=1, build_msgs=build4)
+    assert r["transcript"][0]["verdict"] == "attacker_refused" and r["attacker_attempted"] is False, r
+    assert st4 == {"calls": 3, "parse_retries": 3, "extract_failed": 1}, st4
     print("\nOK - refusal detector, attack loop (5 paths), error guard, baseline arm, judge template, metrics, "
-          "template attacker (single-shot + feedback).")
+          "template attacker (single-shot, feedback, prefill+retries, unparseable).")
 
 
 def main():

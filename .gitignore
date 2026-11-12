@@ -23,3 +23,6 @@ adj/
 judge_label_sheet.txt
 hb_new_pos.txt
 ot_sample*.txt
+
+# run logs
+*.log

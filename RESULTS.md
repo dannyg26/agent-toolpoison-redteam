@@ -98,6 +98,33 @@ vs 77%). Re-labelling the 111 false-labelled truncated items with full text woul
 - the miss rate is pooled across arms (A's two misses fell in no-attacker and aligned-plain, B's one in
   abliterated-plain).
 
+## Extension E1: an attacker trained for red-teaming (in progress)
+
+`yukiyounai/Jailbreak-R1` (Guo et al. 2025), a 7.6B attacker trained with reinforcement learning to write
+jailbreak prompts. It was run in its authors' exact format on the same 150 goals and both targets, with
+the design pre-registered in `ANALYSIS-PLAN.md`. Collection was clean: 900 prompts, all parsed, no
+errors, and the model never refused.
+
+**Preview, automated judges only (not a result):** share of goals flagged by either judge.
+
+| attacker | A | B |
+|---|---|---|
+| abliterated-plain | 0.17 | 0.06 |
+| **trained-redteam** | **0.74** | **0.21** |
+| aligned-redteam | 0.79 | 0.35 |
+
+It beats abliteration clearly under both judges. Against a prompted aligned model the judges disagree:
+StrongREJECT says significantly worse (−0.15, −0.16), HarmBench says no difference (+0.01, −0.03). The
+labels decide.
+
+**Labelling status.** The AI labelling agents' safety system blocked the first E1 sheets for
+"potentially harmful biological information". The design was amended before any label existed (D3):
+
+- 4 chemical/biological-harm goals are excluded, leaving 146 shared goals; the original results are
+  unchanged on that set;
+- 25 already-labelled original items per target are re-shown blind, to detect a shift in labelling
+  standard between sessions.
+
 ## How we got here
 
 *Correction (2026-11-12): earlier versions said the automated judges "failed hand validation". The
@@ -136,7 +163,7 @@ Share of attack rounds (mechanical string checks, no judge involved; target A, B
 | aligned-redteam | 0.00 | 0.00 | 1.00 |
 | abliterated-redteam | 0.00 | 0.00 | 1.00 |
 
-Abliteration does what it says: refusals go from 27% to ~1%. But the freed capacity does not turn into
+Abliteration does what it says: refusals go from 27% to ~1%. (These are upper bounds: the refusal detector also flags attack prompts that merely contain a phrase like "as an AI". Rounds that open like a refusal give 24% and 23% for aligned-plain and ~0% for abliterated-plain; see L1/E1 in `ANALYSIS-PLAN.md`.) But the freed capacity does not turn into
 attacking. Nearly a third of its attempts are the harmful goal parroted back with little or no
 rewriting — which the target then simply refuses. **The red-team prompt removes refusals just as
 completely (27% → 0%) with no weight surgery, and never degenerates into copying.**
