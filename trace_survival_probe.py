@@ -48,8 +48,14 @@ BENIGN = [
 CHAN_RE = re.compile(r"<\|channel\|>\s*(analysis|final|commentary)\s*<\|message\|>", re.S)
 
 
-def channel_spans(text: str):
-    """Return [(channel, msg_start_char, msg_end_char)] for each harmony channel message in `text`."""
+def channel_spans(text, fmt="harmony"):
+    """[(channel, start_char, end_char)] per reasoning-channel message.
+    fmt='harmony' (gpt-oss) or 'think' (Qwen3 / DeepSeek-R1, which wrap the trace in <think>..</think>)."""
+    if fmt == "think":
+        m = re.search(r"<think>(.*?)</think>", text, re.S)
+        if m:
+            return [("analysis", m.start(1), m.end(1)), ("final", m.end(), len(text))]
+        return [("final", 0, len(text))]        # answered without a visible trace
     spans, hits = [], list(CHAN_RE.finditer(text))
     stops = ("<|end|>", "<|return|>", "<|call|>", "<|start|>", "<|channel|>")
     for i, m in enumerate(hits):
@@ -64,6 +70,15 @@ def channel_spans(text: str):
     return spans
 
 
+def final_text(raw, fmt="harmony"):
+    """The model's user-facing answer (final channel), format-aware — for refusal scoring."""
+    if fmt == "think":
+        m = re.search(r"</think>(.*)\Z", raw, re.S)
+        return (m.group(1) if m else raw).strip()
+    from steer import final_channel
+    return final_channel(raw)
+
+
 def token_char_bounds(decode_one, ids):
     """(full_text, [(start,end) per token]) using a per-token decode fn. Good enough to locate ASCII markers."""
     pieces = [decode_one(i) for i in ids]
@@ -74,13 +89,13 @@ def token_char_bounds(decode_one, ids):
     return "".join(pieces), bounds
 
 
-def pooled_channel_vectors(gen_ids, hidden_layer, decode_one, prompt_len):
+def pooled_channel_vectors(gen_ids, hidden_layer, decode_one, prompt_len, fmt="harmony"):
     """Mean-pool hidden states over each channel's message tokens.
     hidden_layer: [total_seq, dim] np array for the FULL sequence; gen tokens start at prompt_len.
     Returns {channel: vector}."""
     text, bounds = token_char_bounds(decode_one, gen_ids)
     out = {}
-    for chan, cs, ce in channel_spans(text):
+    for chan, cs, ce in channel_spans(text, fmt):
         idx = [prompt_len + k for k, (a, b) in enumerate(bounds) if b > cs and a < ce]
         if idx:
             out.setdefault(chan, []).append(hidden_layer[idx].mean(axis=0))
@@ -211,6 +226,13 @@ def _selftest():
     got = {c: t[s:e] for c, s, e in sp}
     assert "analysis" in got and "harmful" in got["analysis"], got
     assert "final" in got and got["final"].strip().startswith("Sure"), got
+
+    # 1b) think-format (Qwen3 / DeepSeek-R1): analysis inside <think>..</think>, final after
+    tt = "<think>The user wants a bomb. This is harmful. I'll comply anyway.</think>Sure, here is how."
+    g2 = {c: tt[s:e] for c, s, e in channel_spans(tt, "think")}
+    assert "harmful" in g2["analysis"] and g2["final"].strip() == "Sure, here is how.", g2
+    assert final_text(tt, "think") == "Sure, here is how."
+    assert channel_spans("no visible trace", "think") == [("final", 0, 16)]
 
     # 2) pooled vectors map channel message tokens to hidden rows (toy tokenizer: 1 char == 1 token)
     ids = list(range(len(t)))                      # pretend each char is a token id
