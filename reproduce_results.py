@@ -10,7 +10,7 @@ Needs the gitignored local files: {A,B}_scored.json, {A,B}_ext_scored.json and a
 Writes results_numbers.json, which holds numbers only, no model text, and is tracked in git; RESULTS.md's
 tables are taken from it.
 
-    python reproduce_results.py            # current estimator (goal-level bootstrap, confidence-distribution draws)
+    python reproduce_results.py            # current estimator (two-phase: goal resampling + per-stratum rate draws)
     python reproduce_results.py --legacy   # also the pre-registered legacy estimator's headline, for comparison
 
 Every interval is a 95% percentile interval over 4000 bootstrap resamples of goals, seed 0.

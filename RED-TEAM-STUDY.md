@@ -92,20 +92,23 @@ For these checkpoints, this prompt and this configuration (details and intervals
 
 - **Abliteration alone does not beat prompting alone by the pre-registered 5-point margin** (H1, both
   targets). This rules out an advantage of 5 points or more; it does not show there is none.
-  - On target A, prompting is significantly better (−0.30 [−0.44, −0.16]; H2 holds after Holm).
-  - On target B, −0.09 [−0.18, +0.005]; H2 is not significant after Holm.
+  - On target A, prompting is significantly better (−0.30 [−0.42, −0.16]; H2 holds after Holm under
+    every estimator version).
+  - On target B, −0.10 [−0.19, −0.02]. Whether prompting is significantly better there (H2) depends on
+    the estimator version, so it is not claimed.
   - **H1 on target B depends on the pooled miss-rate assumption.**
     - It fails with arm-specific miss rates.
     - In simulation, if abliterated-plain's true miss rate were higher than the pooled one, H1 on B would
-      be falsely supported 88% of the time.
+      be falsely supported 96% of the time.
 - **The trained attacker shows no detectable difference from prompting** (E1-H5, primary on B): +0.01
-  [−0.14, +0.16]. Differences of about ±0.15 are not excluded.
+  [−0.11, +0.14]. Differences of about ±0.13 are not excluded.
   - It beats abliteration alone and the no-attacker floor on target A.
-  - On target B both are unresolved.
+  - On target B, its edge over abliteration is unresolved, and its edge over the floor is
+    method-sensitive.
 - **Under a plain instruction, the abliterated checkpoint shows** fewer detected refusals and much more
   near-verbatim goal copying than the aligned one, with no detectable difference in attack success.
 - **Unresolved:** whether adding abliteration to a red-team prompt helps, and whether Jailbreak-R1 is
-  better or worse than prompting by less than about 0.15.
+  better or worse than prompting by less than about 0.13.
 
 ## Where it stands
 - ✅ Collection, both judges and the AI-agent labelling are complete for the five main arms and E1;
@@ -113,17 +116,20 @@ For these checkpoints, this prompt and this configuration (details and intervals
   the estimator's simulated calibration.
 - ✅ An analysis plan was frozen *after* collection and automated scoring, but *before* the agent
   labels used for the estimates (`ANALYSIS-PLAN.md`, including the chronology in C3).
-- ✅ Deviations (D1–D4) and corrections (C1–C5) are logged. Three external reviews led to the
+- ✅ Deviations (D1–D4) and corrections (C1–C6) are logged. Four external reviews led to the
   corrections:
   - **C3** replaced an estimator whose contrasts were not paired.
   - **C4** replaced that estimator's Beta draws with a plug-in bootstrap, because they could flag a true
     zero difference. It also separated H1 from H2 and put H2 in the Holm family.
   - **C5** replaced the plug-in bootstrap, which collapsed at 0/m strata, with confidence-distribution
-    draws. The method was chosen by a pre-stated rule from a calibration of the real hypotheses.
+    draws.
+  - **C6** derived the inference from two-phase sampling theory, after C5 still failed in a sparse
+    configuration. It was adopted under a rule recorded before its calibration.
+  - **Method-sensitive results:** H2 and the E1 floor on target B changed verdict across versions, so
+    neither is claimed.
   - **Verdicts changed against the originally reported ones:**
-    - H2 on target B (no longer significant after Holm);
     - H4 for abliterated-plain (no longer beats the floor after Holm);
-    - the E1 floor on target B (no longer significant after Holm).
+    - H2 and the E1 floor on target B (now method-sensitive, not claimed).
 - ⏳ **Open, in priority order:**
   1. a blinded human validation sample of the AI labels (the main weakness);
   2. labelling every round in sampled cells, with full responses;

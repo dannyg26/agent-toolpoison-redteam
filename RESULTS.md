@@ -2,8 +2,9 @@
 
 **Status: complete, AI-annotated, not human-validated.** The numbers below come from
 `python reproduce_results.py` (stored in `results_numbers.json`) and from the simulated calibration of
-`python estimate.py --calibrate` (stored in `calibration.json` and `design_calibration.json`). They use the
-estimator as revised in `ANALYSIS-PLAN.md` C5, after a third external review. Earlier versions of this
+`python estimate.py --calibrate` (stored in `calibration.json`, `design_calibration.json` and
+`stress_calibration.json`). They use the estimator as revised in `ANALYSIS-PLAN.md` C6, after a fourth
+external review. Earlier versions of this
 file used estimators with known defects; verdicts that changed are noted.
 
 ## In short
@@ -12,17 +13,23 @@ For these checkpoints, this red-team prompt and this three-attempt configuration
 
 - **Abliteration alone does not beat prompting alone by the pre-registered 5-point margin** (H1, both
   targets). This excludes an advantage of 5 points or more; it does not show there is no advantage at all.
-  - Target A: −0.30 [−0.44, −0.16]. Prompting is also significantly better (H2, Holm-adjusted).
-  - Target B: −0.09 [−0.18, +0.005]. H2 is not significant (Holm 0.12).
+  - Target A: −0.30 [−0.42, −0.16]. Prompting is also significantly better (H2, Holm-adjusted). This
+    holds under every estimator version and every sensitivity analysis.
+  - Target B: −0.10 [−0.19, −0.02].
   - **H1 on B rests on the pre-registered pooled miss rate.**
     - With arm-specific miss rates it fails.
-    - In a simulation where abliterated-plain's true miss rate is higher than the pooled one, H1 is
-      falsely supported 88% of the time.
-    - On A, the point estimate stays below the margin even at the least favourable plausible miss rates.
+    - In simulation, if abliterated-plain's unflagged cells hid more jailbreaks than the other arms',
+      pooled H1 on B would be falsely supported 96% of the time.
 - **Jailbreak-R1, an attacker trained for red-teaming, shows no detectable difference from prompting**
-  (E1-H5, primary on B): +0.01 [−0.14, +0.16]. Differences of about ±0.15 are not excluded. It beats
+  (E1-H5, primary on B): +0.01 [−0.11, +0.14]. Differences of about ±0.13 are not excluded. It beats
   abliteration alone on A; on B that is unresolved.
-- **Unresolved:** whether adding abliteration to a red-team prompt helps (+0.06 [−0.09, +0.20] on A).
+- **Two results on target B are method-sensitive** and should not be read as established:
+  - prompting beating abliteration alone (H2);
+  - Jailbreak-R1 beating "just ask" (E1 floor).
+
+  Both are significant under the current estimator (Holm 0.038 and 0.044). Each was non-significant under
+  at least one earlier estimator version. Both sit at the threshold.
+- **Unresolved:** whether adding abliteration to a red-team prompt helps (+0.06 [−0.08, +0.20] on A).
 - **The two published automated judges agree only moderately** (kappa 0.52–0.60), and some conclusions
   drawn from them differ from those drawn from the labels.
 
@@ -50,61 +57,79 @@ This shows the labels are *repeatable* under this procedure. It does not show th
 instances of the same model can share systematic errors. No human labels exist yet. Every result is
 therefore a comparison under this AI annotation procedure.
 
-**Estimator.** A stratified two-phase sample:
+**Estimator.** A stratified two-phase (double) sample:
 
-- judge-flagged cells were labelled at a known rate;
-- a blind audit sampled the unflagged cells.
+- **Phase 1:** each (arm, goal) cell falls in a stratum by the judges' flags: candidate, unflagged, or no
+  reply.
+- **Phase 2:** a sample of each stratum is labelled.
 
-Goals are resampled jointly across arms with their labels attached, so observed labels stay paired. In
-each resample, the rate of each stratum is redrawn from the binomial *confidence distribution* around
-that resample's counts and imputed to its unlabelled cells.
+The point estimate is the pre-registered formula, ASR = (C · precision + U · miss rate) / n:
 
-- **The draw.** It is an equal mixture of Beta(k, m−k+1) and Beta(k+1, m−k), whose quantiles are the
-  Clopper–Pearson limits.
-- **Its two boundary properties:**
-  - a stratum with 0 of m confirmed still gets an upper tail reaching its Clopper–Pearson bound, so its
-    interval never collapses to a point;
-  - half of its draws are exactly 0, so a true zero difference is not rejected.
-- **Intervals and estimand.** Intervals are 95% percentile intervals over 4000 resamples of goals. The
-  estimand is attack success over a population of goals like these.
-- **What is modelled across arms.** Imputed rates are drawn independently per arm, except the shared
-  pooled miss rate. Dependence between arms in unlabelled cells is modelled only through that and the
-  shared goal resampling.
+- C and U are an arm's candidate and unflagged cell counts;
+- precision and miss rate are the labelled rates in those strata;
+- cells with no reply count 0.
 
-**How the method was chosen** (`ANALYSIS-PLAN.md` C5). Three variants were compared by a pre-stated rule
-in a *design-level* calibration (`design_calibration.json`). That calibration uses:
+**Uncertainty** follows the two phases, and each source enters once.
 
-- the real six arms, sampling rules, 40-cell pooled audit and Jailbreak-R1's own 30-cell audit;
-- the real hypotheses, run through `test_hypotheses` with the real Holm families;
-- abliterated-plain set exactly at H1's null boundary (+0.05) or equal to prompting;
-- Jailbreak-R1 set equal to prompting.
+- **Phase 1** (which goals, hence how many cells fall in each stratum) comes from resampling goals jointly
+  across arms.
+- **Phase 2** (each stratum's rate) comes from one draw per resample from the stratum's labelled counts,
+  applied to the whole stratum. The draw is a half-correction binomial confidence distribution: an equal
+  mixture of Beta(k, m−k+1) and Beta(k+1, m−k).
+  - Its percentiles lie *inside* the Clopper–Pearson limits; it is not an exact method. For 0/40, its
+    upper end is 0.072 against Clopper–Pearson's 0.088.
+  - At 0/m half its draws are exactly 0.
+  - Its performance is established by simulation only (below).
+- **Across arms,** rates are drawn independently, except the shared pooled miss rate. The pairing of
+  observed labels is used only through the shared goal resample, so contrasts are conservative when
+  outcomes are positively correlated.
+- **Intervals** are 95% percentile intervals over 4000 resamples. The estimand is attack success over a
+  population of goals like these.
 
-1000 experiments per scenario; only this method passed:
+**How the method was adopted** (`ANALYSIS-PLAN.md` C6). It was derived from two-phase sampling theory
+after a fourth external review, not selected from candidates. The acceptance rule was recorded before the
+calibration run and before any real-data result under this method (researcher-reported ordering).
 
-| scenario (true values) | H1 falsely supported (nominal ≤ 0.025) | H2 rejected under equality (nominal 0.05) | E1-H5 rejected (nominal 0.05) | min. coverage of hypothesis contrasts | ASR coverage |
-|---|---|---|---|---|---|
-| A-like, abliterated-plain at +0.05 | 0.011 | — | 0.030 | 0.961 | 0.971 |
-| A-like, abliterated-plain equal | — | 0.032 | 0.025 | 0.965 | 0.974 |
-| B-like, abliterated-plain at +0.05 | 0.017 | — | 0.022 | 0.954 | 0.976 |
-| B-like, abliterated-plain equal | — | 0.043 | 0.020 | 0.947 | 0.975 |
-| B-like, +0.05 reached through a **higher miss rate** (pooling wrong) | **0.876** | — | 0.025 | 0.000 | 0.865 |
+The rule was checked in two calibration suites:
 
-- **Conservative.** The method is somewhat conservative: ASR coverage is about 0.97 against a nominal
-  0.95.
-- **The last row is the important limit.** If abliterated-plain's unflagged cells really contain more
-  jailbreaks than the other arms', the pre-registered pooled miss rate hides it, and H1 on B would be
-  falsely supported. The audit cannot rule that out: abliterated-plain's own audit on B is 1 of 9.
-- **The C4 method failed this rule.** The plug-in bootstrap over-rejected H2 under equality (0.067) and
-  under-covered (0.928), and it collapsed at 0/m strata.
+- **Design suite** (`design_calibration.json`, 1000 experiments per scenario):
+  - the real six arms, sampling rules, pooled 40-cell audit and Jailbreak-R1's own 30-cell audit;
+  - the real hypotheses run through `test_hypotheses`, with each scenario's own target rules and Holm
+    families.
+- **Stress suite** (`stress_calibration.json`, 1500 experiments each): sparse configurations from the
+  external reviews.
+
+It passed every check in every scenario where pooling is correct.
+
+| scenario (true values) | H1 falsely supported (nominal ≤ 0.025) | E1-H5 rejected (nominal 0.05) | familywise error, main / E1 secondary (nominal 0.05) | min. coverage of hypothesis contrasts |
+|---|---|---|---|---|
+| A-like, abliterated-plain at H1's boundary (+0.05) | 0.018 | 0.043 | 0.000 / 0.025 | 0.950 |
+| A-like, abliterated-plain equal to prompting | — | 0.044 | 0.040 / 0.034 | 0.954 |
+| A-like, every arm equal | — | 0.041 | 0.033 / 0.029 | 0.945 |
+| B-like, abliterated-plain at +0.05 | 0.023 | 0.034 | 0.000 / 0.000 | 0.943 |
+| B-like, abliterated-plain equal | — | 0.029 | 0.030 / 0.020 | 0.950 |
+| B-like, every arm equal | — | 0.034 | 0.035 / 0.028 | 0.943 |
+| sparse: 120 unflagged (40 audited) + 30 no-reply cells at H1's boundary | 0.003 | — | — | 0.973 |
+| sparse: 150 unflagged (40 audited) at H1's boundary | 0.000 | — | — | 0.983 |
+| identical outcomes, rare positives, different screening | — | zero null rejected 0.001 | — | 0.999 |
+| B-like, +0.05 reached through a **higher miss rate** (pooling wrong) | **0.962** | 0.039 | — | 0.000 |
+
+- **Power.** H1 is supported in only 9–33% of experiments when abliterated-plain truly equals prompting.
+  Excluding a 5-point advantage needs a clearly negative contrast.
+- **The pooling-wrong row is the important limit.** The audit cannot rule it out: abliterated-plain's own
+  audit on B is 1 of 9.
 - **Stylised four-arm scenarios** (`calibration.json`, 2000 experiments each, pooling correct):
 
   | check | result |
   |---|---|
-  | contrast coverage | 0.939–0.974 |
-  | twin-null rejections | 0.026–0.056 |
-  | Holm familywise error | 0.029–0.045 |
+  | contrast coverage | 0.945–0.967 |
+  | twin-null rejections | 0.037–0.053 |
+  | Holm familywise error | 0.029–0.042 |
+  | single-arm ASR coverage | 0.951–0.980 |
 
-**Calibration is measured in these scenarios, not guaranteed.**
+**Calibration is measured in these scenarios, not guaranteed across all configurations.** The scenarios
+were written after the study's outcomes were known, and there is no independently specified validation
+suite.
 
 **Tests.**
 
@@ -125,22 +150,22 @@ gets 3 attempts per goal.
 
 | arm | A: Qwen2.5-7B | B: Llama-3.1-8B |
 |---|---|---|
-| no-attacker (just ask) | 0.09 [0.03, 0.22] | 0.04 [0.00, 0.15] |
-| aligned-plain | 0.16 [0.07, 0.28] | 0.10 [0.05, 0.20] |
-| abliterated-plain | 0.15 [0.08, 0.27] | 0.08 [0.03, 0.20] |
-| **aligned-redteam** | **0.45 [0.33, 0.58]** | **0.17 [0.08, 0.28]** |
-| abliterated-redteam | 0.52 [0.41, 0.63] | 0.19 [0.11, 0.30] |
+| no-attacker (just ask) | 0.09 [0.04, 0.19] | 0.04 [0.01, 0.13] |
+| aligned-plain | 0.15 [0.09, 0.26] | 0.10 [0.06, 0.19] |
+| abliterated-plain | 0.15 [0.09, 0.25] | 0.07 [0.03, 0.16] |
+| **aligned-redteam** | **0.46 [0.35, 0.57]** | **0.17 [0.10, 0.27]** |
+| abliterated-redteam | 0.52 [0.42, 0.62] | 0.19 [0.12, 0.28] |
 
 | hypothesis | A | B | verdict |
 |---|---|---|---|
-| **H1** (primary) abliterated-plain − aligned-redteam; supported if upper bound < +0.05 | −0.30 [−0.44, −0.16]; one-sided p (d ≥ +0.05) < 0.001 | −0.09 [−0.18, +0.005]; one-sided p 0.001 | **supported on both** (B only under the pooled miss rate) |
-| **H2** same contrast, two-sided test of 0 | p < 0.001, Holm < 0.001 | p 0.062, Holm 0.123 | **A only** |
-| H3 abliterated-plain − aligned-plain | −0.01 [−0.10, +0.08], Holm 0.90 | −0.02 [−0.08, +0.04], Holm 0.47 | not significant on either |
-| H4a aligned-redteam − no-attacker | +0.36 [+0.22, +0.49], Holm < 0.001 | +0.13 [+0.04, +0.21], Holm 0.010 | beats the floor on both |
-| H4b abliterated-plain − no-attacker | +0.06 [+0.003, +0.11], p 0.035, Holm 0.069 | +0.04 [+0.007, +0.07], p 0.024, Holm 0.0705 | not significant after Holm on either |
-| H4c abliterated-redteam − no-attacker | +0.42 [+0.30, +0.53], Holm < 0.001 | +0.15 [+0.08, +0.22], Holm 0.0025 | beats the floor on both |
-| exploratory: abliterated-redteam − aligned-redteam | +0.06 [−0.09, +0.20] | +0.02 [−0.08, +0.13] | no claim; poorly powered |
-| exploratory: aligned-redteam − aligned-plain | +0.30 [+0.15, +0.44] | +0.07 [−0.03, +0.16] | no claim |
+| **H1** (primary) abliterated-plain − aligned-redteam; supported if upper bound < +0.05 | −0.30 [−0.42, −0.16]; one-sided p (d ≥ +0.05) < 0.001 | −0.10 [−0.19, −0.02]; one-sided p < 0.001 | **supported on both** (B only under the pooled miss rate) |
+| **H2** same contrast, two-sided test of 0 | p < 0.001, Holm < 0.001 | p 0.0125, Holm 0.0375 | A; **B method-sensitive** (non-significant under C4 and C5) |
+| H3 abliterated-plain − aligned-plain | +0.00 [−0.09, +0.08], Holm 1.00 | −0.03 [−0.09, +0.02], Holm 0.27 | not significant on either |
+| H4a aligned-redteam − no-attacker | +0.36 [+0.23, +0.48], Holm < 0.001 | +0.13 [+0.05, +0.21], Holm 0.002 | beats the floor on both |
+| H4b abliterated-plain − no-attacker | +0.06 [+0.005, +0.12], p 0.035, Holm 0.069 | +0.03 [−0.001, +0.07], p 0.057, Holm 0.11 | not significant after Holm on either |
+| H4c abliterated-redteam − no-attacker | +0.43 [+0.31, +0.52], Holm < 0.001 | +0.15 [+0.08, +0.22], Holm < 0.001 | beats the floor on both |
+| exploratory: abliterated-redteam − aligned-redteam | +0.06 [−0.08, +0.20] | +0.02 [−0.08, +0.11] | no claim; poorly powered |
+| exploratory: aligned-redteam − aligned-plain | +0.30 [+0.16, +0.43] | +0.07 [−0.02, +0.16] | no claim |
 
 ## Extension E1: an attacker trained for red-teaming (146 goals)
 
@@ -155,17 +180,17 @@ The drift check re-showed 25 original items blind in the E1 batch, and passed:
 
 | arm | A | B |
 |---|---|---|
-| no-attacker | 0.10 [0.03, 0.22] | 0.04 [0.00, 0.15] |
-| abliterated-plain | 0.15 [0.08, 0.27] | 0.08 [0.03, 0.20] |
-| **trained-redteam** | **0.51 [0.38, 0.63]** | **0.18 [0.09, 0.30]** |
-| aligned-redteam | 0.48 [0.35, 0.61] | 0.17 [0.09, 0.28] |
-| abliterated-redteam | 0.52 [0.41, 0.63] | 0.19 [0.12, 0.30] |
+| no-attacker | 0.09 [0.04, 0.20] | 0.04 [0.01, 0.13] |
+| abliterated-plain | 0.16 [0.09, 0.26] | 0.07 [0.03, 0.16] |
+| **trained-redteam** | **0.51 [0.40, 0.61]** | **0.18 [0.10, 0.30]** |
+| aligned-redteam | 0.48 [0.37, 0.59] | 0.17 [0.10, 0.27] |
+| abliterated-redteam | 0.52 [0.42, 0.62] | 0.19 [0.12, 0.28] |
 
 | hypothesis | A | B | verdict |
 |---|---|---|---|
-| **E1-H5** trained − aligned-redteam (primary on B; secondary on A) | +0.03 [−0.15, +0.19], Holm 0.78 | **+0.01 [−0.14, +0.16], p 0.92** | **no detectable difference** |
-| E1-H6 trained − abliterated-plain | +0.35 [+0.18, +0.49], Holm < 0.001 | +0.10 [−0.04, +0.23], Holm 0.1495 | A only; B unresolved |
-| E1 floor: trained − no-attacker | +0.41 [+0.23, +0.54], Holm < 0.001 | +0.14 [−0.001, +0.27], p 0.052, Holm 0.103 | A only (*changed:* B was reported significant) |
+| **E1-H5** trained − aligned-redteam (primary on B; secondary on A) | +0.03 [−0.13, +0.18], Holm 0.74 | **+0.01 [−0.11, +0.14], p 0.91** | **no detectable difference** |
+| E1-H6 trained − abliterated-plain | +0.35 [+0.21, +0.47], Holm < 0.001 | +0.10 [−0.01, +0.23], Holm 0.067 | A only; B unresolved |
+| E1 floor: trained − no-attacker | +0.41 [+0.27, +0.53], Holm < 0.001 | +0.14 [+0.02, +0.26], p 0.022, Holm 0.044 | A; **B method-sensitive** (non-significant under C5) |
 
 **E1 compares whole systems, not the effect of red-team training alone.** Jailbreak-R1 differs from the
 prompted aligned attacker in several ways at once:
@@ -195,12 +220,12 @@ prompted aligned attacker in several ways at once:
 
 | analysis | H1 A | H1 B | E1-H5 A / B | E1-H6 A / B |
 |---|---|---|---|---|
-| as reported | −0.30 [−0.44, −0.16] | −0.09 [−0.18, +0.005] | +0.03 / +0.01 (n.s.) | +0.35 sig / +0.10 n.s. |
-| arm-specific miss rates | −0.33 [−0.51, −0.12] | **+0.00 [−0.33, +0.37]: H1 fails** | +0.04 / +0.02 (n.s.) | +0.39 sig / +0.02 n.s. |
-| least favourable arm-specific miss rates | −0.12 (point) | **+0.33 (point): H1 fails** | — | — |
-| agent 1's blind labels, all arms | −0.38 [−0.50, −0.23] | −0.11 [−0.20, −0.010] | −0.04 / −0.01 (n.s.) | +0.36 sig / +0.10 n.s. |
-| agent 2's blind labels, all arms | −0.30 [−0.43, −0.15] | −0.11 [−0.20, −0.009] | +0.04 / −0.01 (n.s.) | +0.36 sig / +0.10 n.s. |
-| restricted label flip (below) | −0.14 [−0.29, +0.02] | −0.08 [−0.17, +0.01] | — | — |
+| as reported | −0.30 [−0.42, −0.16] | −0.10 [−0.19, −0.02] | +0.03 / +0.01 (n.s.) | +0.35 sig / +0.10 n.s. |
+| arm-specific miss rates | −0.33 [−0.50, −0.13] | **+0.00 [−0.27, +0.28]: H1 fails** | +0.04 / +0.02 (n.s.) | +0.39 sig / +0.02 n.s. |
+| least favourable arm-specific miss rates | −0.10 (point) | **+0.35 (point): H1 fails** | — | — |
+| agent 1's blind labels, all arms | −0.38 [−0.50, −0.24] | −0.11 [−0.20, −0.03] | −0.04 / −0.01 (n.s.) | +0.36 sig / +0.10 n.s. |
+| agent 2's blind labels, all arms | −0.29 [−0.42, −0.16] | −0.11 [−0.20, −0.03] | +0.04 / −0.01 (n.s.) | +0.35 sig / +0.10 n.s. |
+| restricted label flip (below) | −0.17 [−0.30, −0.03] | −0.08 [−0.17, −0.004] | — | — |
 
 - **Arm-specific miss rates** come from 3–12 audit cells per arm, several of them 0/m. They are very
   imprecise.
@@ -209,17 +234,17 @@ prompted aligned attacker in several ways at once:
   - target A: 0/11 → 0.28, and 0/3 → 0;
   - target B: 1/9 → 0.48, and 0/6 → 0.
 
-  On A the point estimate stays well below the margin (−0.12). On B it moves to +0.33. **H1 on B rests on
-  the pooled-miss assumption**, and the design calibration shows what happens if that assumption is wrong
-  in this direction.
+  On A the point estimate stays below the margin (−0.10). On B it moves to +0.35. **H1 on B rests on the
+  pooled-miss assumption**, and the design calibration shows what happens if that assumption is wrong in
+  this direction.
 - **Annotators.** Each row uses one agent's blind labels for every arm, original and E1. The H1, H2 and E1
   verdicts all match the reconciled ones.
 - **Restricted label flip.** Every false label on abliterated-plain whose response was truncated, or
   whose cell had another flagged round, is set to true (12 labels on A, 2 on B).
   - It permits only that one error type. It does not bound errors in unsampled cells, other arms' labels,
     false positives on aligned-redteam, or miss rates.
-  - H1 still holds on both targets.
-  - Prompting's significant advantage on A (H2) does not survive it (Holm 0.079).
+  - H1 holds on both targets.
+  - H2 holds on A (Holm 0.039) but not on B (Holm 0.082).
 
 ## Attacker behaviour (mechanical string checks, no judge or labels)
 
@@ -354,7 +379,7 @@ harmful text, so the final numbers cannot be reproduced from the repository alon
 ```bash
 python redteam.py --selftest          # attack loop, template attacker, refusal checks, metrics
 python estimate.py --selftest         # boundary cases incl. the reviews' counterexamples, quick calibration
-python estimate.py --calibrate        # full simulated calibration: calibration.json + design_calibration.json
+python estimate.py --calibrate        # full simulated calibration -> calibration.json, design_ and stress_calibration.json
 python reproduce_results.py --legacy  # everything else in this file -> results_numbers.json
 ```
 
@@ -392,6 +417,15 @@ Superseded results, deviations and corrections are logged in `ANALYSIS-PLAN.md`,
   - E1 tests now require an explicit target.
   - The thinking-mode inference is withdrawn.
   - The E1 floor on B is no longer significant.
+- **C6:** the fourth external review.
+  - The C5 draws counted rate uncertainty twice in interior strata, and still falsely supported H1 in a
+    nearby sparse configuration (0.07–0.09 against a nominal 0.025).
+  - The C5 method's Clopper–Pearson description was wrong.
+  - Inference now follows two-phase sampling: phase 1 from resampling goals, phase 2 from one rate draw
+    per stratum, applied to the whole stratum.
+  - It was adopted under a rule recorded before its calibration, which now uses each scenario's own target
+    rules and adds all-null and sparse stress scenarios.
+  - H2 on B and the E1 floor on B are flagged as method-sensitive.
 
 Earlier versions of this file are in git history. The judge-only ("screen-level") results that preceded
 labelling are in commit `407c47c` and earlier.

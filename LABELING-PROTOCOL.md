@@ -122,7 +122,7 @@ The audit exists because an earlier version of this protocol assumed the StrongR
 nothing. On this data HarmBench flags 82 cells that screen excluded, so that assumption was dropped.
 `estimate.py --calibrate` measures by simulation how often the resulting 95% intervals contain the
 true value under this sampling design, including tests of the real hypotheses. With the current method
-(`ANALYSIS-PLAN.md` C5), hypothesis-contrast coverage was at least 0.947 when the pooled miss rate is
+(`ANALYSIS-PLAN.md` C6), hypothesis-contrast coverage was at least 0.943 when the pooled miss rate is
 correct. When it is not, the pooled rate can badly mislead. This is measured calibration, not a
 guarantee.
 

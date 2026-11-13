@@ -503,7 +503,10 @@ calibration is not claimed.
 - **Holm families**, per target: main = H2, H3, H4a–c; E1 = E1-H6, E1 floor (+ E1-H5 on A).
 - **Output** prints "unadjusted interval excludes 0" separately from "significant after Holm".
 
-Current verdicts:
+Verdicts under C4:
+
+> **Historical — superseded by C5 and C6.** These verdicts and the sensitivity results in item 4 used
+> the C4 method. The current verdicts are in the latest correction entry and in `RESULTS.md`.
 
 - **H1:** supported on both targets (A −0.305 [−0.425, −0.186]; B −0.091 [−0.172, −0.007]). On B this is
   conditional on the pooled miss rate.
@@ -521,7 +524,7 @@ Current verdicts:
 
 - The annotator analyses now use one agent's blind labels for *every* arm. In C3 they used them only for
   the E1 arm. All verdicts match the reconciled ones, except H2 on B, which becomes significant under
-  either agent.
+  either agent. *(Historical: under C5 and later methods, H2 on B is not significant under either agent.)*
 - The per-arm miss analysis is now complemented by a deterministic least-favourable version: each arm's
   own audit at the end of its 95% Clopper–Pearson interval that most favours abliterated-plain. H1 on B
   fails under both versions. On A the point estimate stays at −0.12.
@@ -558,6 +561,26 @@ item 5, RESULTS.md and RED-TEAM-STUDY.md.
   is −0.18 on the 146 shared goals, not −0.15.
 
 ## C5 — third external review: boundary-aware inference, design-level calibration (2026-11-13)
+
+> **Corrected (C6).** The timing statement in the first paragraph below is accurate only for `cd` and
+> `cd_full`. Real-data results under `plugin` (the C4 method) were already known, as this entry's last
+> paragraph says. The ordering is researcher-reported: the rule, the code and the results share commit
+> `8798de9`.
+>
+> The selection was also weaker than presented here:
+>
+> - **Monte Carlo noise.** `plugin` was rejected on margins smaller than the Monte Carlo uncertainty
+>   (0.067 vs 0.065; 0.928 vs 0.930).
+> - **Post-hoc scenarios.** The scenarios were constructed after the study's outcomes were known.
+> - **No independent validation.** Selection and validation used the same suite.
+> - **Undefined tie-break.** "Narrowest H1 interval" did not say how widths would be combined across
+>   scenarios.
+>
+> The method's description was also wrong. The mixture's percentiles are *not* the Clopper–Pearson limits:
+> for 0/40 the upper end is 0.072, not 0.088.
+>
+> Most importantly, `cd` still falsely supported H1 in a nearby sparse configuration: 0.071 against a
+> nominal 0.025. C6 replaces it.
 
 **Selection rule, written before the full calibration run and before any real-data result under the
 candidate methods.** Three ways of varying imputed stratum rates across bootstrap resamples are
@@ -640,7 +663,10 @@ it gives:
 
    RED-TEAM-STUDY.md now says "same maximum attempt budget".
 
-**Verdicts under C5** (current; `RESULTS.md`):
+**Verdicts under C5:**
+
+> **Historical — superseded by C6.** H2 on B and the E1 floor on B changed again under C6.
+
 
 - **H1:** supported on both targets.
   - A: −0.305 [−0.436, −0.157].
@@ -659,3 +685,116 @@ it gives:
 **Choice of method and the data.** The real-data results under the C4 method were known when the rule was
 written. The rule itself refers only to simulation, and it was written before any real-data result under
 the candidate methods was computed.
+
+## C6 — fourth external review: two-phase inference derived, not selected (2026-11-13)
+
+**Acceptance rule, recorded before the C6 calibration run and before any real-data result under the C6
+method.** The ordering is researcher-reported; it shares a commit with the results.
+
+**The method.** C6 replaces the C5 draws by a construction that follows standard two-phase (double)
+sampling. It was not found by searching candidates. It is `rate_draw="twophase"` in
+`estimate_goal_bootstrap`:
+
+- **Phase 1:** stratum sizes come from the goal resample, shared across arms.
+- **Phase 2:** each stratum's rate is drawn once per resample from the half-correction binomial
+  confidence distribution of its labelled counts, and applied to the whole stratum.
+
+Each source of uncertainty enters once. The point estimate is the pre-registered formula
+`(C · precision + U · miss rate) / n`.
+
+**What is evaluated, and how.** Only this method is evaluated for adoption. The C5 method is run
+alongside for comparison only.
+
+The acceptance rule applies to every pooling-correct scenario, in two suites:
+
+- **The C5 design suite,** now run with each scenario's own target rules.
+- **A suite added in C6:**
+  - target-like "all-null" worlds, where every arm has the same true ASR through different screening and
+    precision;
+  - the fourth review's sparse configuration;
+  - unequal screening with rare positives.
+
+In every one of those scenarios the method must meet all of these:
+
+| check | limit |
+|---|---|
+| H1 falsely supported at its boundary | ≤ 0.035 |
+| each true secondary null rejected after Holm | ≤ 0.065 |
+| familywise error over each secondary family's true nulls | ≤ 0.065 |
+| E1-H5 rejected under equality | ≤ 0.065 |
+| coverage of every hypothesis contrast | ≥ 0.93 |
+
+**If it fails.** Every result is reported. If the method fails a check, the verdicts that rely on the
+failed property are withheld and reported descriptively. No further candidates are searched in this
+round.
+
+**Outcome of the C6 rule.** The calibration ran with `estimate.py --calibrate`. Its output is in:
+
+- `calibration.json`;
+- `design_calibration.json` (1000 experiments per scenario);
+- `stress_calibration.json` (1500 per configuration).
+
+`twophase` **passed every check** in every scenario where pooling is correct:
+
+| check | result | limit |
+|---|---|---|
+| H1 falsely supported at its boundary | 0.018 (A-like), 0.023 (B-like), 0.003 and 0.000 (sparse) | ≤ 0.035 |
+| each true secondary null rejected after Holm | max 0.040 | ≤ 0.065 |
+| familywise error per secondary family | max 0.040 | ≤ 0.065 |
+| E1-H5 rejected under equality | max 0.044 | ≤ 0.065 |
+| minimum hypothesis-contrast coverage | 0.943 | ≥ 0.93 |
+
+For comparison, the C5 method falsely supported H1 0.090 of the time in the review's sparse
+configuration. When pooling is wrong (abliterated-plain at +0.05 through a higher miss rate), H1 on B is
+falsely supported 0.962 of the time. That is the disclosed limit, and no estimator can repair it without
+arm-specific audits. Power to support H1 when abliterated-plain truly equals prompting is low: 0.09–0.33.
+
+**What the fourth review found** (all six points held):
+
+1. **`cd` falsely supported H1 in a nearby sparse configuration.** The configuration had 120 unflagged and
+   30 no-reply cells, 0/40 audited, and a true ASR of 0.05. H1 was falsely supported 0.071 of the time.
+   The cause was structural: the rate uncertainty was applied only to the unlabelled cells, while the
+   labelled zeros were treated as fixed. Fixed by `twophase`; the configuration is now a self-test and a
+   stress scenario.
+2. **The mixture's percentiles are not the Clopper–Pearson limits.** They lie inside them. All
+   descriptions are corrected.
+3. **`cd` counted rate uncertainty twice in interior strata.** Its variance was about 28% above the
+   sampling variance. `twophase` matches it: 0.00366 against 0.00368 in the review's example.
+4. **A-like scenarios were run with B's hypothesis rules.** The target is now passed through. All-null
+   scenarios and familywise error per family were added.
+5. **The selection chronology and its weaknesses were overstated.** Corrected in a note at the head of C5.
+6. **C4's verdicts were still headed "current".** They are now marked historical.
+
+**Verdicts under C6** (current; `RESULTS.md`):
+
+- **H1:** supported on both targets.
+  - A: −0.302 [−0.424, −0.162].
+  - B: −0.097 [−0.186, −0.021], conditional on the pooled miss rate.
+- **H2:** A significant. B significant (p 0.0125, Holm 0.0375), but **method-sensitive**: it was not
+  significant under C4 and C5.
+- **H3:** not significant on either target.
+- **H4:** aligned-redteam and abliterated-redteam beat the floor on both targets; abliterated-plain does
+  not (Holm 0.069 and 0.11).
+- **E1-H5:** no detectable difference on B (+0.008 [−0.110, +0.137]); not significant on A.
+- **E1-H6:** A significant; B not (Holm 0.067).
+- **E1 floor:** A significant. B significant (Holm 0.044), but **method-sensitive**: it was not significant
+  under C5.
+
+Point estimates now use the pre-registered formula exactly. The headline therefore equals the legacy
+estimator's point estimate (−0.302 on A, −0.097 on B).
+
+**Adaptive-development disclosure.** This is the fourth revision of the inference procedure, each one
+prompted by an external review. Every revision was made with the real-data results of the previous
+methods known. The verdicts that depend on the method are flagged as method-sensitive and are not claimed
+as findings:
+
+- H2 on B;
+- the E1 floor on B.
+
+The verdicts that held under every version are:
+
+- H1 on both targets;
+- H2 on A;
+- E1-H5;
+- E1-H6 on A;
+- H4a and H4c.
