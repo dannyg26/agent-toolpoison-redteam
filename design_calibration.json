@@ -1,5 +1,29 @@
 {
  "A-margin": {
+  "paired": {
+   "n": 1000,
+   "h1_support": 0.028,
+   "e1h5_reject": 0.053,
+   "secondary_null_reject_holm": {
+    "E1-H5": 0.035
+   },
+   "fwer_main": 0.0,
+   "fwer_e1": 0.035,
+   "h1_mean_width": 0.2843370926763886,
+   "asr_cover": 0.958,
+   "min_contrast_cover": 0.943,
+   "cover": {
+    "H1": 0.95,
+    "H2": 0.95,
+    "H3": 0.959,
+    "H4a": 0.955,
+    "H4b": 0.959,
+    "H4c": 0.952,
+    "E1-H5": 0.946,
+    "E1-H6": 0.943,
+    "E1-floor": 0.964
+   }
+  },
   "twophase": {
    "n": 1000,
    "h1_support": 0.018,
@@ -23,33 +47,35 @@
     "E1-H6": 0.95,
     "E1-floor": 0.962
    }
-  },
-  "cd": {
-   "n": 1000,
-   "h1_support": 0.011,
-   "e1h5_reject": 0.03,
-   "secondary_null_reject_holm": {
-    "E1-H5": 0.012
-   },
-   "fwer_main": 0.0,
-   "fwer_e1": 0.012,
-   "h1_mean_width": 0.3208425352579943,
-   "asr_cover": 0.9706,
-   "min_contrast_cover": 0.961,
-   "cover": {
-    "H1": 0.979,
-    "H2": 0.979,
-    "H3": 0.969,
-    "H4a": 0.975,
-    "H4b": 0.976,
-    "H4c": 0.961,
-    "E1-H5": 0.97,
-    "E1-H6": 0.965,
-    "E1-floor": 0.978
-   }
   }
  },
  "A-equal": {
+  "paired": {
+   "n": 1000,
+   "h1_support": 0.107,
+   "e1h5_reject": 0.053,
+   "secondary_null_reject_holm": {
+    "H2": 0.061,
+    "E1-H5": 0.024,
+    "E1-H6": 0.024
+   },
+   "fwer_main": 0.061,
+   "fwer_e1": 0.044,
+   "h1_mean_width": 0.27786447733682706,
+   "asr_cover": 0.9574,
+   "min_contrast_cover": 0.932,
+   "cover": {
+    "H1": 0.932,
+    "H2": 0.932,
+    "H3": 0.954,
+    "H4a": 0.952,
+    "H4b": 0.954,
+    "H4c": 0.958,
+    "E1-H5": 0.946,
+    "E1-H6": 0.947,
+    "E1-floor": 0.949
+   }
+  },
   "twophase": {
    "n": 1000,
    "h1_support": 0.085,
@@ -75,35 +101,31 @@
     "E1-H6": 0.955,
     "E1-floor": 0.954
    }
-  },
-  "cd": {
-   "n": 1000,
-   "h1_support": 0.066,
-   "e1h5_reject": 0.025,
-   "secondary_null_reject_holm": {
-    "H2": 0.029,
-    "E1-H5": 0.012,
-    "E1-H6": 0.007
-   },
-   "fwer_main": 0.029,
-   "fwer_e1": 0.018,
-   "h1_mean_width": 0.31237100818642977,
-   "asr_cover": 0.9742,
-   "min_contrast_cover": 0.965,
-   "cover": {
-    "H1": 0.968,
-    "H2": 0.968,
-    "H3": 0.976,
-    "H4a": 0.975,
-    "H4b": 0.965,
-    "H4c": 0.967,
-    "E1-H5": 0.975,
-    "E1-H6": 0.973,
-    "E1-floor": 0.967
-   }
   }
  },
  "B-margin": {
+  "paired": {
+   "n": 1000,
+   "h1_support": 0.026,
+   "e1h5_reject": 0.034,
+   "secondary_null_reject_holm": {},
+   "fwer_main": 0.0,
+   "fwer_e1": 0.0,
+   "h1_mean_width": 0.2109297001008858,
+   "asr_cover": 0.9658,
+   "min_contrast_cover": 0.934,
+   "cover": {
+    "H1": 0.949,
+    "H2": 0.949,
+    "H3": 0.947,
+    "H4a": 0.934,
+    "H4b": 0.949,
+    "H4c": 0.957,
+    "E1-H5": 0.966,
+    "E1-H6": 0.975,
+    "E1-floor": 0.975
+   }
+  },
   "twophase": {
    "n": 1000,
    "h1_support": 0.023,
@@ -125,31 +147,34 @@
     "E1-H6": 0.967,
     "E1-floor": 0.974
    }
-  },
-  "cd": {
-   "n": 1000,
-   "h1_support": 0.017,
-   "e1h5_reject": 0.022,
-   "secondary_null_reject_holm": {},
-   "fwer_main": 0.0,
-   "fwer_e1": 0.0,
-   "h1_mean_width": 0.2271283660755951,
-   "asr_cover": 0.9762,
-   "min_contrast_cover": 0.954,
-   "cover": {
-    "H1": 0.965,
-    "H2": 0.965,
-    "H3": 0.954,
-    "H4a": 0.957,
-    "H4b": 0.954,
-    "H4c": 0.96,
-    "E1-H5": 0.976,
-    "E1-H6": 0.974,
-    "E1-floor": 0.98
-   }
   }
  },
  "B-equal": {
+  "paired": {
+   "n": 1000,
+   "h1_support": 0.172,
+   "e1h5_reject": 0.033,
+   "secondary_null_reject_holm": {
+    "H2": 0.04,
+    "E1-H6": 0.016
+   },
+   "fwer_main": 0.04,
+   "fwer_e1": 0.016,
+   "h1_mean_width": 0.20147074706265028,
+   "asr_cover": 0.9684,
+   "min_contrast_cover": 0.936,
+   "cover": {
+    "H1": 0.936,
+    "H2": 0.936,
+    "H3": 0.958,
+    "H4a": 0.95,
+    "H4b": 0.961,
+    "H4c": 0.949,
+    "E1-H5": 0.966,
+    "E1-H6": 0.978,
+    "E1-floor": 0.98
+   }
+  },
   "twophase": {
    "n": 1000,
    "h1_support": 0.163,
@@ -174,34 +199,31 @@
     "E1-H6": 0.973,
     "E1-floor": 0.972
    }
-  },
-  "cd": {
-   "n": 1000,
-   "h1_support": 0.139,
-   "e1h5_reject": 0.02,
-   "secondary_null_reject_holm": {
-    "H2": 0.024,
-    "E1-H6": 0.018
-   },
-   "fwer_main": 0.024,
-   "fwer_e1": 0.018,
-   "h1_mean_width": 0.2156749589186006,
-   "asr_cover": 0.975,
-   "min_contrast_cover": 0.947,
-   "cover": {
-    "H1": 0.956,
-    "H2": 0.956,
-    "H3": 0.966,
-    "H4a": 0.964,
-    "H4b": 0.96,
-    "H4c": 0.947,
-    "E1-H5": 0.979,
-    "E1-H6": 0.978,
-    "E1-floor": 0.982
-   }
   }
  },
  "B-margin-miss": {
+  "paired": {
+   "n": 1000,
+   "h1_support": 0.954,
+   "e1h5_reject": 0.04,
+   "secondary_null_reject_holm": {},
+   "fwer_main": 0.0,
+   "fwer_e1": 0.0,
+   "h1_mean_width": 0.17971524236762765,
+   "asr_cover": 0.7762,
+   "min_contrast_cover": 0.0,
+   "cover": {
+    "H1": 0.046,
+    "H2": 0.046,
+    "H3": 0.001,
+    "H4a": 0.935,
+    "H4b": 0.0,
+    "H4c": 0.923,
+    "E1-H5": 0.959,
+    "E1-H6": 0.458,
+    "E1-floor": 0.933
+   }
+  },
   "twophase": {
    "n": 1000,
    "h1_support": 0.962,
@@ -223,31 +245,40 @@
     "E1-H6": 0.417,
     "E1-floor": 0.914
    }
-  },
-  "cd": {
-   "n": 1000,
-   "h1_support": 0.876,
-   "e1h5_reject": 0.025,
-   "secondary_null_reject_holm": {},
-   "fwer_main": 0.0,
-   "fwer_e1": 0.0,
-   "h1_mean_width": 0.2013947649413625,
-   "asr_cover": 0.8648,
-   "min_contrast_cover": 0.0,
-   "cover": {
-    "H1": 0.124,
-    "H2": 0.124,
-    "H3": 0.005,
-    "H4a": 0.955,
-    "H4b": 0.0,
-    "H4c": 0.932,
-    "E1-H5": 0.975,
-    "E1-H6": 0.624,
-    "E1-floor": 0.948
-   }
   }
  },
  "A-allnull": {
+  "paired": {
+   "n": 1000,
+   "h1_support": 0.118,
+   "e1h5_reject": 0.041,
+   "secondary_null_reject_holm": {
+    "H2": 0.01,
+    "H3": 0.011,
+    "H4a": 0.011,
+    "H4b": 0.013,
+    "H4c": 0.013,
+    "E1-H5": 0.017,
+    "E1-H6": 0.013,
+    "E1-floor": 0.016
+   },
+   "fwer_main": 0.045,
+   "fwer_e1": 0.028,
+   "h1_mean_width": 0.22796486749261013,
+   "asr_cover": 0.9564,
+   "min_contrast_cover": 0.943,
+   "cover": {
+    "H1": 0.95,
+    "H2": 0.95,
+    "H3": 0.955,
+    "H4a": 0.948,
+    "H4b": 0.95,
+    "H4c": 0.943,
+    "E1-H5": 0.958,
+    "E1-H6": 0.966,
+    "E1-floor": 0.967
+   }
+  },
   "twophase": {
    "n": 1000,
    "h1_support": 0.107,
@@ -278,40 +309,39 @@
     "E1-H6": 0.963,
     "E1-floor": 0.96
    }
-  },
-  "cd": {
-   "n": 1000,
-   "h1_support": 0.081,
-   "e1h5_reject": 0.025,
-   "secondary_null_reject_holm": {
-    "H2": 0.004,
-    "H3": 0.005,
-    "H4a": 0.004,
-    "H4b": 0.008,
-    "H4c": 0.008,
-    "E1-H5": 0.009,
-    "E1-H6": 0.008,
-    "E1-floor": 0.005
-   },
-   "fwer_main": 0.023,
-   "fwer_e1": 0.013,
-   "h1_mean_width": 0.24976561545940054,
-   "asr_cover": 0.9704,
-   "min_contrast_cover": 0.954,
-   "cover": {
-    "H1": 0.966,
-    "H2": 0.966,
-    "H3": 0.966,
-    "H4a": 0.964,
-    "H4b": 0.97,
-    "H4c": 0.954,
-    "E1-H5": 0.974,
-    "E1-H6": 0.981,
-    "E1-floor": 0.979
-   }
   }
  },
  "B-allnull": {
+  "paired": {
+   "n": 1000,
+   "h1_support": 0.338,
+   "e1h5_reject": 0.027,
+   "secondary_null_reject_holm": {
+    "H2": 0.008,
+    "H3": 0.01,
+    "H4a": 0.011,
+    "H4b": 0.013,
+    "H4c": 0.008,
+    "E1-H6": 0.014,
+    "E1-floor": 0.008
+   },
+   "fwer_main": 0.043,
+   "fwer_e1": 0.02,
+   "h1_mean_width": 0.13004707328894663,
+   "asr_cover": 0.976,
+   "min_contrast_cover": 0.941,
+   "cover": {
+    "H1": 0.951,
+    "H2": 0.951,
+    "H3": 0.957,
+    "H4a": 0.955,
+    "H4b": 0.954,
+    "H4c": 0.941,
+    "E1-H5": 0.971,
+    "E1-H6": 0.972,
+    "E1-floor": 0.976
+   }
+  },
   "twophase": {
    "n": 1000,
    "h1_support": 0.326,
@@ -340,36 +370,6 @@
     "E1-H5": 0.963,
     "E1-H6": 0.959,
     "E1-floor": 0.971
-   }
-  },
-  "cd": {
-   "n": 1000,
-   "h1_support": 0.306,
-   "e1h5_reject": 0.03,
-   "secondary_null_reject_holm": {
-    "H2": 0.01,
-    "H3": 0.009,
-    "H4a": 0.007,
-    "H4b": 0.012,
-    "H4c": 0.006,
-    "E1-H6": 0.016,
-    "E1-floor": 0.008
-   },
-   "fwer_main": 0.035,
-   "fwer_e1": 0.021,
-   "h1_mean_width": 0.13155885778838422,
-   "asr_cover": 0.9818,
-   "min_contrast_cover": 0.942,
-   "cover": {
-    "H1": 0.947,
-    "H2": 0.947,
-    "H3": 0.958,
-    "H4a": 0.951,
-    "H4b": 0.952,
-    "H4c": 0.942,
-    "E1-H5": 0.969,
-    "E1-H6": 0.966,
-    "E1-floor": 0.973
    }
   }
  }

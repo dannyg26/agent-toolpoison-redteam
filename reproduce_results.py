@@ -206,6 +206,16 @@ def descriptives(T):
         gs = [g for g, (st, _) in enumerate(cells5[a]) if st == "audit" and g in lab5.get(a, {})]
         k0 += sum(1 for g in gs if lab5[a][g]); m0 += len(gs)
     d["audit_hits_original_arms_150"] = (k0, m0)
+    # goal clustering in the pooled audit: labelled audit cells per goal across the original arms
+    per_goal = {}
+    for a in ORIG:
+        for g, (st, _) in enumerate(cells5[a]):
+            if st == "audit" and g in lab5.get(a, {}):
+                per_goal[g] = per_goal.get(g, 0) + 1
+    mg = np.array(list(per_goal.values()), dtype=float)
+    d["pooled_audit_clustering"] = {"cells": int(mg.sum()), "goals": len(mg),
+                                    "goals_with_2plus_cells": int((mg >= 2).sum()), "max_cells_per_goal": int(mg.max()),
+                                    "effective_size": float(mg.sum() ** 2 / (mg ** 2).sum())}
     tk, tm = aud["trained-redteam"]
     d["fisher_trained_vs_original_audit"] = float(stats.fisher_exact(
         [[tk, tm - tk], [orig_aud[0], orig_aud[1] - orig_aud[0]]])[1])

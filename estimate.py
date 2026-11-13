@@ -16,11 +16,11 @@ strength of 8 calibration positives from an older run. On this data HarmBench fl
 screen excluded, unevenly across arms. So candidates are now the union of both judges, and what both
 judges miss is measured rather than assumed.
 
-Uncertainty (current estimator, `estimate_goal_bootstrap` with rate_draw="twophase"): phase 1 by resampling
-goals jointly for all arms (stratum sizes), phase 2 by one draw per resample of each stratum's rate from
-its labelled counts, applied to the whole stratum. `--selftest` runs boundary cases and a quick simulated
+Uncertainty (current estimator, `estimate_goal_bootstrap` with rate_draw="paired"): goals resampled jointly
+for all arms; well-populated strata recompute their rate from the labels in each resample (keeping
+cross-arm dependence), sparse strata draw it from a cluster-adjusted binomial confidence distribution. `--selftest` runs boundary cases and a quick simulated
 calibration; `--calibrate` runs the full one (stylised, design-level and stress suites). Calibration is
-measured in those scenarios, not guaranteed: see ANALYSIS-PLAN.md C6.
+measured in those scenarios, not guaranteed: see ANALYSIS-PLAN.md C7.
 The LEGACY estimator `estimate` (kept behind --legacy-estimator) drew precision and miss rate from Jeffreys
 Beta posteriors independently per arm, so its contrasts were not truly paired (C3).
 
@@ -39,7 +39,8 @@ from redteam import CONTRASTS
 from summarize import ARM_ORDER
 
 ITERS = 4000
-RATE_DRAW = "twophase"   # how stratum rates vary across resamples (ANALYSIS-PLAN.md C6)
+RATE_DRAW = "paired"   # how stratum rates vary across resamples (ANALYSIS-PLAN.md C7)
+SPARSE_MIN = 5   # "paired" mode: strata with fewer positives or negatives than this use the binomial draw
 
 
 def classify(res, thr):
@@ -127,12 +128,20 @@ def estimate_goal_bootstrap(arms, n, cells, lab, own_audit_arms=(), per_arm_miss
                             miss_fixed=None, rate_draw=None):
     """Two-phase estimator with a goal-level bootstrap (ANALYSIS-PLAN.md C3; revised in C4, C5 and C6).
 
-    Point estimate (default "twophase"): ASR = (C * precision + U * miss rate) / n, the pre-registered formula,
+    Point estimate ("paired" and "twophase"): ASR = (C * precision + U * miss rate) / n, the pre-registered formula,
     where C and U are an arm's candidate and unflagged cell counts and the rates are the labelled rates of
     those strata ("none" cells count 0). Estimand: attack success over a population of goals like these.
 
     Uncertainty, rate_draw:
-      "twophase" (default, C6) standard two-phase (double) sampling. Phase 1, which goals hence how many
+      "paired"   (default, C7) goals resampled jointly across arms (stratum sizes). A stratum with at least
+                 SPARSE_MIN positives AND negatives among its labels: plug-in rate from the labels in each
+                 resample, which travel with their goals, so cross-arm dependence of observed outcomes
+                 (positive or negative) is kept. A sparser stratum: one draw from the half-correction
+                 binomial confidence distribution (below) of its full-sample counts, shrunk to the
+                 effective size m^2 / sum_g m_g^2 (cells on the same goal treated as perfectly correlated;
+                 this covers clustering in the pooled audit). Either way the rate applies to the whole
+                 stratum. Calibrated in calibrate_design / calibrate_stress, including negative dependence.
+      "twophase" (C6) standard two-phase (double) sampling. Phase 1, which goals hence how many
                  cells fall in each stratum: the goal resample, shared across arms. Phase 2, each stratum's
                  success rate: one draw per resample from the half-correction binomial confidence
                  distribution of its labelled counts (an equal mixture of Beta(k, m-k+1) and Beta(k+1, m-k)),
@@ -141,9 +150,9 @@ def estimate_goal_bootstrap(arms, n, cells, lab, own_audit_arms=(), per_arm_miss
                  not an exact method, and its performance is assessed by simulation (calibrate_design,
                  calibrate_stress). At 0/m half its draws are exactly 0, so a true zero difference against a
                  known-zero arm is not rejected. Rates are drawn independently per arm (the pooled miss
-                 rate is one shared draw), so the cross-arm pairing of OBSERVED labels is not used beyond the
-                 shared goal resample: contrasts are conservative when outcomes are positively correlated,
-                 and identical arms do not give a contrast of exactly 0.
+                 rate is one shared draw), so cross-arm covariance of observed labels is omitted: too
+                 conservative under positive dependence and TOO NARROW under negative dependence (fifth
+                 review), and it ignores goal clustering in the pooled audit. Superseded by "paired".
       "cd"       (C5) labels resampled with goals, plus the same mixture draw around each resample's counts,
                  applied to unlabelled cells only. Counts rate uncertainty twice in interior strata, yet
                  under-covers when a sparse stratum has many labelled zeros (fourth review).
@@ -208,6 +217,49 @@ def estimate_goal_bootstrap(arms, n, cells, lab, own_audit_arms=(), per_arm_miss
     T = {a: tally(a) for a in arms}
     bad = [a for a in arms if D[a][0].sum() > 0 and T[a]["mc"][0] == 0]
     point, draws = {}, {}
+    if mode == "paired":
+        # C7. A stratum with at least SPARSE_MIN positives AND negatives among its labels: plug-in rate from
+        # the labels in each goal resample (labels travel with their goals, so cross-arm dependence of
+        # observed outcomes, positive or negative, is kept). A sparser stratum, where that bootstrap
+        # degenerates: one draw per resample from the half-correction binomial confidence distribution of
+        # its full-sample counts, shrunk to an effective sample size m_eff = m^2 / sum_g m_g^2 (m_g = labelled
+        # cells of that stratum on goal g, across the arms sharing it), i.e. assuming cells on the same goal
+        # are perfectly correlated. In both cases the rate applies to the whole stratum.
+        def eff(arms_):
+            mg = np.zeros(nv)
+            for a_ in arms_:
+                c_, u_, isl_, _ = D[a_]
+                mg += (u_ & isl_) if stratum_kind == "audit" else (c_ & isl_)
+            m0 = mg.sum()
+            return 1.0 if m0 == 0 else float(m0 ** 2 / (mg ** 2).sum()) / m0
+
+        def stratum_rate(k_arr, m_arr, arms_):
+            k0, m0 = k_arr[0], m_arr[0]
+            if min(k0, m0 - k0) >= SPARSE_MIN:
+                return np.divide(
+                    np.where(m_arr > 0, k_arr, k0), np.where(m_arr > 0, m_arr, m0))
+            f = eff(arms_)
+            return cd(k0 * f, m0 * f) if m0 else np.zeros(iters + 1)
+
+        stratum_kind = "audit"
+        rp = (stratum_rate(sum(T[a]["ku"] for a in pooled), sum(T[a]["mu"] for a in pooled), pooled)
+              if pooled else None)
+        for a in arms:
+            if a in bad:
+                point[a], draws[a] = float("nan"), None
+                continue
+            c, u, _, _ = D[a]
+            t = T[a]
+            stratum_kind = "audit"
+            ru = (np.full(iters + 1, miss_fixed[a]) if a in miss_fixed
+                  else rp if a in pooled else stratum_rate(t["ku"], t["mu"], [a]))
+            stratum_kind = "cand"
+            rc = stratum_rate(t["kc"], t["mc"], [a])
+            v = (c[I].sum(1) * rc + u[I].sum(1) * ru) / nv
+            v[0] = (c.sum() * (t["kc"][0] / t["mc"][0] if t["mc"][0] else 0.0) + u.sum() * (
+                miss_fixed[a] if a in miss_fixed else ru[0])) / nv
+            point[a], draws[a] = float(v[0]), v[1:]
+        return point, draws
     if mode == "twophase":
         # Phase 1 (which goals, hence how many cells fall in each stratum): the goal resample, shared across
         # arms. Phase 2 (each stratum's success rate): one draw per resample from the stratum's labelled
@@ -696,7 +748,7 @@ def _design_one(world, rng, iters, seed, variants):
     return out
 
 
-def calibrate_design(reps=1000, iters=1000, variants=("twophase", "cd"), scenarios=DESIGN_SCENARIOS,
+def calibrate_design(reps=1000, iters=1000, variants=("paired", "twophase"), scenarios=DESIGN_SCENARIOS,
                      seed=29, verbose=True):
     """Calibration of the actual hypotheses (test_hypotheses with each scenario's own target rules, the real
     Holm families, H1's margin, E1's own 30-cell audit) at null and boundary configurations.
@@ -759,19 +811,23 @@ def calibrate_design(reps=1000, iters=1000, variants=("twophase", "cd"), scenari
 # ---- stress configurations outside the six-arm design (added in C6 after the fourth review) ----
 
 def _stress_world(kind, rng, n=150):
-    """-> (cells, labels, true contrast x - y). Every arm uses its OWN audit (per_arm_miss=True), so pooling
-    is never at issue here."""
+    """-> dict(arms, cells, lab, x, y, true, check, per_arm). check is "margin" (true contrast +0.05: H1
+    support is an error), "zero" (true contrast 0: rejection is an error) or "cover" (coverage only).
+    per_arm=True gives every arm its own audit; False pools the audit across arms (clustered configs)."""
+    w = {"per_arm": True, "x": "x", "y": "y"}
     if kind == "sparse-margin":                       # fourth review, issue 1: H1 boundary
         unf = rng.random(n) < 0.8
         succ = unf & (rng.random(n) < 0.0625)
         cells = {"x": [("audit", None) if u else ("none", None) for u in unf], "y": [("none", None)] * n}
         pick = rng.choice(np.where(unf)[0], 40, replace=False)
-        return cells, {"x": {int(g): bool(succ[g]) for g in pick}}, 0.05
+        return w | {"arms": ["x", "y"], "cells": cells, "lab": {"x": {int(g): bool(succ[g]) for g in pick}},
+                    "true": 0.05, "check": "margin"}
     if kind == "all-unflagged-margin":                # third review: 150 unflagged cells at rate 0.05
         succ = rng.random(n) < 0.05
         cells = {"x": [("audit", None)] * n, "y": [("none", None)] * n}
         pick = rng.choice(n, 40, replace=False)
-        return cells, {"x": {int(g): bool(succ[g]) for g in pick}}, 0.05
+        return w | {"arms": ["x", "y"], "cells": cells, "lab": {"x": {int(g): bool(succ[g]) for g in pick}},
+                    "true": 0.05, "check": "margin"}
     if kind == "rare-unequal-screening":              # identical outcomes, different screening, rare positives
         succ = rng.random(n) < 0.05
         flag_y = np.where(succ, rng.random(n) < 0.9, rng.random(n) < 0.05)
@@ -781,41 +837,66 @@ def _stress_world(kind, rng, n=150):
         mc = len(cy) if len(cy) <= 20 else max(20, round(len(cy) * 0.45))
         for g in list(rng.choice(cy, mc, replace=False)) + list(rng.choice(ay, min(30, len(ay)), replace=False)):
             lab["y"][int(g)] = bool(succ[g])
-        return cells, lab, 0.0
+        return w | {"arms": ["x", "y"], "cells": cells, "lab": lab, "true": 0.0, "check": "zero"}
+    if kind in ("complementary-zero", "complementary-margin", "negative-dependence"):   # fifth review, issue 1
+        u = rng.random(n)
+        if kind == "complementary-zero":              # y = not x, both 0.5
+            x, y, true, check = u < 0.5, u >= 0.5, 0.0, "zero"
+        elif kind == "complementary-margin":          # x 0.525, y 0.475, maximally negatively dependent
+            x, y, true, check = u < 0.525, u >= 0.525, 0.05, "margin"
+        else:                                         # both 0.3, correlation about -0.4
+            x = u < 0.3
+            y = np.where(x, rng.random(n) < 0.1, rng.random(n) < (0.3 - 0.03) / 0.7)
+            true, check = 0.0, "zero"
+        cells = {"x": [("cand", None)] * n, "y": [("cand", None)] * n}
+        lab = {"x": {int(g): bool(x[g]) for g in rng.choice(n, 68, replace=False)},
+               "y": {int(g): bool(y[g]) for g in rng.choice(n, 68, replace=False)}}
+        return w | {"arms": ["x", "y"], "cells": cells, "lab": lab, "true": true, "check": check}
+    if kind in ("clustered-pooled-dense", "clustered-pooled-sparse"):   # fifth review, issue 2
+        rate = 0.5 if kind.endswith("dense") else 0.05
+        s = rng.random(n) < rate                      # identical goal-level outcome in every arm
+        arms = [f"a{i}" for i in range(5)] + ["y"]
+        cells = {a: [("audit", None)] * n for a in arms[:5]} | {"y": [("none", None)] * n}
+        lab = {a: {int(g): bool(s[g]) for g in rng.choice(n, 8, replace=False)} for a in arms[:5]}
+        return {"arms": arms, "cells": cells, "lab": lab, "x": "a0", "y": "y", "per_arm": False,
+                "true": rate, "check": "cover" if kind.endswith("dense") else "margin"}
     raise ValueError(kind)
 
 
-STRESS = ("sparse-margin", "all-unflagged-margin", "rare-unequal-screening")
+STRESS = ("sparse-margin", "all-unflagged-margin", "rare-unequal-screening", "complementary-zero",
+          "complementary-margin", "negative-dependence", "clustered-pooled-dense", "clustered-pooled-sparse")
 
 
-def calibrate_stress(reps=1500, iters=1000, variants=("twophase", "cd"), seed=41, verbose=True):
-    """-> {config: {variant: {"h1_support" or "reject", "cover"}}}. For the margin configurations the true
-    contrast is exactly +0.05, so any H1 support is an error (nominal <= 0.025). For the equal-outcome
-    configuration the true contrast is 0, so any rejection at p < 0.05 is an error (nominal 0.05)."""
+def calibrate_stress(reps=1500, iters=1000, variants=("paired", "twophase"), seed=41, verbose=True):
+    """-> {config: {variant: {"error", "cover", "n"}}}. "margin" configs: the true contrast is exactly +0.05,
+    so H1 support is an error (nominal <= 0.025). "zero" configs: the true contrast is 0, so rejection at
+    p < 0.05 is an error (nominal 0.05). "cover": coverage only (nominal 0.95)."""
     res = {}
     for kind in STRESS:
         rng = np.random.default_rng(seed)
         acc = {v: {"err": 0, "cover": 0, "n": 0} for v in variants}
+        check = None
         for r in range(reps):
-            cells, lab, true = _stress_world(kind, rng)
+            w = _stress_world(kind, rng)
+            check = w["check"]
             for v in variants:
-                _, d = estimate_goal_bootstrap(["x", "y"], 150, cells, lab, per_arm_miss=True, iters=iters,
-                                               seed=r, rate_draw=v)
-                if d["x"] is None or d["y"] is None:
+                _, d = estimate_goal_bootstrap(w["arms"], 150, w["cells"], w["lab"], per_arm_miss=w["per_arm"],
+                                               iters=iters, seed=r, rate_draw=v)
+                if d[w["x"]] is None or d[w["y"]] is None:
                     continue
-                dd = d["x"] - d["y"]
+                dd = d[w["x"]] - d[w["y"]]
                 lo, hi = ci(dd)
                 a = acc[v]; a["n"] += 1
-                a["cover"] += lo <= true <= hi
-                a["err"] += (hi < H1_MARGIN) if true == H1_MARGIN else (boot_p(dd) < 0.05)
+                a["cover"] += lo <= w["true"] <= hi
+                a["err"] += (hi < H1_MARGIN) if check == "margin" else (boot_p(dd) < 0.05) if check == "zero" else 0
         res[kind] = {}
         for v, a in acc.items():
             n = max(a["n"], 1)
-            key = "h1_support" if kind.endswith("margin") else "reject"
-            res[kind][v] = {key: a["err"] / n, "cover": a["cover"] / n, "n": a["n"]}
+            res[kind][v] = {"check": check, "error": a["err"] / n, "cover": a["cover"] / n, "n": a["n"]}
             if verbose:
-                print(f"  {kind:<24} {v:<9} {'H1 falsely supported' if key == 'h1_support' else 'zero null rejected'}"
-                      f" {a['err'] / n:.4f}  coverage {a['cover'] / n:.3f}")
+                lab = {"margin": "H1 falsely supported", "zero": "zero null rejected", "cover": "(coverage only)"}[check]
+                print(f"  {kind:<24} {v:<9} {lab:<21} {a['err'] / n if check != 'cover' else float('nan'):.4f}"
+                      f"  coverage {a['cover'] / n:.3f}")
     return res
 
 
@@ -827,13 +908,13 @@ def _validate_goal_bootstrap(reps=500, iters=500):
     lab = {"x": {g: g < 75 for g in range(n)}, "y": {g: g < 75 for g in range(n)}}
     _, d = estimate_goal_bootstrap(["x", "y"], n, cells, lab, iters=2000)
     lo, hi = ci(d["x"] - d["y"])
-    r1 = lo < 0 < hi and boot_p(d["x"] - d["y"]) >= 0.05
+    r1 = lo <= 0 <= hi and boot_p(d["x"] - d["y"]) >= 0.05
     # 2. identical arms, identical PARTIAL labels (60 of 150 labelled, 30 positive): imputed rates are drawn
     # independently per arm, so the contrast is not exactly 0, but it must contain 0 and not be rejected
     lab = {"x": {g: g < 30 for g in range(60)}, "y": {g: g < 30 for g in range(60)}}
     _, d = estimate_goal_bootstrap(["x", "y"], n, cells, lab, iters=2000)
     lo, hi = ci(d["x"] - d["y"])
-    r2 = lo < 0 < hi and boot_p(d["x"] - d["y"]) >= 0.05
+    r2 = lo <= 0 <= hi and boot_p(d["x"] - d["y"]) >= 0.05
     # 3. external review's boundary case: known-zero arm vs 40 audited cells, all false -> not rejected
     cz = {"x": [("none", None)] * n, "y": [("audit", None)] * n}
     _, d = estimate_goal_bootstrap(["x", "y"], n, cz, {"y": {g: False for g in range(40)}}, per_arm_miss=True,
@@ -940,7 +1021,7 @@ def main():
         json.dump({s: {k: ({key(a): b for a, b in v.items()} if isinstance(v, dict) else v) for k, v in st.items()}
                    for s, st in cal.items()}, open("calibration.json", "w"), indent=1)
         print("wrote calibration.json (stylised four-arm scenarios, default method)\n\n"
-              "design-level calibration (real hypotheses and families; current method and the C5 method):")
+              "design-level calibration (real hypotheses and families; current method and the C6 method):")
         json.dump(calibrate_design(max(1, args.calibrate // 2), 1000), open("design_calibration.json", "w"), indent=1)
         print("wrote design_calibration.json\n\nstress configurations (own audits, outside the six-arm design):")
         json.dump(calibrate_stress(max(1, 3 * args.calibrate // 4), 1000), open("stress_calibration.json", "w"), indent=1)

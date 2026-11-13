@@ -421,6 +421,10 @@ exploratory AI labels, and *before* any of the agent labels used for the final e
 - The confirmatory reading is therefore limited to the final blind annotation, not to the choice of
   design.
 
+> **Withdrawn (C7).** No confirmatory reading survives. The inference procedure was later revised four
+> times (C3–C6), each time with the earlier real-data results known. All results in this study are
+> therefore **retrospective findings under an adaptively developed analysis**; see C7.
+
 **7. Labelling procedure as actually run** (supersedes the human split-labelling in
 `LABELING-PROTOCOL.md`, which now carries an operative section): both AI agents labelled *every* item
 independently; disagreements were discussed with each agent's reasons visible; anything unresolved
@@ -524,7 +528,8 @@ Verdicts under C4:
 
 - The annotator analyses now use one agent's blind labels for *every* arm. In C3 they used them only for
   the E1 arm. All verdicts match the reconciled ones, except H2 on B, which becomes significant under
-  either agent. *(Historical: under C5 and later methods, H2 on B is not significant under either agent.)*
+  either agent. *(Historical. Under C5, H2 on B was not significant under either agent; under C6 it was
+  significant under both. The result is method-sensitive across versions.)*
 - The per-arm miss analysis is now complemented by a deterministic least-favourable version: each arm's
   own audit at the end of its 95% Clopper–Pearson interval that most favours abliterated-plain. H1 on B
   fails under both versions. On A the point estimate stays at −0.12.
@@ -765,7 +770,10 @@ arm-specific audits. Power to support H1 when abliterated-plain truly equals pro
 5. **The selection chronology and its weaknesses were overstated.** Corrected in a note at the head of C5.
 6. **C4's verdicts were still headed "current".** They are now marked historical.
 
-**Verdicts under C6** (current; `RESULTS.md`):
+**Verdicts under C6:**
+
+> **Historical — superseded by C7.**
+
 
 - **H1:** supported on both targets.
   - A: −0.302 [−0.424, −0.162].
@@ -798,3 +806,131 @@ The verdicts that held under every version are:
 - E1-H5;
 - E1-H6 on A;
 - H4a and H4c.
+
+> **Qualified (C7).** Agreement across estimator versions is a sensitivity description. It is not
+> independent replication, and it does not restore error control, because every version analyses the same
+> observations and several had demonstrated defects. The results are retrospective; see C7 for the path to
+> a prospective confirmation.
+
+## C7 — fifth external review: cross-arm dependence and clustered audits; retrospective framing (2026-11-13)
+
+**Acceptance rule, recorded before the C7 calibration run and before any real-data result under the
+C7 method** (researcher-reported ordering).
+
+**The method** (`rate_draw="paired"`). It combines the two earlier constructions, each where it is valid:
+
+- **Strata with at least 5 positives and 5 negatives among their labels:** the rate is recomputed from
+  the labels in each goal resample. Labels travel with their goals, so dependence between arms' observed
+  outcomes is kept, whether positive or negative. This is where C6's independent draws failed: under
+  negative dependence they rejected a true zero difference 0.097 of the time.
+- **Sparser strata,** where that bootstrap degenerates: one draw per resample from the half-correction
+  binomial confidence distribution of the full-sample counts.
+  - The counts are shrunk to an effective size m² / Σ_g m_g², where m_g is the number of labelled cells of
+    the stratum on goal g. This treats cells on the same goal as perfectly correlated, which covers
+    clustering in the pooled audit.
+- **In both cases** the rate applies to the whole stratum, so each source of uncertainty enters once.
+
+The threshold of 5 is fixed here, before calibration.
+
+**The evaluation.** Only this method is evaluated for adoption; `twophase` (C6) is run for comparison.
+The calibration covers:
+
+- the C6 design suite;
+- the C6 stress suite;
+- new dependence configurations:
+  - complementary outcomes, at both the zero null and H1's boundary;
+  - negatively correlated outcomes with equal rates;
+  - a clustered pooled audit, dense and sparse.
+
+In every pooling-correct scenario the method must meet all of these:
+
+| check | limit |
+|---|---|
+| H1 falsely supported at its boundary | ≤ 0.035 |
+| a true zero null rejected (unadjusted, two-arm configurations) | ≤ 0.065 |
+| each true secondary null rejected after Holm | ≤ 0.065 |
+| familywise error per family | ≤ 0.065 |
+| E1-H5 rejected under equality | ≤ 0.065 |
+| coverage of every evaluated contrast or rate | ≥ 0.93 |
+
+If it fails, the failure is reported, and the inferential verdicts are withdrawn in favour of descriptive
+intervals.
+
+**Outcome of the C7 rule.** The run is in:
+
+- `calibration.json`;
+- `design_calibration.json` (1000 experiments per scenario);
+- `stress_calibration.json` (1500 per configuration).
+
+`paired` **passed every check** in every pooling-correct scenario, though narrowly in places:
+
+| check | result | limit |
+|---|---|---|
+| H1 falsely supported | 0.000–0.033 | ≤ 0.035 |
+| a zero null rejected | 0.002–0.055 | ≤ 0.065 |
+| familywise error per family | max 0.061 | ≤ 0.065 |
+| E1-H5 rejected | max 0.053 | ≤ 0.065 |
+| minimum coverage | 0.932 | ≥ 0.93 |
+
+In the new dependence configurations, C6's `twophase` would have failed: a zero null rejected 0.108 of
+the time under complementary outcomes, with coverage 0.889 and 0.881. When pooling is wrong, H1 on B is
+falsely supported 0.954 of the time. That is the disclosed limit.
+
+**What the fifth review found** (all six points held; both dependence counterexamples were reproduced):
+
+1. **Independent rate draws omitted the covariance between arms' labelled rates.** Under negative
+   dependence the C6 method rejected a true zero difference about 0.10 of the time and under-covered.
+   Fixed: strata with at least 5 positives and 5 negatives keep labels with their goals.
+2. **The pooled audit's goal clustering was ignored.** Fixed with the effective size m² / Σ_g m_g². On
+   the real data:
+   - A: 40 cells on 38 goals, effective size 36;
+   - B: 40 cells on 31 goals, effective size 26.
+3. **Cross-version stability does not restore confirmatory inference.** Accepted. All results are
+   retrospective; the C3 confirmatory sentence is withdrawn, and the C6 stability list is qualified.
+4. **"Every sensitivity analysis" was too broad.** It is replaced. Least-favourable calculations are point
+   values only and are not used as significance claims.
+5. **Two ASR endpoints were mis-rounded.** Tables are now rendered by `make_tables.py` from full
+   precision.
+6. **The C4 historical note was false for C6.** Corrected.
+
+**Verdicts under C7** (current; retrospective):
+
+- **H1:** supported on both targets.
+  - A: −0.302 [−0.424, −0.167].
+  - B: −0.097 [−0.172, −0.010], conditional on the pooled miss rate.
+- **H2:** A significant. B not (Holm 0.086).
+- **H3:** not significant on either target.
+- **H4:**
+  - H4a and H4c beat the floor on both targets.
+  - H4b: A significant (Holm 0.045), B not.
+- **E1-H5:** no detectable difference on B (+0.008 [−0.126, +0.139]); not significant on A.
+- **E1-H6:** A significant; B not (Holm 0.14).
+- **E1 floor:** A significant; B not (Holm 0.14).
+
+**Stable across every version:**
+
+- H1 on both targets (B under pooling);
+- H2 on A;
+- H3 (not significant);
+- H4a and H4c;
+- E1-H5 (no detectable difference);
+- E1-H6 on A.
+
+**Method-sensitive, not claimed:**
+
+- H2 on B;
+- the E1 floor on B;
+- H4b on A and B.
+
+**Path to a prospective confirmation.** This is proposed, not done. The StrongREJECT dataset has 313
+behaviours; this study used the first 150 after a `random.Random(0)` shuffle. The other 163 have never
+been collected, scored or labelled. A confirmation would proceed in this order:
+
+1. Freeze this procedure in a tagged commit **before** any collection on the held-out goals. That means
+   the C7 estimator, `SPARSE_MIN = 5`, the hypotheses, the Holm families, the H1 margin and the decision
+   rules.
+2. Exclude chemical/biological-harm goals by a rule stated in advance.
+3. Collect, score and label with the same procedure.
+4. Apply the frozen procedure once.
+
+Only results from that run would be confirmatory.
