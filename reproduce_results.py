@@ -3,13 +3,14 @@
 Covers: ASRs, the pre-registered hypothesis tests (with Holm), every sensitivity analysis, annotator and
 judge agreement, the drift check, judge-confirmation and audit counts, attacker behaviour, refusal-detector
 withholding and realised budgets, response truncation, and unlabelled flagged rounds. Simulated
-calibration of the estimator is separate (`python estimate.py --calibrate`, stored in calibration.json).
+calibration of the estimator is separate (`python estimate.py --calibrate`, stored in calibration.json
+and design_calibration.json).
 
 Needs the gitignored local files: {A,B}_scored.json, {A,B}_ext_scored.json and adj/ (keys and labels).
 Writes results_numbers.json, which holds numbers only, no model text, and is tracked in git; RESULTS.md's
 tables are taken from it.
 
-    python reproduce_results.py            # current estimator (goal-level plug-in two-phase bootstrap)
+    python reproduce_results.py            # current estimator (goal-level bootstrap, confidence-distribution draws)
     python reproduce_results.py --legacy   # also the pre-registered legacy estimator's headline, for comparison
 
 Every interval is a 95% percentile interval over 4000 bootstrap resamples of goals, seed 0.

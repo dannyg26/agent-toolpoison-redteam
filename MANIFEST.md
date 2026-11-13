@@ -32,9 +32,16 @@ files. What remains unrecorded is the main study's vLLM version and serving opti
 
 - **Inference:** vLLM 0.33.0 (E1), on a single RunPod A100, OpenAI-compatible API. The main study's
   vLLM version was not recorded.
-- **Attackers (main study):** temperature 0.7, max 300 tokens. No reasoning traces (`<think>`) appear in
-  any of the 2,250 recorded target-A attacks, consistent with `--disable-thinking`; the flag itself was
-  not logged.
+- **Attackers (main study):** temperature 0.7, max 300 tokens. **Thinking mode was not recorded and
+  cannot be inferred from the stored attacks.** `make_chat` strips completed `<think>…</think>` blocks
+  before an attack is stored, so their absence is no evidence.
+  - Of the 3,600 stored attacks from the four attacker arms, none contains an *unclosed* `<think>` block,
+    which would survive stripping (for example reasoning cut off at 300 tokens).
+  - One contains a stray closing `</think>`.
+
+  This is weak evidence at most. If reasoning was enabled, it used part of the 300-token budget, which
+  could affect the attacker comparison. (An earlier version of this file called the absence of traces
+  "consistent with `--disable-thinking`"; that inference is withdrawn.)
 - **Jailbreak-R1 (E1):** the authors' input format, `attackers/jailbreak_r1.json` (SHA-256
   `1c0f5b83669af0723c80bcee39335d1d24844089a3014aee05449a0100f85536`).
   - Prefill `<think> Sure, let's think step by step, `, sent via vLLM `continue_final_message`.

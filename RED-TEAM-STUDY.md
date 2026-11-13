@@ -8,7 +8,8 @@ attacker has to be *willing* to write attacks, and there are three common ways t
 2. **abliterate** it — a weight edit that removes the refusal direction (Arditi et al. 2024); or
 3. download a model **trained** for red-teaming (here Jailbreak-R1, arXiv:2506.00782).
 
-This study compares these attacker *configurations* against the same targets, goals and query budget.
+This study compares these attacker *configurations* against the same targets, goals and maximum
+attempt budget (realised target queries differ by arm; see `RESULTS.md`).
 It measures attack success and simple attacker behaviours (detected refusal, near-verbatim copying of
 the goal). It does **not** measure general capability, and it does not isolate "safety" from every
 other consequence of a particular weight edit or training run.
@@ -91,16 +92,20 @@ For these checkpoints, this prompt and this configuration (details and intervals
 
 - **Abliteration alone does not beat prompting alone by the pre-registered 5-point margin** (H1, both
   targets). This rules out an advantage of 5 points or more; it does not show there is none.
-  - On target A, prompting is significantly better (−0.30 [−0.42, −0.19]; H2 holds after Holm).
-  - On target B, −0.09 [−0.17, −0.007]; H2 is not significant after Holm.
-  - H1 on target B depends on the pooled miss-rate assumption and fails without it.
+  - On target A, prompting is significantly better (−0.30 [−0.44, −0.16]; H2 holds after Holm).
+  - On target B, −0.09 [−0.18, +0.005]; H2 is not significant after Holm.
+  - **H1 on target B depends on the pooled miss-rate assumption.**
+    - It fails with arm-specific miss rates.
+    - In simulation, if abliterated-plain's true miss rate were higher than the pooled one, H1 on B would
+      be falsely supported 88% of the time.
 - **The trained attacker shows no detectable difference from prompting** (E1-H5, primary on B): +0.01
-  [−0.12, +0.13]. Differences of about ±0.13 are not excluded. It beats abliteration alone on target A;
-  on B that is unresolved.
+  [−0.14, +0.16]. Differences of about ±0.15 are not excluded.
+  - It beats abliteration alone and the no-attacker floor on target A.
+  - On target B both are unresolved.
 - **Under a plain instruction, the abliterated checkpoint shows** fewer detected refusals and much more
   near-verbatim goal copying than the aligned one, with no detectable difference in attack success.
 - **Unresolved:** whether adding abliteration to a red-team prompt helps, and whether Jailbreak-R1 is
-  better or worse than prompting by less than about 0.13.
+  better or worse than prompting by less than about 0.15.
 
 ## Where it stands
 - ✅ Collection, both judges and the AI-agent labelling are complete for the five main arms and E1;
@@ -108,16 +113,17 @@ For these checkpoints, this prompt and this configuration (details and intervals
   the estimator's simulated calibration.
 - ✅ An analysis plan was frozen *after* collection and automated scoring, but *before* the agent
   labels used for the estimates (`ANALYSIS-PLAN.md`, including the chronology in C3).
-- ✅ Deviations (D1–D4) and corrections (C1–C4) are logged. Two external reviews led to the corrections:
+- ✅ Deviations (D1–D4) and corrections (C1–C5) are logged. Three external reviews led to the
+  corrections:
   - **C3** replaced an estimator whose contrasts were not paired.
   - **C4** replaced that estimator's Beta draws with a plug-in bootstrap, because they could flag a true
     zero difference. It also separated H1 from H2 and put H2 in the Holm family.
+  - **C5** replaced the plug-in bootstrap, which collapsed at 0/m strata, with confidence-distribution
+    draws. The method was chosen by a pre-stated rule from a calibration of the real hypotheses.
   - **Verdicts changed against the originally reported ones:**
     - H2 on target B (no longer significant after Holm);
-    - H4 for abliterated-plain (no longer beats the floor after Holm).
-
-    The E1 floor on B was non-significant under C3 and is significant again under C4, as originally
-    reported.
+    - H4 for abliterated-plain (no longer beats the floor after Holm);
+    - the E1 floor on target B (no longer significant after Holm).
 - ⏳ **Open, in priority order:**
   1. a blinded human validation sample of the AI labels (the main weakness);
   2. labelling every round in sampled cells, with full responses;

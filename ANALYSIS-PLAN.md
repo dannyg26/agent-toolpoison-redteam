@@ -79,6 +79,9 @@ the interval is reported for future work.
 Secondary and exploratory results are reported with intervals and labelled as such; no correction
 is applied to them.
 
+> **Historical (superseded in C3/C4).** Holm adjustment is now applied within each study's secondary
+> family on each target, H2 included; see C4, item 3.
+
 ## Checks that can change interpretation
 
 - **Miss-rate heterogeneity.** The miss rate is pooled across arms. Per-arm audit hits are reported;
@@ -141,6 +144,9 @@ Consequences:
   the two published judges agree at kappa 0.52–0.60, and HarmBench flags 82 cells that StrongREJECT
   does not.
 - Hypotheses, margin, estimator and decision rules are unchanged.
+
+> **Historical.** True when written (D2). The estimator was later replaced (C3, C4, C5), and Holm
+> adjustment was added (C3, C4). Hypotheses and the 5-point margin are still unchanged.
 - The remaining sheets (A2–A5, B1–B3) are labelled by the same two-agent procedure, with provenance
   recorded the same way.
 
@@ -391,6 +397,9 @@ possible error: false labels on abliterated-plain whose response was truncated o
 another flagged round. Under the corrected estimator the A headline is then −0.142 [−0.300, +0.022].
 H1 still holds; H2 on A does not survive this analysis.
 
+> **Note (C4, C5).** Under C4 this analysis gave H2 on A Holm 0.042, i.e. significant. Under the C5
+> estimator it is −0.142 [−0.294, +0.020], Holm 0.079: H2 on A again does not survive. H1 still holds.
+
 **5. Outcome definition.** Only one round per cell was labelled: the highest-scoring flagged round
 (candidates), or the highest-scoring round (audit). The estimated quantity is therefore the success rate
 of that *selected round*, a lower bound on "jailbroken within 3 rounds". Every arm's estimate is a
@@ -481,6 +490,10 @@ correlated across arms (`calibration.json`).
 The intervals are close to nominal, slightly liberal at worst, in the scenarios simulated. General
 calibration is not claimed.
 
+> **Superseded (C5).** "Slightly liberal" understated single-arm coverage of 0.910, which is 9% non-coverage
+> against a nominal 5%. These scenarios also did not test the real hypotheses, H1's margin or E1's audit.
+> The C4 method was replaced in C5 after failing the design-level calibration.
+
 **3. Hypotheses are now tested as hypotheses, not arm pairs** (`estimate.HYPOTHESES`, `test_hypotheses`).
 
 - **H1** is a one-sided margin test, with its own p-value for d ≥ +0.05.
@@ -543,3 +556,106 @@ item 5, RESULTS.md and RED-TEAM-STUDY.md.
   and 0.061–0.069 on B.
 - One correction to the descriptive record: StrongREJECT's judge-only Jailbreak-R1 contrast on target A
   is −0.18 on the 146 shared goals, not −0.15.
+
+## C5 — third external review: boundary-aware inference, design-level calibration (2026-11-13)
+
+**Selection rule, written before the full calibration run and before any real-data result under the
+candidate methods.** Three ways of varying imputed stratum rates across bootstrap resamples are
+compared:
+
+- `plugin`: the C4 method;
+- `cd`: a draw from the binomial confidence distribution around each resample's counts;
+- `cd_full`: the same draw around the full-sample counts.
+
+They are compared by `estimate.calibrate_design` (1000 experiments per scenario). That function runs the
+real hypotheses through `test_hypotheses`, with:
+
+- the real Holm families;
+- H1's margin;
+- E1's own 30-cell audit;
+- abliterated-plain set either exactly at H1's null boundary (+0.05) or equal to aligned-redteam;
+- Jailbreak-R1 equal to aligned-redteam.
+
+In every scenario where pooling is correct, the method used must meet all of these:
+
+| check | limit |
+|---|---|
+| H1 falsely supported at the boundary | ≤ 0.035 (nominal 0.025) |
+| H2 rejected under equality | ≤ 0.065 (nominal 0.05) |
+| E1-H5 rejected under equality | ≤ 0.065 (nominal 0.05) |
+| coverage of every hypothesis contrast | ≥ 0.93 |
+
+The slack allows about 2 Monte Carlo SE. If more than one method passes, the one with the narrowest H1
+interval is used. If none passes, formal verdicts are withheld and intervals are reported descriptively.
+
+**Outcome of the rule** (`design_calibration.json`, 1000 experiments per scenario; reproduced exactly
+by `estimate.py --calibrate`).
+
+| method | result | where it failed |
+|---|---|---|
+| `plugin` | fails | H2 rejected at 0.067 under equality (A); minimum coverage 0.928 |
+| `cd_full` | fails | H1 falsely supported 0.056–0.069; nulls rejected up to 0.15 |
+| **`cd`** | **passes** | — |
+
+For `cd` in the pooling-correct scenarios:
+
+| check | result |
+|---|---|
+| H1 falsely supported | 0.011–0.017 |
+| H2 rejected under equality | 0.032–0.043 |
+| E1-H5 rejected | 0.020–0.030 |
+| minimum contrast coverage | 0.947 |
+| ASR coverage | about 0.97 (somewhat conservative) |
+
+`cd` is now the default (`estimate.RATE_DRAW`). In the stylised four-arm scenarios (`calibration.json`)
+it gives:
+
+- contrast coverage 0.939–0.974;
+- twin-null rejections 0.026–0.056;
+- Holm familywise error 0.029–0.045.
+
+**What the third review found, and what changed:**
+
+1. **The C4 plug-in bootstrap collapsed at 0/m strata.** Two counterexamples were reproduced:
+   - *Margin boundary.* 40 audited cells, all false, against a known-zero arm gave [0, 0] and "H1
+     supported". With a true rate of 0.05 that happens with probability 0.95^40 = 0.13.
+   - *Equal outcomes, different screening.* Identical true outcomes were declared different, at
+     [−0.087, −0.020] with p = 0.
+
+   Under `cd` both are handled: H1 is not supported (upper bound 0.055), and the difference is not
+   rejected (p ≈ 0.08). Both are now permanent self-tests.
+2. **The C4 calibration did not calibrate the real hypotheses.** That is fixed by `calibrate_design`,
+   above.
+3. **The calibration exposes the pooled-miss limit.** It includes a scenario where abliterated-plain
+   reaches +0.05 through a higher miss rate. There, pooled H1 on B is falsely supported 88% of the time.
+   This quantifies the already-disclosed dependence of H1 on B on the pooled miss rate.
+4. **E1-H5 defaulted to primary when no target was given.** `test_hypotheses` now raises an error for E1
+   without an explicit target, and the CLI requires `--target` with `--extra-scored`.
+5. **The thinking-mode inference is withdrawn** (`MANIFEST.md`). Completed reasoning blocks are stripped
+   before storage, so their absence is no evidence.
+6. **Supersession notes were added** for:
+   - the original no-adjustment rule;
+   - the "estimator unchanged" statement in D2;
+   - C3 item 4.
+
+   RED-TEAM-STUDY.md now says "same maximum attempt budget".
+
+**Verdicts under C5** (current; `RESULTS.md`):
+
+- **H1:** supported on both targets.
+  - A: −0.305 [−0.436, −0.157].
+  - B: −0.091 [−0.180, +0.005], margin p 0.001, conditional on the pooled miss rate.
+- **H2:** A significant; B not (p 0.062, Holm 0.123).
+- **H3:** not significant on either target.
+- **H4:** aligned-redteam and abliterated-redteam beat the floor on both targets; abliterated-plain does
+  not (Holm 0.069 and 0.0705).
+- **E1-H5:** no detectable difference on B (+0.009 [−0.138, +0.156]); not significant on A.
+- **E1-H6:** A significant; B not (Holm 0.1495).
+- **E1 floor:** A significant. **On B, not significant: [−0.001, +0.270], Holm 0.103.** *Changed* from
+  C4 and from the original report.
+- **Restricted flip on A:** H2 does not survive (Holm 0.079). Under the annotator sensitivities, every
+  H1, H2 and E1 verdict matches the reconciled one.
+
+**Choice of method and the data.** The real-data results under the C4 method were known when the rule was
+written. The rule itself refers only to simulation, and it was written before any real-data result under
+the candidate methods was computed.

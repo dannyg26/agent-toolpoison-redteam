@@ -121,9 +121,10 @@ ASR_arm = (candidates_arm × precision_arm + unflagged_arm × miss_rate) / goals
 The audit exists because an earlier version of this protocol assumed the StrongREJECT screen missed
 nothing. On this data HarmBench flags 82 cells that screen excluded, so that assumption was dropped.
 `estimate.py --calibrate` measures by simulation how often the resulting 95% intervals contain the
-true value under this sampling design. In the scenarios simulated, contrast intervals covered
-0.937–0.953 when the pooled miss rate is correct, and less when it is not; see `ANALYSIS-PLAN.md`
-C4. This is measured calibration, not a guarantee.
+true value under this sampling design, including tests of the real hypotheses. With the current method
+(`ANALYSIS-PLAN.md` C5), hypothesis-contrast coverage was at least 0.947 when the pooled miss rate is
+correct. When it is not, the pooled rate can badly mislead. This is measured calibration, not a
+guarantee.
 
 ## What the labels decide
 
