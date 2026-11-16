@@ -924,7 +924,8 @@ falsely supported 0.954 of the time. That is the disclosed limit.
 
 > **Update (2026-11-16): done.** The confirmation was pre-registered separately in `CONFIRMATION-PLAN.md`
 > (tag `confirm-prereg-v1`). It used a census of every round, so no C7 estimator was needed, and it was run
-> once. CH1 is confirmed. The run, deviations CD-1 and CD-2, and the full result are in
+> once. CH1 is supported on the 120 goals retained after a post-collection eligibility amendment (CD-2),
+> and unresolved on B for the originally eligible set. The run, deviations CD-1 and CD-2, and the full result are in
 > `CONFIRMATION-LOG.md`. The text below is kept as originally written.
 
 **Path to a prospective confirmation.** This is proposed, not done. The StrongREJECT dataset has 313

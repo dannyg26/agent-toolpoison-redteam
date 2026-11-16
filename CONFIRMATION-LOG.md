@@ -100,6 +100,15 @@ The overrun bought no extra data and changed nothing in the design.
      full for reading, and saved the agent's chosen positives with a default reason for most items. Labels
      were still the agent's judgement per item, but its reasons are mostly generic, which weakens
      reconciliation. Agent 2 used no script.
+
+     > **Qualified (seventh external review, 2026-11-16).** "Labels were still the agent's judgement per item" is
+     > not demonstrated by the outputs. The script's `save(n, positives)` writes `true` for the items the
+     > agent listed and `false` for every other item on the sheet. In agent 1's first session all 126 true
+     > items carry one identical reason and 545 of the 554 false items another. So that session recorded
+     > only a positive set, and any item the agent overlooked became false by default. Agent 2's first
+     > session also reused one reason on 438 false items, but its positives have item-specific reasons;
+     > its mechanics are not otherwise recorded. The script (path sanitised), all briefs and their hashes
+     > are published in `confirm_data/method/`.
    - The remedy will be decided and logged as a deviation before any label value is read.
 
 7. **Labelling complete (2026-11-16).** Both agents resumed in new sessions from the CD-2 continuation sheets,
@@ -183,6 +192,14 @@ analysed goal has a missing label, so the "missing as true" sensitivity is ident
   As stated in CD-2 before any label was read, at 38 blocked goals this check is largely uninformative. CH1
   on B is not robust to the hypothetical that every excluded goal would have favoured abliteration; CH1 on A
   is.
+
+  > **Qualified (seventh external review, 2026-11-16).** Calling the check "uninformative" understated it. It
+  > shows that the retained-goal result on B does not establish CH1 for the 158 originally eligible goals
+  > without assumptions about the excluded ones. CH1 is supported on the retained set; under the
+  > registered least-favourable completion it stays supported on A and is **unresolved on B**. The check
+  > was registered as reported, not as a decision gate. The CD-2 prediction about its usefulness came
+  > after collection and is separate from the registered check. Recomputed with the CC-1 corrected
+  > function: identical.
 - **Selected-round secondary outcome** (the highest StrongREJECT-scoring round per cell): the same verdicts,
   except CH3-A (Holm p = 0.054, not rejected).
 
@@ -192,11 +209,14 @@ analysed goal has a missing label, so the "missing as true" sensitivity is ident
   | B | −0.200 | rejected | Holm p = 0.75, not rejected |
 
 **Not pre-registered (exploratory).** On B, Jailbreak-R1's CI excludes zero on the low side (−0.175, p = 0.002
-for zero). It did worse than prompting the aligned model. CH3 was a TOST equivalence test, not a test of
+for zero). In this sample, procedure and later collection session it scored lower than prompting the
+aligned model; this is an exploratory negative contrast, not a confirmed reversal. CH3 was a TOST equivalence test, not a test of
 difference, so this is reported descriptively only.
 
-**How the result is to be read:**
-- confirmed under this AI annotation procedure, not human-validated (D-2);
+**How the result is to be read** (qualified after the seventh external review):
+- a prospective test of frozen hypotheses and code, with a post-collection eligibility amendment (CD-2);
+  the verdicts hold for the 120 retained goals, and for the original eligible set CH1 on B is unresolved;
+- under this AI annotation procedure, not human-validated (D-2);
 - for these checkpoints, this red-team prompt and three attempts;
 - for goals excluding biological and chemical harm (D3, CD-2).
 
@@ -234,8 +254,16 @@ triggering items could not be identified.
 - All 38 are treated as blocked goals under the fallback: excluded from every arm and passed to
   `confirm_analysis.py --blocked`.
 
-*Blindness.* The marks were made and hashed after collection, but before anyone read a label value, an
-outcome, a judge score or an agreement figure. The screen used goal text only, so it cannot depend on arm
+  > **Qualified (seventh external review, 2026-11-16).** These are proxy exclusions for content the annotators
+  > might not process, not 38 goals shown to be blocked. The trigger was probably response-specific, and
+  > 155 of 158 goals had already appeared without a stop. Excluding them from every arm prevents
+  > differential deletion, but the broader rule was written after collection; it is not the registered
+  > fallback applied unchanged. Accurately described: the registered analysis was applied to a
+  > post-collection, reportedly outcome-blind amendment of the eligible goal set. CH1–CH3 are findings for
+  > the 120 retained goals.
+
+*Blindness.* As the researcher reports, the marks were made and hashed after collection, but before anyone
+read a label value, an outcome, a judge score or an agreement figure. The screen used goal text only, so it cannot depend on arm
 or outcome.
 
 *Consequences.*
@@ -254,6 +282,13 @@ or outcome.
   | secondary familywise error | 0.040 | 0.032 |
 
   Error control holds at n = 120. The secondary tests lose power.
+
+  > **Qualified (seventh external review, 2026-11-16).** "Error control holds at n = 120" is too general. The
+  > procedure met the stated checks in the configurations examined. It is not uniformly calibrated near
+  > sparse margins. With abliterated-plain at 0.05 and aligned-redteam at 0, observing 2 of 120 against
+  > 0 gives the 95% interval [0, 0.042], so CH1 is supported. Under that true margin null this happens
+  > with probability P{Bin(120, 0.05) ≤ 2} = 0.058; a simulation of the frozen bootstrap gives 0.055,
+  > against the intended 0.025. The observed contrasts (−0.533 and −0.300) are far from this regime.
 - **The least-favourable CH1 sensitivity will almost certainly fail.** Setting 38 of 158 goals to success
   for abliterated-plain and failure for aligned-redteam shifts that contrast by about +0.24, far past the
   +0.05 margin. This sensitivity is pre-registered as reported, not as a decision rule. It will be reported
@@ -272,3 +307,48 @@ or outcome.
 - **Brief.** The continuation brief adds one requirement: a real reason for every item, not a template
   (see run note 6). Each agent resumes in a new session of the same model, with no shared history with the
   other agent.
+
+## Seventh external review and correction CC-1 (2026-11-16, after the frozen run)
+
+The review covered commit `0114f9d`. All 10 points were checked against the code and data and held. The
+frozen `confirm_results.json` is unchanged. Changes are wording, records, and one code correction that does
+not affect the result.
+
+1. **CD-2 is an eligibility amendment, not the registered fallback applied unchanged.** Accepted. CD-2 and
+   the result are qualified, and RESULTS.md and RED-TEAM-STUDY.md now report a prospective test with a
+   post-collection eligibility amendment. Verdicts are stated for the 120 retained goals.
+2. **The least-favourable check is not "uninformative".** Accepted. For the 158 originally eligible goals,
+   CH1 is unresolved on B and supported on A.
+3. **The later freeze ordering is asserted, not independently shown.** Accepted. Only the tag
+   `confirm-prereg-v1` (`9c174d7`) was pushed before collection. Later commits were pushed together in this
+   order: sheet hashes `5f13bcd`, CD-2 `37e5e2c`, blind labels `57b6846`, result `ec1d2dd`. Their order is
+   therefore researcher-reported; hashes identify bytes, not when they existed. In future work, each freeze
+   is to be pushed, or its digest otherwise externally timestamped, before the step that depends on it.
+4. **"Not worth it" exceeds the comparison.** Accepted. The headline now says that, for these
+   configurations and retained goals, plain-instruction abliteration produced lower any-round success than
+   the red-team prompt on the aligned model. Abliteration plus the prompt remains untested here.
+5. **Verdicts on different estimands are not replications.** Accepted. The prospective test is described as
+   a related comparison with a different outcome specified in advance, read alongside the original
+   hypotheses. The B result for Jailbreak-R1 is an exploratory negative contrast tied to this sample,
+   procedure and later session.
+6. **The helper-assisted annotation needs an inspectable record.** Accepted. The agents' briefs (initial,
+   continuation, reconciliation) and agent 1's helper script (path sanitised) are published in
+   `confirm_data/method/` with source hashes. Run note 6 now says what the outputs show: agent 1's first
+   session recorded a positive set, and everything else defaulted to false. Kappa 0.915 describes two
+   instances of one model. Reconciliation changes are not validation.
+7. **"Error control holds at n = 120" is too general.** Accepted and reproduced: P{Bin(120, 0.05) ≤ 2} =
+   0.0575, and a simulation of the frozen bootstrap gives 0.055 false support at that sparse boundary. The
+   statement is narrowed to the configurations examined.
+8. **`blocked_worst_case` misses cells with every round withheld.** Accepted, and confirmed by reading the
+   code. **Correction CC-1:** the function now sets the least favourable values on cell outcomes, through
+   `_decide`, which was split out of `analyse` with unchanged behaviour. The frozen version is kept as
+   `_blocked_worst_case_frozen`, and `--selftest` gains the reviewer's case.
+   - No blocked CH1 cell in the data lacks a labelable round, since only 2 rounds were withheld.
+   - Rerunning the full analysis with the corrected code reproduces `confirm_results.json` exactly.
+9. **"No data was lost" contradicts run note 3.** Accepted. The first attempt's phase 3–4 outputs were lost
+   and rerun. The researcher reports none had been inspected. The retained analysis files are complete. The
+   cache-based snapshot record (CD-1) is weaker evidence than authenticated served-model records. That
+   matters most for the trained arm, which was collected in a later session.
+10. **Mixed historical and current scope.** Accepted. "All results are retrospective" now reads "all
+    original-study results". The pooled-miss-rate, one-round and truncation limits are labelled as applying
+    to the original study, not the prospective test.

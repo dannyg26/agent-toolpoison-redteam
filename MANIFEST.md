@@ -82,11 +82,15 @@ files. What remains unrecorded is the main study's vLLM version and serving opti
 - **Software.** vLLM 0.33.0, torch 2.14.0, transformers 5.20.2 (`confirm_data/pip_versions.txt`).
   - Collection ran on an A100 80GB PCIe.
   - Scoring ran on an A100 SXM 80GB.
-- **Records committed in `confirm_data/`.** These hold hashes and goal indices only:
-  - the sheet hashes, before labelling;
+- **Records committed in `confirm_data/`.** These hold hashes, goal indices and method text only:
+  - the sheet hashes, committed locally before labelling;
   - the continuation sheet hashes;
   - the blind- and final-label hashes;
-  - the analysis inputs.
+  - the analysis inputs;
+  - `method/`: the annotators' briefs and agent 1's helper script, with source hashes.
+
+  Only the tag was pushed before collection. The later commits were pushed together afterwards, so their
+  order is researcher-reported, not externally timestamped.
 - **Result.** `confirm_results.json`.
 - **Local and gitignored.** These contain model-generated harmful text and are not distributed:
   - `confirm_data/{A,B}_conf{,_ext}_{raw,scored}.json`;

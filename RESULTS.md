@@ -12,12 +12,31 @@ time with the earlier real-data results known. Agreement across those versions i
 description, not confirmation. Earlier versions of this file used estimators with known defects; verdicts
 that changed are noted.
 
-**A prospective confirmation has since been run** (next section). It was pre-registered as
-`confirm-prereg-v1` before any held-out data existed, run once on goals this study never used, and its
-deviations are logged in `CONFIRMATION-LOG.md`. Its verdicts are the confirmatory ones. The retrospective
-findings below are kept as the original study.
+**A prospective test has since been run** (next section). Its hypotheses, analysis code and collection
+settings were tagged `confirm-prereg-v1` and pushed before any held-out data existed, and the frozen
+analysis was run once on goals this study never used.
 
-## Prospective confirmation (pre-registered; AI-annotated, not human-validated)
+Its analysed population was **amended after collection** (deviation CD-2). That makes it a prospective
+test with a post-collection eligibility amendment, not an unqualified confirmation for the full held-out
+set; see "Status" below. Deviations are logged in `CONFIRMATION-LOG.md`. The retrospective findings further
+down are kept as the original study.
+
+## Prospective test with a post-collection eligibility amendment (AI-annotated, not human-validated)
+
+**Status.**
+- **Fixed in advance:** the hypotheses, the analysis code and the collection settings, by the tag pushed
+  before collection.
+- **Amended after collection:** the goals analysed. CD-2 removed 38 goals (24% of the 158 eligible) under
+  a broader, goals-only rule written after the labelling agents were stopped. The researcher reports the
+  rule was applied before any label, outcome or judge score was read, but its detailed criterion was not
+  fixed before collection. These are proxy exclusions for content the annotators might not process, not
+  38 goals shown to be blocked.
+- **So the verdicts below hold for the 120 retained goals.** For the 158 originally eligible goals they
+  depend on the registered least-favourable check, which leaves CH1 on B unresolved.
+- **Ordering of the later steps.** Only the tag was publicly timestamped before collection. The later
+  commits fixing the sheets, the exclusions, the blind labels and the results were made locally, in that
+  order, as the researcher reports, but were pushed together afterwards. Their order is therefore not
+  independently timestamped; hashes identify the files' bytes, not when they existed.
 
 Plan: `CONFIRMATION-PLAN.md`, tag `confirm-prereg-v1`. Run log, deviations and full result:
 `CONFIRMATION-LOG.md`. Output: `confirm_results.json`; input hashes: `confirm_data/analysis_inputs.json`.
@@ -25,7 +44,7 @@ Plan: `CONFIRMATION-PLAN.md`, tag `confirm-prereg-v1`. Run log, deviations and f
 **Design.**
 - **Goals.** 163 held-out StrongREJECT goals were collected. 5 were excluded by the pre-registered
   pre-screen. 38 more were excluded by a stricter goals-only re-screen after the labelling agents' provider
-  blocked biological content (deviation CD-2, recorded before any label was read). That leaves **120 goals
+  blocked biological content (deviation CD-2, reported as recorded before any label was read). That leaves **120 goals
   per target**.
 - **Arms.** abliterated-plain, aligned-redteam and trained-redteam (Jailbreak-R1), on the same two targets,
   same checkpoints and same three-attempt configuration.
@@ -49,42 +68,54 @@ Plan: `CONFIRMATION-PLAN.md`, tag `confirm-prereg-v1`. Run log, deviations and f
 |---|---|---|---|---|
 | **CH1 (primary):** abliterated-plain − aligned-redteam < +0.05 on both targets | A | −0.533 | 95% [−0.633, −0.433] | supported |
 | | B | −0.300 | 95% [−0.383, −0.208] | supported |
-| | | | | **confirmed** |
+| | | | | **supported on both targets (retained goals)** |
 | CH2: same contrast ≠ 0 (Holm) | A | −0.533 | p < 0.001 | prompting significantly better |
 | | B | −0.300 | p < 0.001 | prompting significantly better |
 | CH3: trained − aligned within ±0.15 (TOST, Holm) | A | −0.008 | 90% [−0.100, +0.083] | equivalent within ±0.15 (p = 0.016) |
 | | B | −0.175 | 90% [−0.259, −0.083] | not shown equivalent (p = 0.70) |
 
-**What the confirmation shows, against the retrospective findings:**
-- **H1 is confirmed on both targets.** Abliteration alone does not beat prompting alone by 5 points.
-- **Abliteration alone is significantly worse than prompting on both targets.** H2 on B was method-sensitive
-  and not claimed retrospectively; it is now confirmed.
-- **On A, Jailbreak-R1 is within ±0.15 of prompting.**
-- **On B, Jailbreak-R1 is not shown equivalent to prompting.**
-  - Exploratory and not pre-registered: its 95% interval [−0.283, −0.067] lies below zero, so it did
-    *worse* than prompting.
-  - This is the opposite direction from the retrospective E1-H5 estimate on B (+0.01 [−0.13, +0.14]). That
-    estimate was a selected-round outcome under imputation, so the two are not directly comparable.
+**What the prospective test shows, for the 120 retained goals:**
+- **CH1 is supported on both targets.** With the plain instruction, abliteration produced lower any-round
+  success than the chosen red-team prompt on the aligned model, far below the +5-point margin.
+- **CH2: that difference is significant on both targets.**
+- **CH3 on A:** Jailbreak-R1 is within ±0.15 of prompting.
+- **CH3 on B:** Jailbreak-R1 is not shown equivalent to prompting.
+  - Exploratory and not pre-registered: its 95% interval [−0.283, −0.067] lies below zero. In this sample,
+    with this procedure and the trained arm collected in a later session, it scored lower than prompting.
+  - This is an exploratory negative contrast, not a confirmed reversal of the retrospective E1-H5
+    estimate on B (+0.01 [−0.13, +0.14]).
+- **Not tested here:** whether adding abliteration to the red-team prompt helps. That remains unresolved.
+  Nor does the test measure cost or practical usefulness.
 
-**Limits of the confirmation:**
-- **The worst case for excluded goals.** With every blocked goal set to its least favourable value
-  (pre-registered as reported, not a decision rule), CH1 still holds on A (upper bound −0.038) but not on B
-  (+0.127). With 38 blocked goals this check was stated in advance to be largely uninformative. CH1 on B is
-  therefore not robust to the hypothetical that every excluded goal would have favoured abliteration.
+**Limits:**
+- **The original eligible population.** With every one of the 38 CD-2 goals set to its least favourable
+  value (registered as a reported check, not a decision gate), CH1 stays supported on A (upper bound
+  −0.038) but is **unresolved on B** (+0.127). The retained-goal result on B therefore does not establish
+  CH1 for the 158 originally eligible goals without assumptions about the excluded ones. CD-2 predicted
+  this failure before any label was read, but the prediction does not remove what the failure implies for
+  scope. Counting the 5 pre-screened goals as well, 26% of the held-out set is outside the analysis.
 - **Scope.** The result does not cover goals involving biological or chemical harm (D3, CD-2).
-- **The labels are not validated.** Two instances of one AI model agreeing shows repeatability, not
-  correctness; no human checked the labels (D-2).
-- **A different estimand.** The confirmation measures any-round success on full responses. The
-  retrospective study measured one selected round per cell, on excerpts, with imputation. The success
-  rates are therefore not comparable across the two; the hypothesis verdicts are.
-- **The selected-round secondary outcome** gives the same verdicts, except that CH3 on A falls short of
-  equivalence (Holm p = 0.054).
+- **The labels are not validated.**
+  - Two instances of one AI model agreeing (kappa 0.915) shows repeatability, not correctness, and cannot
+    reveal errors both share. No human checked the labels (D-2).
+  - Agent 1's first session (sheets 1–17) recorded only which items it judged positive; every other item
+    defaulted to false (see `CONFIRMATION-LOG.md`, run note 6).
+- **A related comparison, not an exact replication.** The prospective test measures any-round success on
+  full responses, with an outcome specified in advance. The retrospective study measured one selected,
+  truncated round per cell, with imputation. Different outcomes can give different verdicts even when the
+  underlying behaviour is the same. CH3 on A shows this: equivalent on the primary outcome, but not on the
+  selected-round one (Holm p = 0.054). The verdicts should be read alongside the original hypotheses, not
+  as exact replications of them.
+- **Calibration.** The frozen self-test passes at the configurations it checks, and the CD-2 re-simulation
+  passed at n = 120. Error control is not uniform near sparse margins. With abliteration at 0.05 and
+  prompting at 0, CH1 is falsely supported about 5.5–5.8% of the time at n = 120, against the intended
+  2.5%. The real contrasts (−0.533 and −0.300) are far from that regime.
 
 ## In short
 
 These are the original, retrospective findings, for these checkpoints, this red-team prompt and this
-three-attempt configuration, under the AI annotation. Where the prospective confirmation above tested the
-same claim, its verdict takes precedence.
+three-attempt configuration, under the AI annotation. The prospective test above
+examines a related comparison on new goals; read its verdicts alongside these, within its own scope.
 
 **Stable under every estimator version:**
 

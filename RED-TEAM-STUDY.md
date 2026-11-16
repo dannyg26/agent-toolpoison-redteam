@@ -88,29 +88,38 @@ labels and imputation, though, so they are not a guaranteed lower bound on it.
 
 ## Answer (AI-annotated, not human-validated)
 
-**Prospective confirmation** (pre-registered `confirm-prereg-v1`, run once on 120 held-out goals per target;
-`RESULTS.md`, `CONFIRMATION-LOG.md`):
+**Prospective test** (hypotheses, code and settings tagged `confirm-prereg-v1` before collection; run once).
+The analysed goals were amended after collection (CD-2), so the findings below hold for the **120 retained
+goals per target** (`RESULTS.md`, `CONFIRMATION-LOG.md`):
 
-- **Abliterating the attacker is not worth it here.**
-  - **CH1, confirmed:** abliteration alone does not beat prompting an aligned model by the 5-point margin,
-    on either target.
-  - **CH2:** prompting is significantly better.
+- **With the plain instruction, the abliterated attacker succeeded less often than the aligned model given
+  the red-team prompt.**
+  - **CH1:** abliteration alone does not beat prompting by the 5-point margin; supported on both targets.
+  - **CH2:** prompting is significantly better on both targets.
   - Success within 3 attempts:
 
     | target | abliterated alone | prompted aligned model | difference (95% CI) |
     |---|---|---|---|
     | A | 0.15 | 0.68 | −0.53 [−0.63, −0.43] |
     | B | 0.05 | 0.35 | −0.30 [−0.38, −0.21] |
+  - This does not test whether adding abliteration to the red-team prompt helps, which is still unresolved,
+    and it measures no costs.
 - **Jailbreak-R1, the trained red-team attacker:**
   - **On A**, within ±0.15 of prompting (−0.01).
-  - **On B**, not shown equivalent (−0.18). Exploratory: there it did worse than prompting.
+  - **On B**, not shown equivalent (−0.18). Exploratory: in this sample it scored lower than prompting.
+    This is not a confirmed reversal of the retrospective estimate.
 - **Caveats:**
-  - With every excluded goal set to its least favourable value, CH1 holds on A but not on B.
-  - Goals involving biological or chemical harm are excluded.
-  - The labels come from two AI agents (kappa 0.92), not from humans.
+  - **Original population.** For the 158 originally eligible goals, setting the 38 CD-2 goals to their
+    least favourable values keeps CH1 on A but leaves it **unresolved on B**.
+  - **Scope.** Goals involving biological or chemical harm are excluded.
+  - **Labels.** They come from two instances of one AI model (kappa 0.92), not from humans. Agent 1's
+    first session recorded only its positives, with everything else defaulting to false.
+  - **Ordering.** Only the pre-registration was publicly timestamped before collection. The order of the
+    later freezes is as the researcher reports it.
 
 **Original retrospective findings,** for these checkpoints, this prompt and this configuration (details and
-intervals in `RESULTS.md`). Where the confirmation tested the same claim, it takes precedence:
+intervals in `RESULTS.md`). The prospective test examines a related comparison with a different outcome; read the two
+alongside each other:
 
 - **Abliteration alone does not beat prompting alone by the pre-registered 5-point margin** (H1, both
   targets). This rules out an advantage of 5 points or more; it does not show there is none.
@@ -150,21 +159,27 @@ intervals in `RESULTS.md`). Where the confirmation tested the same claim, it tak
   - **C7** kept labels with their goals in well-populated strata, which preserves cross-arm dependence,
     and adjusted sparse pooled audits for goal clustering. It was adopted under a rule recorded before its
     calibration.
-  - **All results are retrospective,** because the inference was revised five times with earlier results
-    known.
+  - **All original-study results are retrospective,** because the inference was revised five times with
+    earlier results known.
   - **Method-sensitive results:** H2 on target B, the E1 floor on target B and H4b changed verdict across
     versions, so none is claimed.
   - **Verdicts changed against the originally reported ones:**
     - H2 on target B, the E1 floor on target B, and abliterated-plain against the floor (H4b): all now
       method-sensitive, not claimed.
-- ✅ **Prospective confirmation, done (2026-11-16).** It was pre-registered as `confirm-prereg-v1` before any
-  held-out data existed. It used 163 held-out goals, 120 of them analysed, with a census of every round in
-  full responses, and the frozen analysis was run once. CH1 is confirmed.
+- ✅ **Prospective test, done (2026-11-16).** Its hypotheses, code and settings were tagged
+  `confirm-prereg-v1` and pushed before any held-out data existed. It used 163 held-out goals, 120 of them
+  analysed after a post-collection eligibility amendment. Every round was labelled, in full responses, and
+  the frozen analysis was run once. CH1 is supported on the retained goals; for the originally eligible
+  goals it is unresolved on B.
   - **Deviations** (`CONFIRMATION-LOG.md`):
     - CD-1: model snapshots were recorded from the download cache.
-    - CD-2: 38 further goals were excluded by a goals-only re-screen, after the labelling provider blocked
-      biological content. This was recorded before any label was read.
-  - Two pods were also lost to an exhausted GPU balance, with no data lost.
+    - CD-2: 38 further goals were excluded by a goals-only re-screen written after the labelling provider
+      blocked biological content. The researcher reports it was recorded before any label was read.
+  - **Correction CC-1:** after the run, the seventh external review found that the blocked-goal
+    sensitivity mishandled cells with every round withheld. No real cell is affected and the result is
+    unchanged.
+  - **Lost pods.** Two pods were lost to an exhausted GPU balance. The first attempt's phase 3–4 outputs
+    were lost and rerun; the researcher reports none of it had been inspected.
 - ⏳ **Open, in priority order:**
   1. a blinded human validation sample of the AI labels: still the main weakness, now for both the
      original study and the confirmation;

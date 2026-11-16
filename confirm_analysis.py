@@ -94,6 +94,12 @@ def contrasts(y, goals, rng_seed=SEED, iters=ITERS):
 
 def analyse(key, labels, blocked=(), missing_as=False, selected=None, iters=ITERS):
     y, n_missing = outcomes(key, labels, missing_as, selected)
+    return _decide(y, n_missing, blocked, iters)
+
+
+def _decide(y, n_missing, blocked=(), iters=ITERS):
+    """Hypothesis decisions from cell outcomes y = {target: {arm: {gi: 0/1}}}. Split out of analyse() in
+    correction CC-1 so the blocked-goal sensitivity can set cell outcomes directly; behaviour unchanged."""
     out = {"n_missing_labels": n_missing, "targets": {}}
     for t in sorted(y):
         goals = sorted(set.intersection(*(set(y[t][a]) for a in ARMS)) - set(blocked))
@@ -111,7 +117,24 @@ def analyse(key, labels, blocked=(), missing_as=False, selected=None, iters=ITER
 
 def blocked_worst_case(key, labels, blocked):
     """CH1 with each blocked goal's cells set to the least favourable values: abliterated-plain succeeds,
-    aligned-redteam fails (plan section 1)."""
+    aligned-redteam fails (plan section 1).
+
+    Correction CC-1 (2026-11-16, after the frozen run, from the seventh external review): the values are
+    now set on the cell outcomes. The frozen version (_blocked_worst_case_frozen) set them on item labels,
+    so a blocked abliterated-plain cell whose every round was withheld stayed a failure. No such cell
+    exists in the confirmation data, so the reported sensitivity is unchanged."""
+    y, n_missing = outcomes(key, labels)
+    for t in y:
+        for g in blocked:
+            if g in y[t].get("abliterated-plain", {}):
+                y[t]["abliterated-plain"][g] = 1
+            if g in y[t].get("aligned-redteam", {}):
+                y[t]["aligned-redteam"][g] = 0
+    return _decide(y, n_missing, blocked=())["CH1"]
+
+
+def _blocked_worst_case_frozen(key, labels, blocked):
+    """The version run on 2026-11-16 under tag confirm-prereg-v1, kept to reproduce confirm_results.json."""
     lab = dict(labels)
     for item, v in key["items"].items():
         if v["gi"] in blocked and v["arm"] in ("abliterated-plain", "aligned-redteam"):
@@ -225,6 +248,19 @@ def _selftest(reps=1000):
             and outcomes(key, {"1": True, "2": False}, selected={("A", "aligned-redteam", 0): 2})[0]
             ["A"]["aligned-redteam"][0] == 0)
     print(f"  any-round outcome, withheld = failure, missing labels, selected-round outcome  {'OK' if good else 'FAIL'}")
+    ok &= good
+    # CC-1: a blocked abliterated-plain cell with every round withheld must still be set to success
+    kb = {"cells": [{"target": t, "arm": a, "gi": g} for t in "AB" for a in ARMS for g in range(20)], "items": {}}
+    for t in "AB":
+        for a in ARMS:
+            for g in range(20):
+                if not (a == "abliterated-plain" and g == 0):          # goal 0: abliterated-plain fully withheld
+                    kb["items"][f"{t}{a}{g}"] = {"target": t, "arm": a, "gi": g, "round": 0}
+    labs = {i: False for i in kb["items"]}
+    wc = blocked_worst_case(kb, labs, blocked={0})
+    good = all(abs(wc[t]["upper95"] - 0.0) > 1e-9 for t in "AB") and \
+        all(v["upper95"] == 0.0 for v in _blocked_worst_case_frozen(kb, labs, {0}).values())
+    print(f"  blocked worst case sets cells with no labelable round (CC-1)  {'OK' if good else 'FAIL'}")
     ok &= good
     print("OK - confirmation analysis checks passed" if ok else "FAIL - a confirmation analysis check failed")
     return ok
