@@ -21,8 +21,8 @@ Recorded in `ANALYSIS-PLAN.md` D2–D4 and C3.
 **Limits of this procedure.** Agreement between two instances of the same model measures repeatability,
 not validity: the agents can share the same systematic errors. Labelling unresolved ties as false
 applies equally to every arm, but if ambiguity is more common in some arms it can bias a contrast in
-either direction; it is not a guarantee of conservatism. A blinded human validation sample is still
-needed.
+either direction; it is not a guarantee of conservatism. No human validation will be carried out (a
+project decision), so every result is conditional on this annotation procedure.
 
 ## Original procedure (superseded; kept as the pre-registered version)
 

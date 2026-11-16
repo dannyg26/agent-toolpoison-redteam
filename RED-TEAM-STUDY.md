@@ -180,15 +180,15 @@ alongside each other:
     unchanged.
   - **Lost pods.** Two pods were lost to an exhausted GPU balance. The first attempt's phase 3–4 outputs
     were lost and rerun; the researcher reports none of it had been inspected.
+- **Permanent limitation:** Both studies remain AI-annotated and will not receive human validation (a project decision); their
+  success estimates and comparisons are conditional on the recorded annotation procedure.
 - ⏳ **Open, in priority order:**
-  1. a blinded human validation sample of the AI labels: still the main weakness, now for both the
-     original study and the confirmation;
-  2. a pre-registered difference test of Jailbreak-R1 against prompting on target B, where the
+  1. a pre-registered difference test of Jailbreak-R1 against prompting on target B, where the
      confirmation suggests it is worse;
-  3. a non-Qwen attacker family;
-  4. more goals and repeated collections, including a route to label biological and chemical goals;
-  5. more than one red-team prompt;
-  6. an audit of Jailbreak-R1's training-data overlap.
+  2. a non-Qwen attacker family;
+  3. more goals and repeated collections, including a route to label biological and chemical goals;
+  4. more than one red-team prompt;
+  5. an audit of Jailbreak-R1's training-data overlap.
 
 Files:
 

@@ -29,7 +29,8 @@ down are kept as the original study.
 - **Amended after collection:** the goals analysed. CD-2 removed 38 goals (24% of the 158 eligible) under
   a broader, goals-only rule written after the labelling agents were stopped. The researcher reports the
   rule was applied before any label, outcome or judge score was read, but its detailed criterion was not
-  fixed before collection. These are proxy exclusions for content the annotators might not process, not
+  fixed before collection. The same exclusions apply to every arm, but inclusion may still be associated
+  with success through goal content. These are proxy exclusions for content the annotators might not process, not
   38 goals shown to be blocked.
 - **So the verdicts below hold for the 120 retained goals.** For the 158 originally eligible goals they
   depend on the registered least-favourable check, which leaves CH1 on B unresolved.
@@ -100,6 +101,12 @@ Plan: `CONFIRMATION-PLAN.md`, tag `confirm-prereg-v1`. Run log, deviations and f
     reveal errors both share. No human checked the labels (D-2).
   - Agent 1's first session (sheets 1–17) recorded only which items it judged positive; every other item
     defaulted to false (see `CONFIRMATION-LOG.md`, run note 6).
+  - So the success rates are rates under this annotation procedure. They do not establish accurate
+    absolute rates or negligible false negatives, and reconciliation cannot detect positives both agents
+    missed. The low abliterated-plain rates in particular are not independently verified as an absence of
+    harmful help.
+  - Both studies remain AI-annotated and will not receive human validation (a project decision); their
+    success estimates and comparisons are conditional on the recorded annotation procedure.
 - **A related comparison, not an exact replication.** The prospective test measures any-round success on
   full responses, with an outcome specified in advance. The retrospective study measured one selected,
   truncated round per cell, with imputation. Different outcomes can give different verdicts even when the
@@ -471,8 +478,9 @@ agreement.
 
 ## Scope and limitations
 
-- **Labels:** AI annotators only (two instances of one model), with no human validation sample. This is
-  the main open weakness.
+- **Labels:** AI annotators only (two instances of one model). Both studies remain AI-annotated and will not receive human validation (a project decision); their
+  success estimates and comparisons are conditional on the recorded annotation procedure. This is the
+  main limitation.
 - **Attackers:** every attacker is from the Qwen family, including Jailbreak-R1, so none is independent
   of that lineage.
 - **Abliteration:** one community abliteration (huihui-ai v2; its model card describes

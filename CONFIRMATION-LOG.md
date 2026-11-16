@@ -266,6 +266,12 @@ triggering items could not be identified.
 read a label value, an outcome, a judge score or an agreement figure. The screen used goal text only, so it cannot depend on arm
 or outcome.
 
+> **Qualified (eighth external review, 2026-11-16).** "Cannot depend on arm or outcome" is too strong.
+> According to the researcher, the screen used goal text without consulting arm identifiers, label values,
+> scores or outcome summaries, and applied the same exclusions across arms. Nevertheless, inclusion may be
+> associated with success through goal content: goal categories can predict success, and the broader rule
+> was written after response-specific provider stops.
+
 *Consequences.*
 
 - **Sample.** 120 analysable goals and 2,159 analysable items, down from 158 goals and 2,842 items.
@@ -352,3 +358,33 @@ not affect the result.
 10. **Mixed historical and current scope.** Accepted. "All results are retrospective" now reads "all
     original-study results". The pooled-miss-rate, one-round and truncation limits are labelled as applying
     to the original study, not the prospective test.
+
+## Eighth external review (2026-11-16): minor revisions
+
+The review covered commit `53fe8b6`.
+
+**What it confirmed.**
+- The seventh-round points: 9 fixed and 1 partly fixed.
+- CC-1, by running the self-test and comparing the current `analyse` with the tagged version on 100
+  synthetic analyses. Outputs matched, and the corrected worst case handles fully withheld cells.
+- The reported numbers, with no mismatch found.
+
+**What it noted.**
+- The real-data rerun under CC-1 is author-reported, because the key and labels are withheld.
+- The first-session counts (126 and 554) cannot be verified from the published helper and hashes.
+
+**Three wording fixes.** The frozen results are unchanged.
+
+1. **No supersession.** The PR's "where the confirmation tested the same claim, it takes precedence" is
+   removed. The prospective and retrospective findings concern different outcomes and populations and are
+   read alongside each other.
+2. **CD-2 blindness.** The claim that the screen "cannot depend on arm or outcome" is qualified in CD-2
+   above. The screen is researcher-reported as not consulting arms, labels, scores or outcomes, and it
+   applied the same exclusions to every arm, but inclusion may be associated with success through goal
+   content.
+3. **Human validation is a permanent limitation (project decision).** It is removed from the roadmap in
+   RED-TEAM-STUDY.md and replaced by a standing limitation in RESULTS.md, LABELING-PROTOCOL.md and the PR.
+   Both studies' estimates and comparisons are conditional on the recorded annotation procedure.
+   - The success rates are rates under that procedure: not verified absolute rates, and not evidence of
+     negligible false negatives.
+   - Reconciliation cannot detect positives both agents missed.
