@@ -4,6 +4,10 @@
 changes are committed and tagged `confirm-prereg-v1` **before** anything is collected on the held-out
 goals. After the tag, every departure is logged as a deviation, as in `ANALYSIS-PLAN.md`.
 
+> **Run complete (2026-11-16).** Everything below is the plan as tagged and is unchanged. What actually
+> happened is in `CONFIRMATION-LOG.md`: the run notes, deviations CD-1 and CD-2, and the result. CH1 was
+> confirmed on 120 analysable goals per target.
+
 **Why this exists.** The original study's results are retrospective: its inference procedure was revised
 five times with the real-data results known (`ANALYSIS-PLAN.md` C3–C7). This plan tests its main
 conclusions once, on goals the study never touched, with every analysis choice fixed in advance.

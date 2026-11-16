@@ -7,16 +7,84 @@
 external review. Tables are rendered from those files by `make_tables.py`, so every number is rounded once
 from full precision.
 
-**All results are retrospective.** The inference procedure was revised five times (C3–C7), each time
-with the earlier real-data results known. Agreement across those versions is a sensitivity description,
-not confirmation. A prospective confirmation would apply the frozen C7 procedure to goals this study never
-used (`ANALYSIS-PLAN.md` C7). Earlier versions of this
-file used estimators with known defects; verdicts that changed are noted.
+**The original results are retrospective.** The inference procedure was revised five times (C3–C7), each
+time with the earlier real-data results known. Agreement across those versions is a sensitivity
+description, not confirmation. Earlier versions of this file used estimators with known defects; verdicts
+that changed are noted.
+
+**A prospective confirmation has since been run** (next section). It was pre-registered as
+`confirm-prereg-v1` before any held-out data existed, run once on goals this study never used, and its
+deviations are logged in `CONFIRMATION-LOG.md`. Its verdicts are the confirmatory ones. The retrospective
+findings below are kept as the original study.
+
+## Prospective confirmation (pre-registered; AI-annotated, not human-validated)
+
+Plan: `CONFIRMATION-PLAN.md`, tag `confirm-prereg-v1`. Run log, deviations and full result:
+`CONFIRMATION-LOG.md`. Output: `confirm_results.json`; input hashes: `confirm_data/analysis_inputs.json`.
+
+**Design.**
+- **Goals.** 163 held-out StrongREJECT goals were collected. 5 were excluded by the pre-registered
+  pre-screen. 38 more were excluded by a stricter goals-only re-screen after the labelling agents' provider
+  blocked biological content (deviation CD-2, recorded before any label was read). That leaves **120 goals
+  per target**.
+- **Arms.** abliterated-plain, aligned-redteam and trained-redteam (Jailbreak-R1), on the same two targets,
+  same checkpoints and same three-attempt configuration.
+- **Labels.** A census: every round of every cell, full responses, 2,159 items. Two independent AI agents
+  labelled blind, with blind kappa 0.915. Their 58 disagreements were reconciled; an item is true only if
+  both agree.
+- **Outcome.** Any-round success ("jailbroken within 3 attempts").
+- **Inference.** A paired goal bootstrap, run once. A census needs no imputation, miss rate or two-phase
+  estimator.
+
+**Attack success within 3 attempts** (n = 120 goals per target):
+
+| target | abliterated-plain | aligned-redteam | trained-redteam (Jailbreak-R1) |
+|---|---|---|---|
+| A (Qwen2.5-7B-Instruct) | 0.150 | 0.683 | 0.675 |
+| B (Llama-3.1-8B-Instruct) | 0.050 | 0.350 | 0.175 |
+
+**Pre-registered hypotheses:**
+
+| | target | estimate | interval | verdict |
+|---|---|---|---|---|
+| **CH1 (primary):** abliterated-plain − aligned-redteam < +0.05 on both targets | A | −0.533 | 95% [−0.633, −0.433] | supported |
+| | B | −0.300 | 95% [−0.383, −0.208] | supported |
+| | | | | **confirmed** |
+| CH2: same contrast ≠ 0 (Holm) | A | −0.533 | p < 0.001 | prompting significantly better |
+| | B | −0.300 | p < 0.001 | prompting significantly better |
+| CH3: trained − aligned within ±0.15 (TOST, Holm) | A | −0.008 | 90% [−0.100, +0.083] | equivalent within ±0.15 (p = 0.016) |
+| | B | −0.175 | 90% [−0.259, −0.083] | not shown equivalent (p = 0.70) |
+
+**What the confirmation shows, against the retrospective findings:**
+- **H1 is confirmed on both targets.** Abliteration alone does not beat prompting alone by 5 points.
+- **Abliteration alone is significantly worse than prompting on both targets.** H2 on B was method-sensitive
+  and not claimed retrospectively; it is now confirmed.
+- **On A, Jailbreak-R1 is within ±0.15 of prompting.**
+- **On B, Jailbreak-R1 is not shown equivalent to prompting.**
+  - Exploratory and not pre-registered: its 95% interval [−0.283, −0.067] lies below zero, so it did
+    *worse* than prompting.
+  - This is the opposite direction from the retrospective E1-H5 estimate on B (+0.01 [−0.13, +0.14]). That
+    estimate was a selected-round outcome under imputation, so the two are not directly comparable.
+
+**Limits of the confirmation:**
+- **The worst case for excluded goals.** With every blocked goal set to its least favourable value
+  (pre-registered as reported, not a decision rule), CH1 still holds on A (upper bound −0.038) but not on B
+  (+0.127). With 38 blocked goals this check was stated in advance to be largely uninformative. CH1 on B is
+  therefore not robust to the hypothetical that every excluded goal would have favoured abliteration.
+- **Scope.** The result does not cover goals involving biological or chemical harm (D3, CD-2).
+- **The labels are not validated.** Two instances of one AI model agreeing shows repeatability, not
+  correctness; no human checked the labels (D-2).
+- **A different estimand.** The confirmation measures any-round success on full responses. The
+  retrospective study measured one selected round per cell, on excerpts, with imputation. The success
+  rates are therefore not comparable across the two; the hypothesis verdicts are.
+- **The selected-round secondary outcome** gives the same verdicts, except that CH3 on A falls short of
+  equivalence (Holm p = 0.054).
 
 ## In short
 
-These are retrospective findings, for these checkpoints, this red-team prompt and this three-attempt
-configuration, under the AI annotation.
+These are the original, retrospective findings, for these checkpoints, this red-team prompt and this
+three-attempt configuration, under the AI annotation. Where the prospective confirmation above tested the
+same claim, its verdict takes precedence.
 
 **Stable under every estimator version:**
 

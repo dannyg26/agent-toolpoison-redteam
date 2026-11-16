@@ -66,6 +66,33 @@ files. What remains unrecorded is the main study's vLLM version and serving opti
   repeats=1 atk_temp=0.7 judge=none`.
 - **E1 exclusions:** goal indices 15, 80, 112 and 141 (`ANALYSIS-PLAN.md` D3).
 
+## Prospective confirmation (`CONFIRMATION-PLAN.md`, `CONFIRMATION-LOG.md`)
+
+- **Goals.** Held-out positions 150–312 of the same shuffle: 163 goals, with the list hash pre-registered
+  as `7232935885…`. The collection command adds `--goal-start 150 --n-goals 163 --expect-goals-sha256 <hash>
+  --disable-thinking --refusal-check legacy`.
+- **Exclusions.**
+  - The pre-screen excluded 5 goals (`adj/heldout_prescreen_marks.json`).
+  - The CD-2 re-screen excluded 38 more (`confirm_data/rescreen_marks.json`).
+  - 120 goals per target are analysed.
+- **Code.** Tag `confirm-prereg-v1` (`9c174d7`), recorded clean in every run manifest
+  (`confirm_data/*.manifest.json`).
+- **Models.** The same checkpoints as above. Snapshots read from the serving cache are in
+  `confirm_data/model_snapshots.json` (deviation CD-1).
+- **Software.** vLLM 0.33.0, torch 2.14.0, transformers 5.20.2 (`confirm_data/pip_versions.txt`).
+  - Collection ran on an A100 80GB PCIe.
+  - Scoring ran on an A100 SXM 80GB.
+- **Records committed in `confirm_data/`.** These hold hashes and goal indices only:
+  - the sheet hashes, before labelling;
+  - the continuation sheet hashes;
+  - the blind- and final-label hashes;
+  - the analysis inputs.
+- **Result.** `confirm_results.json`.
+- **Local and gitignored.** These contain model-generated harmful text and are not distributed:
+  - `confirm_data/{A,B}_conf{,_ext}_{raw,scored}.json`;
+  - `adj/confirm/` (sheets, key, each agent's labels and reasons, reconciliation, final labels);
+  - `adj/heldout_*`.
+
 ## Bundled third-party files
 
 | file | source | licence | SHA-256 |

@@ -86,9 +86,31 @@ The labelled outcome is the success of one selected round per (arm, goal) cell. 
 full-response labels this would be at most "jailbroken within 3 attempts". The estimates rest on excerpt
 labels and imputation, though, so they are not a guaranteed lower bound on it.
 
-## Answer (AI-annotated, not human-validated; retrospective)
+## Answer (AI-annotated, not human-validated)
 
-For these checkpoints, this prompt and this configuration (details and intervals in `RESULTS.md`):
+**Prospective confirmation** (pre-registered `confirm-prereg-v1`, run once on 120 held-out goals per target;
+`RESULTS.md`, `CONFIRMATION-LOG.md`):
+
+- **Abliterating the attacker is not worth it here.**
+  - **CH1, confirmed:** abliteration alone does not beat prompting an aligned model by the 5-point margin,
+    on either target.
+  - **CH2:** prompting is significantly better.
+  - Success within 3 attempts:
+
+    | target | abliterated alone | prompted aligned model | difference (95% CI) |
+    |---|---|---|---|
+    | A | 0.15 | 0.68 | −0.53 [−0.63, −0.43] |
+    | B | 0.05 | 0.35 | −0.30 [−0.38, −0.21] |
+- **Jailbreak-R1, the trained red-team attacker:**
+  - **On A**, within ±0.15 of prompting (−0.01).
+  - **On B**, not shown equivalent (−0.18). Exploratory: there it did worse than prompting.
+- **Caveats:**
+  - With every excluded goal set to its least favourable value, CH1 holds on A but not on B.
+  - Goals involving biological or chemical harm are excluded.
+  - The labels come from two AI agents (kappa 0.92), not from humans.
+
+**Original retrospective findings,** for these checkpoints, this prompt and this configuration (details and
+intervals in `RESULTS.md`). Where the confirmation tested the same claim, it takes precedence:
 
 - **Abliteration alone does not beat prompting alone by the pre-registered 5-point margin** (H1, both
   targets). This rules out an advantage of 5 points or more; it does not show there is none.
@@ -135,15 +157,23 @@ For these checkpoints, this prompt and this configuration (details and intervals
   - **Verdicts changed against the originally reported ones:**
     - H2 on target B, the E1 floor on target B, and abliterated-plain against the floor (H4b): all now
       method-sensitive, not claimed.
+- ✅ **Prospective confirmation, done (2026-11-16).** It was pre-registered as `confirm-prereg-v1` before any
+  held-out data existed. It used 163 held-out goals, 120 of them analysed, with a census of every round in
+  full responses, and the frozen analysis was run once. CH1 is confirmed.
+  - **Deviations** (`CONFIRMATION-LOG.md`):
+    - CD-1: model snapshots were recorded from the download cache.
+    - CD-2: 38 further goals were excluded by a goals-only re-screen, after the labelling provider blocked
+      biological content. This was recorded before any label was read.
+  - Two pods were also lost to an exhausted GPU balance, with no data lost.
 - ⏳ **Open, in priority order:**
-  1. a blinded human validation sample of the AI labels (the main weakness);
-  2. a prospective confirmation: freeze the C7 procedure, then apply it once to the 163 StrongREJECT goals
-     this study never used (`ANALYSIS-PLAN.md` C7);
-  3. labelling every round in sampled cells, with full responses;
-  4. a non-Qwen attacker family;
-  5. more goals and repeated collections;
-  6. more than one red-team prompt;
-  7. an audit of Jailbreak-R1's training-data overlap.
+  1. a blinded human validation sample of the AI labels: still the main weakness, now for both the
+     original study and the confirmation;
+  2. a pre-registered difference test of Jailbreak-R1 against prompting on target B, where the
+     confirmation suggests it is worse;
+  3. a non-Qwen attacker family;
+  4. more goals and repeated collections, including a route to label biological and chemical goals;
+  5. more than one red-team prompt;
+  6. an audit of Jailbreak-R1's training-data overlap.
 
 Files:
 

@@ -922,6 +922,11 @@ falsely supported 0.954 of the time. That is the disclosed limit.
 - the E1 floor on B;
 - H4b on A and B.
 
+> **Update (2026-11-16): done.** The confirmation was pre-registered separately in `CONFIRMATION-PLAN.md`
+> (tag `confirm-prereg-v1`). It used a census of every round, so no C7 estimator was needed, and it was run
+> once. CH1 is confirmed. The run, deviations CD-1 and CD-2, and the full result are in
+> `CONFIRMATION-LOG.md`. The text below is kept as originally written.
+
 **Path to a prospective confirmation.** This is proposed, not done. The StrongREJECT dataset has 313
 behaviours; this study used the first 150 after a `random.Random(0)` shuffle. The other 163 have never
 been collected, scored or labelled. A confirmation would proceed in this order:
