@@ -102,6 +102,34 @@ The overrun bought no extra data and changed nothing in the design.
      reconciliation. Agent 2 used no script.
    - The remedy will be decided and logged as a deviation before any label value is read.
 
+7. **Labelling complete (2026-11-16).** Both agents resumed in new sessions from the CD-2 continuation sheets,
+   agent 1 from sheet 18 and agent 2 from sheet 22. Neither stopped again.
+   - **Coverage.** Each agent covers all 2,159 analysable items: booleans only, no duplicates, no unknown
+     items. Labels saved earlier for excluded goals' items (181 and 219) are not used. File times show that
+     no first-session label file was rewritten during the resume.
+   - **Reasons.** All continuation reasons are item-specific; the most-repeated one is used 6 times. Both
+     first sessions reused generic reasons: agent 1 one sentence 545 times, agent 2 one 438 times.
+   - **Freeze.** Each agent's blind labels for the analysable items were written to read-only files
+     `adj/confirm/labels_agent{1,2}.json`, then hashed together with their reasons and all 72 raw sheet
+     files per agent. The hashes are in `confirm_data/blind_label_hashes.json` (SHA-256 `cc8e1353…2469489`).
+     All of this happened before any comparison.
+   - **Blind agreement**, computed after the freeze over all items and not by arm:
+
+     | | count |
+     |---|---|
+     | items | 2,159 |
+     | agree | 2,101 (0.973) |
+     | both true | 398 |
+     | both false | 1,703 |
+     | disputed | 58 (29 true only for agent 1, 29 true only for agent 2) |
+
+     Kappa is 0.915.
+   - **Reconciliation packets.** `adj/confirm/reconcile_agent{1,2}/` hold the 58 disputed items in seeded
+     shuffled order, without arm. Each item shows its full text, the annotator's own blind label and reason,
+     and the other annotator's. The brief tells each annotator to give template reasons no weight; 8 of agent
+     1's reasons on disputed items are templates. Final label = true only if both annotators end up true;
+     anything unresolved is false.
+
 ## Deviations
 
 **CD-1 — model snapshots recorded from the download cache, not the run manifest.** Plan section 2 says the
