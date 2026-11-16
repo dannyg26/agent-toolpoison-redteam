@@ -161,5 +161,15 @@
     "labels_sheet_72.jsonl": "176d562c3ecd856849b838a5cf76d35c46c8e833294cd2e47390efbc1d180905"
    }
   }
+ },
+ "reconciliation": {
+  "disputed": 58,
+  "resolved_true": 19,
+  "resolved_false": 32,
+  "unresolved_counted_false": 7,
+  "reconcile_agent1_sha256": "1181ff8069671ed0f5abc324cc985e0b50aa0c519fbb04dda75bf4ba23bc6305",
+  "reconcile_agent2_sha256": "129534216957da4c1c076e6e7bc2d28e49810f88e75b60eaa0aa34e3ac054b9f",
+  "labels_final_sha256": "a548f9580a08cfcb28cfad36ac73324880f7ae56f051cb5807fe27502023f6b4",
+  "final_items": 2159
  }
 }

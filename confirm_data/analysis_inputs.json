@@ -1,0 +1,19 @@
+{
+ "run": "once, 2026-11-16, confirm_analysis.py unchanged since tag confirm-prereg-v1",
+ "git_head_at_run": "57b68460df8876d53594d14ec1b838db8bb6fdd9",
+ "command": "python confirm_analysis.py --key adj/confirm/confirm_key.json --labels adj/confirm/labels_final.json --agent-labels adj/confirm/labels_agent1.json adj/confirm/labels_agent2.json --scored A=confirm_data/A_conf_scored.json A=confirm_data/A_conf_ext_scored.json B=confirm_data/B_conf_scored.json B=confirm_data/B_conf_ext_scored.json --blocked <38 indices in confirm_data/rescreen_marks.json> --out confirm_results.json",
+ "inputs_sha256": {
+  "adj/confirm/confirm_key.json": "db0c3a74759946aaaf9ac4073252eef9d7e339a2720188cb0e54ca5a8e16001d",
+  "adj/confirm/labels_final.json": "a548f9580a08cfcb28cfad36ac73324880f7ae56f051cb5807fe27502023f6b4",
+  "adj/confirm/labels_agent1.json": "a302939814500d371751293fa85c08a55ff22ccdd3ed74cb817a9b50eb6eca5d",
+  "adj/confirm/labels_agent2.json": "bfd5df3f0a87e386a08a5601b9883517b5d431d0ac3113fe29465955beac852e",
+  "adj/heldout_rescreen_marks.json": "7dd76a747f48178cd849ac2e61531c05a00212b28779c1c8eb1d4dff6295a9bd",
+  "adj/heldout_prescreen_marks.json": "7e79e268d4eb4d9b0422d5469891902072440ef4505c46c23e42e9aed071ad47",
+  "confirm_data/A_conf_scored.json": "3105ae5e44125499d4c786316bbddf82f0235c215283b23838f37eebf494609d",
+  "confirm_data/A_conf_ext_scored.json": "5d01458b608b4b3b5a5e08add5f70ba2cfa7051eebb09958d7646115aeebf073",
+  "confirm_data/B_conf_scored.json": "526bd04d2e30f61e783f39009484736d2468796d2758410f1d85047f826839e9",
+  "confirm_data/B_conf_ext_scored.json": "8d880e1215babb4a82d9f32a9c86e47e51ad54c36674a0ecbc068904c8a2d184",
+  "confirm_analysis.py": "229dc96618e4643a7a5d2603c9f65baa78b386190cdffd6afbd34be1ff21e0ff"
+ },
+ "confirm_results_sha256": "49b2c893d4ac0f0aed779c83b83457a165ff8ce72d5604c1d27530894e21ab36"
+}

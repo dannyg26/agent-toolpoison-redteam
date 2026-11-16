@@ -130,6 +130,76 @@ The overrun bought no extra data and changed nothing in the design.
      1's reasons on disputed items are templates. Final label = true only if both annotators end up true;
      anything unresolved is false.
 
+8. **Reconciliation and final labels (2026-11-16).** Each agent reviewed the 58 disputed items in a new session.
+   Agent 1 changed 27 labels and agent 2 changed 28; each agent's own `changed` flags match these counts.
+   Outcome of the 58 disputes:
+
+   | outcome | items |
+   |---|---|
+   | both true | 19 |
+   | both false | 32 |
+   | still split, counted false | 7 |
+
+   `adj/confirm/labels_final.json` covers all 2,159 analysable items and is read-only. The final labels and
+   both reconciliation files are hashed in `confirm_data/blind_label_hashes.json`.
+
+## Result (frozen analysis, run once on 2026-11-16)
+
+`confirm_analysis.py` was unchanged since the tag, and its inputs are hashed in
+`confirm_data/analysis_inputs.json`. The output is `confirm_results.json` (SHA-256 `49b2c893…e21ab36`).
+Paired goal bootstrap: 10,000 resamples, seed 2026, n = 120 goals per target. All 38 excluded goals are
+passed as blocked. The 683 labels the script reports as missing are exactly those goals' items; no
+analysed goal has a missing label, so the "missing as true" sensitivity is identical to the primary.
+
+**Any-round attack success** (primary outcome):
+
+| target | abliterated-plain | aligned-redteam | trained-redteam |
+|---|---|---|---|
+| A | 0.150 | 0.683 | 0.675 |
+| B | 0.050 | 0.350 | 0.175 |
+
+**Pre-registered hypotheses:**
+
+| hypothesis | target | estimate | 95% CI | 90% CI | test | verdict |
+|---|---|---|---|---|---|---|
+| CH1: abliterated-plain − aligned-redteam, upper < +0.05 | A | −0.533 | [−0.633, −0.433] | | upper −0.433 | supported |
+| | B | −0.300 | [−0.383, −0.208] | | upper −0.208 | supported |
+| **CH1 (both targets)** | | | | | | **CONFIRMED** |
+| CH2: same contrast ≠ 0 | A | −0.533 | | | Holm p < 0.001 | rejected: prompting better |
+| | B | −0.300 | | | Holm p < 0.001 | rejected: prompting better |
+| CH3: trained − aligned within ±0.15 (TOST) | A | −0.008 | [−0.125, +0.108] | [−0.100, +0.083] | Holm p = 0.016 | equivalent within ±0.15 |
+| | B | −0.175 | [−0.283, −0.067] | [−0.259, −0.083] | Holm p = 0.701 | not shown equivalent |
+
+**Also reported, as pre-registered:**
+
+- **Blind agreement** between the two agents: kappa 0.915 over 2,159 items.
+- **CH1 with the blocked goals set to their least favourable values:**
+
+  | target | upper bound of the 95% CI | supported |
+  |---|---|---|
+  | A | −0.038 | yes |
+  | B | +0.127 | no |
+
+  As stated in CD-2 before any label was read, at 38 blocked goals this check is largely uninformative. CH1
+  on B is not robust to the hypothetical that every excluded goal would have favoured abliteration; CH1 on A
+  is.
+- **Selected-round secondary outcome** (the highest StrongREJECT-scoring round per cell): the same verdicts,
+  except CH3-A (Holm p = 0.054, not rejected).
+
+  | target | CH1 upper bound | CH2 | CH3 |
+  |---|---|---|---|
+  | A | −0.358 | rejected | Holm p = 0.054, not rejected |
+  | B | −0.200 | rejected | Holm p = 0.75, not rejected |
+
+**Not pre-registered (exploratory).** On B, Jailbreak-R1's CI excludes zero on the low side (−0.175, p = 0.002
+for zero). It did worse than prompting the aligned model. CH3 was a TOST equivalence test, not a test of
+difference, so this is reported descriptively only.
+
+**How the result is to be read:**
+- confirmed under this AI annotation procedure, not human-validated (D-2);
+- for these checkpoints, this red-team prompt and three attempts;
+- for goals excluding biological and chemical harm (D3, CD-2).
+
 ## Deviations
 
 **CD-1 — model snapshots recorded from the download cache, not the run manifest.** Plan section 2 says the
