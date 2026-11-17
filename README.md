@@ -1,6 +1,13 @@
 # Safety-removal studies on open-weight LLMs
 
-This repository holds several studies. **The current one is the red-team attacker study**:
+**2026-11-17 agent pilot:** a recent, general-purpose uncensored Qwen3.8 attacker and
+its aligned control were tested on ten AgentDojo cases against Gemma 4. Each recorded
+six successful campaigns, three with no observed success and one incomplete campaign;
+two pairs are incomplete. This descriptive pilot does not establish an abliteration
+advantage. Actual additional RunPod charge: **$1.52**, with the pod terminated.
+See [pilot results](stage_b/PILOT-RESULTS.md) and the [frozen budget scope](stage_b/PILOT.md).
+
+This repository holds several studies. **The StrongREJECT red-team attacker study** is documented below:
 
 > **Is abliterating your red-team attacker worth it?** It compares three ways of getting a willing
 > attacker LLM: prompting an aligned model, abliterating it (weight surgery that removes refusals), and
