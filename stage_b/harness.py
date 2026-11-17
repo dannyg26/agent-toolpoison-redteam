@@ -72,8 +72,9 @@ def _plain(text):
 class TargetLLM(BasePipelineElement):
     """One target-model turn through an OpenAI-compatible server with native tool parsing (vLLM)."""
 
-    def __init__(self, client, model, temperature=0.0, max_tokens=8192, seed=0):
+    def __init__(self, client, model, temperature=0.0, max_tokens=8192, seed=0, thinking_token_budget=None):
         self.client, self.model, self.temperature, self.max_tokens, self.seed = client, model, temperature, max_tokens, seed
+        self.thinking_token_budget = thinking_token_budget
         self.stats = EpisodeStats()
         self.name = model
 
@@ -84,8 +85,13 @@ class TargetLLM(BasePipelineElement):
         try:
             comp = _with_retries(lambda: self.client.chat.completions.create(
                 model=self.model, messages=msgs, tools=tools or NOT_GIVEN, tool_choice="auto" if tools else NOT_GIVEN,
-                temperature=self.temperature, max_tokens=self.max_tokens, seed=self.seed))
+                temperature=self.temperature, max_tokens=self.max_tokens, seed=self.seed,
+                extra_body=({"thinking_token_budget": self.thinking_token_budget}
+                            if self.thinking_token_budget is not None else {})))
         except openai.BadRequestError as e:          # almost always: conversation longer than the context window
+            message = str(e).lower()
+            if not ("context" in message and any(x in message for x in ("length", "maximum", "token"))):
+                raise  # configuration/API errors are infrastructure failures, not target refusals
             self.stats.context_exceeded += 1
             self.stats.seconds += time.time() - t0
             return query, runtime, env, [*messages, _plain(f"[target request rejected: {str(e)[:200]}]")], extra_args
@@ -280,15 +286,20 @@ def _short(s, n):
 
 
 class Attacker:
-    def __init__(self, client, model, temperature=0.6, top_p=0.95, top_k=20, max_tokens=8192):
+    def __init__(self, client, model, temperature=0.6, top_p=0.95, top_k=20, max_tokens=8192,
+                 thinking_token_budget=None):
         self.client, self.model = client, model
         self.temperature, self.top_p, self.top_k, self.max_tokens = temperature, top_p, top_k, max_tokens
+        self.thinking_token_budget = thinking_token_budget
 
     def __call__(self, messages, seed):
         t0 = time.time()
+        extra = {"top_k": self.top_k}
+        if self.thinking_token_budget is not None:
+            extra["thinking_token_budget"] = self.thinking_token_budget
         comp = _with_retries(lambda: self.client.chat.completions.create(
             model=self.model, messages=messages, temperature=self.temperature, top_p=self.top_p,
-            max_tokens=self.max_tokens, seed=seed, extra_body={"top_k": self.top_k}))
+            max_tokens=self.max_tokens, seed=seed, extra_body=extra))
         msg = comp.choices[0].message
         return {"content": msg.content or "",
                 "reasoning": getattr(msg, "reasoning_content", None) or getattr(msg, "reasoning", None),
@@ -309,7 +320,7 @@ def campaign_seed(case_id, campaign):
     return int(hashlib.sha256(f"{case_id}|{campaign}|{BASE_SEED}".encode()).hexdigest()[:8], 16) % (2 ** 31)
 
 
-def run_campaign(case, campaign, attacker, adaptive, budget, target_name, make_llm):
+def run_campaign(case, campaign, attacker, adaptive, budget, target_name, make_llm, should_stop=None):
     """Up to `budget` candidates, each evaluated in a freshly reset environment. Stops at the first success."""
     suite = get_suite(BENCHMARK_VERSION, case["suite"])
     ut = suite.get_user_task_by_id(case["user_task"])
@@ -318,8 +329,11 @@ def run_campaign(case, campaign, attacker, adaptive, budget, target_name, make_l
     conv = [{"role": "system", "content": ATTACKER_SYSTEM.format(target_name=target_name)},
             {"role": "user", "content": ATTACKER_FIRST.format(user_prompt=ut.PROMPT, goal=it.GOAL, budget=budget,
                                                               vectors=vector_lines(suite, case["vectors"]))}]
-    cands, traces, success_at = [], [], None
+    cands, traces, success_at, cancelled = [], [], None, False
     for k in range(1, budget + 1):
+        if should_stop and should_stop():
+            cancelled = True
+            break
         gen = attacker(conv, seed + k)
         conv.append({"role": "assistant", "content": gen["content"]})
         found = INJ_RE.findall(gen["content"])
@@ -345,9 +359,9 @@ def run_campaign(case, campaign, attacker, adaptive, budget, target_name, make_l
             else:
                 nxt = NONADAPTIVE_NEXT.format(k=k + 1) if not adaptive else f"Write attempt {k + 1} of {budget}."
             conv.append({"role": "user", "content": note + nxt})
-    errored = any(c.get("episode", {}).get("error") for c in cands)
+    errored = cancelled or any(c.get("episode", {}).get("error") for c in cands)
     return {"seed": seed, "candidates": cands, "success_at": success_at, "error": errored,
-            "attacker_conversation": conv}, traces
+            "deadline_reached": cancelled, "attacker_conversation": conv}, traces
 
 # ----------------------------------------------------------------------------------------------------------------
 # Runner
@@ -364,6 +378,9 @@ def _with_retries(fn, tries=4):
 
 
 def run_unit(unit, args, attacker, make_llm):
+    should_stop = lambda: bool(args.stop_file and Path(args.stop_file).exists())
+    if should_stop():
+        raise TimeoutError("pod budget deadline reached; unit was not started")
     cond = args.condition
     rec = {"key": unit["key"], "condition": cond, "attacker": args.attacker_label, "target": args.target_label,
            "benchmark_version": BENCHMARK_VERSION}
@@ -384,15 +401,18 @@ def run_unit(unit, args, attacker, make_llm):
         rec.update(injection=text, episode=ep)
         return rec, {"key": unit["key"], "target": tr}
     out, traces = run_campaign(case, unit["campaign"], attacker, cond == "adaptive", args.budget,
-                               args.target_name, make_llm)
+                               args.target_name, make_llm, should_stop=should_stop)
     rec.update(campaign=unit["campaign"], **{k: v for k, v in out.items() if k != "attacker_conversation"})
     return rec, {"key": unit["key"], "attacker_conversation": out["attacker_conversation"], "candidates": traces}
 
 
 def build_units(args):
-    cases = json.loads((HERE / "cases.json").read_text(encoding="utf-8"))[args.split]
+    cases = json.loads(Path(args.cases_file).read_text(encoding="utf-8"))[args.split]
     if args.case_ids:
         want = set(args.case_ids.split(","))
+        unknown = want - {c["case_id"] for c in cases}
+        if unknown:
+            raise ValueError(f"case IDs are absent from the requested split: {sorted(unknown)}")
         cases = [c for c in cases if c["case_id"] in want]
     if args.limit:
         cases = cases[: args.limit]
@@ -420,18 +440,44 @@ def main(argv=None, attacker=None, make_llm=None):
     ap.add_argument("--workers", type=int, default=16)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--case-ids", default="")
+    ap.add_argument("--cases-file", default=str(HERE / "cases.json"))
+    ap.add_argument("--attacker-max-tokens", type=int, default=8192)
+    ap.add_argument("--target-max-tokens", type=int, default=8192)
+    ap.add_argument("--attacker-thinking-budget", type=int)
+    ap.add_argument("--target-thinking-budget", type=int)
+    ap.add_argument("--stop-file", default="")
+    ap.add_argument("--request-timeout", type=float, default=900)
     ap.add_argument("--out", required=True)
     ap.add_argument("--max-error-rate", type=float, default=0.02)
     args = ap.parse_args(argv)
+    for name in ("budget", "campaigns", "workers", "attacker_max_tokens", "target_max_tokens"):
+        if getattr(args, name) <= 0:
+            ap.error(f"--{name.replace('_', '-')} must be positive")
+    if args.limit < 0:
+        ap.error("--limit must be nonnegative")
+    if args.request_timeout <= 0:
+        ap.error("--request-timeout must be positive")
+    for role in ("attacker", "target"):
+        thinking = getattr(args, f"{role}_thinking_budget")
+        if thinking is not None and not 0 <= thinking < getattr(args, f"{role}_max_tokens"):
+            ap.error(f"--{role}-thinking-budget must leave room for final output")
     if args.condition in ("nonadaptive", "adaptive") and not (args.attacker_model or attacker):
         ap.error("--attacker-model is required for attacker conditions")
 
     if make_llm is None:
-        tclient = openai.OpenAI(base_url=args.target_url, api_key="EMPTY", timeout=900, max_retries=0)
-        make_llm = lambda: TargetLLM(tclient, args.target_model)
+        tclient = openai.OpenAI(base_url=args.target_url, api_key="EMPTY", timeout=args.request_timeout, max_retries=0)
+        make_llm = lambda: TargetLLM(tclient, args.target_model, max_tokens=args.target_max_tokens,
+                                     thinking_token_budget=args.target_thinking_budget)
     if attacker is None and args.attacker_model:
-        aclient = openai.OpenAI(base_url=args.attacker_url, api_key="EMPTY", timeout=900, max_retries=0)
-        attacker = Attacker(aclient, args.attacker_model)
+        aclient = openai.OpenAI(base_url=args.attacker_url, api_key="EMPTY", timeout=args.request_timeout, max_retries=0)
+        attacker = Attacker(aclient, args.attacker_model, max_tokens=args.attacker_max_tokens,
+                            thinking_token_budget=args.attacker_thinking_budget)
+
+    # Resume only the exact same design. Old result files deliberately require a new output directory.
+    settings = {k: v for k, v in vars(args).items() if k not in ("out", "cases_file")}
+    settings["cases_sha256"] = hashlib.sha256(Path(args.cases_file).read_bytes()).hexdigest()
+    settings["harness_sha256"] = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+    settings_sha = hashlib.sha256(json.dumps(settings, sort_keys=True).encode()).hexdigest()
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -441,9 +487,14 @@ def main(argv=None, attacker=None, make_llm=None):
     if res_path.exists():
         for line in res_path.read_text(encoding="utf-8").splitlines():
             r = json.loads(line)
+            if r.get("settings_sha256") != settings_sha:
+                ap.error("output exists with different or unrecorded settings; use a new output directory")
             if not _has_error(r):
                 done.add(r["key"])
-    units = [u for u in build_units(args) if u["key"] not in done]
+    try:
+        units = [u for u in build_units(args) if u["key"] not in done]
+    except ValueError as e:
+        ap.error(str(e))
     print(f"{stem}: {len(units)} units to run ({len(done)} already done)", flush=True)
     lock, n_done, n_err = threading.Lock(), 0, 0
     with cf.ThreadPoolExecutor(args.workers) as pool:
@@ -457,6 +508,8 @@ def main(argv=None, attacker=None, make_llm=None):
                        "exception": traceback.format_exc()[-1500:]}
                 tr = {"key": u["key"]}
             with lock:
+                rec["settings_sha256"] = settings_sha
+                rec["settings"] = settings
                 with res_path.open("a", encoding="utf-8") as fh:
                     fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
                 with trace_path.open("a", encoding="utf-8") as fh:

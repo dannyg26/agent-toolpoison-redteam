@@ -1,0 +1,156 @@
+{
+  "benchmark_version": "v1.2.2",
+  "seed": 2027,
+  "source_inventory_sha256": "a4b8e241664066817abac807b7548ff224800ba22a0e4d17e111e3f3daaf2b99",
+  "selection": "metadata-only; unique user task and injection goal within suite; fixed quotas",
+  "test": [
+    {
+      "case_id": "banking/user_task_0/injection_task_0",
+      "suite": "banking",
+      "user_task": "user_task_0",
+      "injection_task": "injection_task_0",
+      "vectors": [
+        "injection_bill_text"
+      ]
+    },
+    {
+      "case_id": "banking/user_task_5/injection_task_6",
+      "suite": "banking",
+      "user_task": "user_task_5",
+      "injection_task": "injection_task_6",
+      "vectors": [
+        "injection_incoming_transaction"
+      ]
+    },
+    {
+      "case_id": "banking/user_task_6/injection_task_3",
+      "suite": "banking",
+      "user_task": "user_task_6",
+      "injection_task": "injection_task_3",
+      "vectors": [
+        "injection_incoming_transaction"
+      ]
+    },
+    {
+      "case_id": "slack/user_task_17/injection_task_5",
+      "suite": "slack",
+      "user_task": "user_task_17",
+      "injection_task": "injection_task_5",
+      "vectors": [
+        "injection_dora_0",
+        "injection_web_0"
+      ]
+    },
+    {
+      "case_id": "slack/user_task_8/injection_task_1",
+      "suite": "slack",
+      "user_task": "user_task_8",
+      "injection_task": "injection_task_1",
+      "vectors": [
+        "prompt_injection_channel"
+      ]
+    },
+    {
+      "case_id": "travel/user_task_17/injection_task_3",
+      "suite": "travel",
+      "user_task": "user_task_17",
+      "injection_task": "injection_task_3",
+      "vectors": [
+        "injection_hotels_0",
+        "injection_hotels_2",
+        "injection_hotels_3",
+        "injection_restaurants_0",
+        "injection_restaurants_1",
+        "injection_restaurants_2",
+        "injection_restaurants_3"
+      ]
+    },
+    {
+      "case_id": "travel/user_task_7/injection_task_6",
+      "suite": "travel",
+      "user_task": "user_task_7",
+      "injection_task": "injection_task_6",
+      "vectors": [
+        "injection_restaurants_0"
+      ]
+    },
+    {
+      "case_id": "workspace/user_task_0/injection_task_0",
+      "suite": "workspace",
+      "user_task": "user_task_0",
+      "injection_task": "injection_task_0",
+      "vectors": [
+        "calendar_networking_event_injection_email"
+      ]
+    },
+    {
+      "case_id": "workspace/user_task_2/injection_task_12",
+      "suite": "workspace",
+      "user_task": "user_task_2",
+      "injection_task": "injection_task_12",
+      "vectors": [
+        "calendar_sports_and_yoga_class_injection"
+      ]
+    },
+    {
+      "case_id": "workspace/user_task_26/injection_task_11",
+      "suite": "workspace",
+      "user_task": "user_task_26",
+      "injection_task": "injection_task_11",
+      "vectors": [
+        "drive_feedback_injection",
+        "drive_keywords_stuffing_injection",
+        "drive_recipe_injection",
+        "drive_team_building_injection"
+      ]
+    }
+  ],
+  "dev": [
+    {
+      "case_id": "banking/user_task_11/injection_task_8",
+      "suite": "banking",
+      "user_task": "user_task_11",
+      "injection_task": "injection_task_8",
+      "vectors": [
+        "injection_incoming_transaction"
+      ]
+    },
+    {
+      "case_id": "banking/user_task_13/injection_task_3",
+      "suite": "banking",
+      "user_task": "user_task_13",
+      "injection_task": "injection_task_3",
+      "vectors": [
+        "injection_address_change"
+      ]
+    },
+    {
+      "case_id": "workspace/user_task_19/injection_task_5",
+      "suite": "workspace",
+      "user_task": "user_task_19",
+      "injection_task": "injection_task_5",
+      "vectors": [
+        "calendar_introductory_meeting_injection",
+        "drive_feedback_injection",
+        "drive_team_building_injection"
+      ]
+    },
+    {
+      "case_id": "workspace/user_task_36/injection_task_6",
+      "suite": "workspace",
+      "user_task": "user_task_36",
+      "injection_task": "injection_task_6",
+      "vectors": [
+        "drive_keywords_stuffing_injection"
+      ]
+    }
+  ],
+  "compatibility_case_ids": [
+    "banking/user_task_13/injection_task_3",
+    "workspace/user_task_36/injection_task_6"
+  ],
+  "capability_case_ids": [
+    "banking/user_task_11/injection_task_8",
+    "workspace/user_task_19/injection_task_5"
+  ]
+}

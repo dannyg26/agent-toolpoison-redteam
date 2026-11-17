@@ -1,5 +1,11 @@
 # Can a Recent Uncensored General-Purpose Agent Improve Automated Red-Teaming? (revised plan, draft)
 
+> **Budget amendment, 2026-11-17:** the executable follow-up is now the single-target, ten-case feasibility
+> pilot specified in [stage_b/PILOT.md](stage_b/PILOT.md). The larger matrix below is historical planning,
+> not an authorized run. Partial capability data and invalid tau-bench attempts are documented in Stage A;
+> do not interpret the historical "nothing collected" draft status below as current. No top-up is required
+> for the bounded pilot; use the existing credit and pod-side termination guard.
+
 **Status: draft, not pre-registered, nothing collected.** This is the revised research plan. Implementation
 notes checked on 2026-11-16 are marked **[impl]**.
 

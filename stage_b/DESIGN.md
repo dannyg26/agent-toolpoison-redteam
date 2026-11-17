@@ -1,5 +1,11 @@
 # Stage B: AgentDojo harness (draft, not frozen)
 
+> **Current execution scope (2026-11-17):** [PILOT.md](PILOT.md) and `pilot_config.json` replace the large
+> run described below with ten held-out cases, two attackers and three attempts on Gemma. The measured
+> development smoke-run record below is preserved. The old full runner is disabled by default; no paid
+> full-matrix run is authorized. The capability gate is incomplete; the pilot has a separate small
+> development check and must not be described as passing the original Stage A gate.
+
 This implements plan §5–§7 and §10 (`AGENT-STUDY-PLAN.md`). Nothing has been collected. The case list, the
 attacker prompt and the analysis are frozen and pushed before any test-split outcome is collected. Until then,
 only the **development** split may be run.
@@ -122,21 +128,46 @@ are frozen with the test-split freeze.
 - obeying the reference attack triggers the check in every case that has a reference solution, except the
   order-dependent travel case.
 
-## Compute (estimate, to be replaced by the development run's measurement)
+## Compute (measured in the development smoke run, 2026-11-17)
 
-**Upper bound per target.** No attack (65 user tasks), fixed (200 cases), then 3 attacker conditions × 600
-campaigns × ≤5 candidates. That is up to about **9,300 target episodes and 9,000 attacker generations per
-target**, 18,600 and 18,000 for both. Early stopping lowers this, by an amount that depends on ASR.
+**Size per target.** No attack (65 user tasks), fixed (200 cases), then 3 attacker conditions × 600
+campaigns × ≤5 candidates. That is up to about 9,300 target episodes and 9,000 attacker generations.
+Early stopping saves almost nothing while ASR is near zero.
 
-**Rough cost.**
-- At about 4–5k generated tokens per candidate (attacker plus a 3–6-call target episode, thinking on) and an
-  aggregate 700–1,000 tokens/s on one A100 with two FP8 27B servers, the test split is roughly
-  **20–35 GPU hours, about $45–75 at $2.19/h**.
-- Gemma's 4B active parameters should make its half faster.
+**Smoke run.** `SPLIT=dev LIMIT=8 TARGETS=qwen`, one A100 SXM, about 2.4 h, about $5.40.
+- **Completed:** no_attack, fixed and non-adaptive.
+- **Partial:** adaptive abliterated finished 20 of 24 campaigns before the time cap.
+- **Not run:** adaptive aligned.
 
-**First measurement step.** A development smoke run, `SPLIT=dev LIMIT=8 TARGETS=qwen`. It is at most about
-370 episodes, roughly 1–1.5 h and $3. It checks the whole path on real models and measures throughput before
-the size is justified (plan §5).
+**Measured per candidate (mean):**
+
+| | non-adaptive | adaptive |
+|---|---|---|
+| attacker generated tokens | 1,131 | 4,789 (10/95 hit the 8,192 cap) |
+| attacker seconds | 68 | 680 |
+| target episode generated tokens | 1,661 | 1,763 |
+| target episode seconds | 112 | 97 |
+| wall time per campaign (16 workers) | 68 s | 310 s |
+| aggregate generation | about 200 tokens/s | about 100 tokens/s |
+
+**Why it is slow.** Two FP8 27B servers on one 80 GB GPU leave little KV cache: 38k tokens on the attacker
+server and 61k on the target server. The attacker server ran about 4 requests at a time at about 18 tokens/s
+each, while the rest queued. One adaptive campaign failed on a 900 s client timeout caused by this queueing.
+
+**What the full test split would cost.**
+- **Tokens:** about 95M generated tokens for both targets. About two thirds are attacker tokens, mostly
+  adaptive thinking.
+- **As run here:** about 100–200 tokens/s, so about 175 GPU hours, **about $400**. Not viable.
+- **One model per GPU** (2×A100 or 2×H100): the KV cache grows about tenfold. A guess of 25–35 h at about
+  $4.4/h, **about $110–150**. This must be measured before it is relied on.
+
+**Validity problem found.** The 10 adaptive candidates that hit the 8,192-token cap were cut off inside their
+thinking and counted as malformed. That makes the attacker's failures partly an artifact of the token limit.
+Fix before the freeze: raise the cap, or bound the thinking explicitly, the same way for both attackers.
+
+**Floor effect.** Against the Qwen target: fixed 0/8, non-adaptive 0/24 campaigns, adaptive abliterated 0/20
+campaigns. If the test split looks the same, the attacker comparison cannot show a difference. Check Gemma and
+the prompts on the development split before paying for the test split.
 
 ## Still open before the test-split freeze
 

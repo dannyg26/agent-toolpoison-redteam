@@ -6,6 +6,11 @@
 # aligned-attacker condition from the same server (separate conversations, nothing shared).
 # Outputs go to /root/out/stage_b. Writes ALL_DONE at the end; any failure writes a FAILED line and exits.
 set -u
+# The former default can cost hundreds of dollars. The budget pilot is a separate explicit runner.
+if [ "${ALLOW_LARGE_STUDY:-}" != "yes" ]; then
+  echo 'FAILED: large-study runner disabled. Use stage_b/run_pilot.sh for the bounded pilot.'
+  exit 64
+fi
 REPO=/root/repo; OUT=/root/out/stage_b; mkdir -p "$OUT"
 SPLIT=${SPLIT:-dev}; LIMIT=${LIMIT:-0}; WORKERS=${WORKERS:-16}; TARGETS=${TARGETS:-"qwen gemma"}
 export VLLM_USE_FLASHINFER_SAMPLER=0
