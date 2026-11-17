@@ -58,3 +58,21 @@ exists. Cost about $0.87.
 - **Keys.** τ-bench gets the server key through `api_key` in the LiteLLM arguments as well as the
   environment. It is a temporary key that exists only on the pod.
 - **Unchanged:** the gate criteria, task lists, checkpoints and serving settings.
+
+## Attempt 4 (2026-11-16, A100 PCIe, pod tket5gsjf695r9, commit 2e7c5b4)
+
+**What worked.** Fix A2: setup, the pre-flight checks, the simulated user and the abliterated checkpoint
+all succeeded.
+
+**What failed.** `bfcl generate` then hung. In `--skip-server-setup` mode it waits for the server by
+polling `/v1/models` **without** an API key, and the key-protected server answered `401 Unauthorized`
+every time. BFCL never sent a test case, and no benchmark item was attempted. After 30 minutes with an
+unchanged log and an idle GPU, the watcher's stall rule stopped the run and terminated the pod. Cost about
+$1.52.
+
+**Fix A3.**
+- **No server key.** The vLLM servers run without `--api-key`. They listen only on `127.0.0.1` inside the
+  pod, so the key gave no protection. The `/v1/models` record of the served model is still saved.
+- **Faster stall rule.** The watcher's stall limit drops from 30 to 15 minutes. The watcher runs locally
+  and is not part of the repository.
+- **Unchanged:** the gate, tasks, checkpoints, precision and context length.

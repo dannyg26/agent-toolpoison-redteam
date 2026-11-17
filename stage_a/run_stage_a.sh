@@ -39,7 +39,8 @@ done
 
 serve(){ # model port util name  -> waits until the model is listed (authenticated)
   local rev; rev=$(awk -v m="$1" '$1==m{print $2}' "$OUT/revisions.txt")
-  nohup vllm serve "$1" --revision "$rev" --served-model-name "$4" --port "$2" --host 127.0.0.1 --api-key "$KEY" \
+  # No --api-key (fix A3): servers listen on 127.0.0.1 only, and BFCL polls /v1/models without a key.
+  nohup vllm serve "$1" --revision "$rev" --served-model-name "$4" --port "$2" --host 127.0.0.1 \
     --quantization fp8 --max-model-len 32768 --gpu-memory-utilization "$3" --max-num-seqs 32 \
     --limit-mm-per-prompt '{"image":0,"video":0}' \
     --enable-auto-tool-choice --tool-call-parser hermes --reasoning-parser qwen3 > "$OUT/serve_$2.log" 2>&1 </dev/null &
