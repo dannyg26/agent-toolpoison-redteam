@@ -10,13 +10,28 @@ USER_SIM=Qwen/Qwen3.8-27B-FP8
 CHECKPOINTS=("huihui-ai/Huihui-Qwen3.8-27B-abliterated" "Qwen/Qwen3.8-27B")
 log(){ echo "$* ($(date +%T))"; }
 
+TAU2_REPO=https://github.com/sierra-research/tau2-bench; TAU2_COMMIT=989d3285ae669e49503324bdb9981bf14fccedeb  # tag v2.0.0
 log "=== setup"
-pip install -q "vllm==0.33.0" > "$OUT/pip_vllm.log" 2>&1 || { log "FAILED pip vllm"; exit 1; }
-python -m venv /root/venv_bfcl && /root/venv_bfcl/bin/pip install -q "bfcl-eval==2026.3.23" > "$OUT/pip_bfcl.log" 2>&1 \
+pip install -q "vllm==0.33.0" uv > "$OUT/pip_vllm.log" 2>&1 || { log "FAILED pip vllm"; exit 1; }
+python -m venv /root/venv_bfcl && /root/venv_bfcl/bin/pip install -q "bfcl-eval==2026.3.23" soundfile > "$OUT/pip_bfcl.log" 2>&1 \
   || { log "FAILED pip bfcl"; exit 1; }
-python -m venv /root/venv_tau2 && /root/venv_tau2/bin/pip install -q "tau2==4.0.1" > "$OUT/pip_tau2.log" 2>&1 \
-  || { log "FAILED pip tau2"; exit 1; }
+# tau-bench is NOT the PyPI package named "tau2" (an unrelated physics tool). Install the benchmark from its
+# repository at the v2.0.0 tag. It needs Python >= 3.12, so uv provides a 3.12 environment.
+( git clone -q "$TAU2_REPO" /root/tau2-bench && git -C /root/tau2-bench checkout -q "$TAU2_COMMIT" &&
+  uv venv -q -p 3.12 /root/venv_tau2 && uv pip install -q --python /root/venv_tau2/bin/python -e /root/tau2-bench ) \
+  > "$OUT/pip_tau2.log" 2>&1 || { log "FAILED install tau2-bench"; exit 1; }
 /root/venv_bfcl/bin/python "$REPO/stage_a/bfcl_adapter.py" --diff-out "$OUT/bfcl_adapter.diff" || { log "FAILED adapter"; exit 1; }
+# pre-flight: every tool must import and accept our flags BEFORE any model is downloaded
+/root/venv_bfcl/bin/python -c "from bfcl_eval.constants.model_config import MODEL_CONFIG_MAPPING as M; \
+assert 'Qwen/Qwen3.8-27B-FC' in M and 'huihui-ai/Huihui-Qwen3.8-27B-abliterated-FC' in M" > "$OUT/preflight.log" 2>&1 \
+  || { log "FAILED preflight bfcl"; tail -20 "$OUT/preflight.log"; exit 1; }
+/root/venv_bfcl/bin/bfcl generate --help 2>&1 | grep -q -- "--run-ids" || { log "FAILED preflight bfcl --run-ids"; exit 1; }
+( cd /root/tau2-bench && /root/venv_tau2/bin/tau2 run --help ) > "$OUT/preflight_tau2.log" 2>&1
+grep -q -- "--task-ids" "$OUT/preflight_tau2.log" && grep -q -- "--user-llm" "$OUT/preflight_tau2.log" \
+  || { log "FAILED preflight tau2"; tail -20 "$OUT/preflight_tau2.log"; exit 1; }
+for dom in airline retail telecom; do [ -f "/root/tau2-bench/data/tau2/domains/$dom/split_tasks.json" ] \
+  || { log "FAILED preflight tau2 data $dom"; exit 1; }; done
+log "preflight OK"
 for m in "${CHECKPOINTS[@]}" "$USER_SIM"; do                      # pin revisions before serving
   python -c "from huggingface_hub import HfApi;print('$m', HfApi().model_info('$m').sha)" >> "$OUT/revisions.txt" \
     || { log "FAILED revision $m"; exit 1; }
@@ -51,21 +66,24 @@ for M in "${CHECKPOINTS[@]}"; do
     BFCL_PROJECT_ROOT="$D" /root/venv_bfcl/bin/bfcl evaluate --model "$M-FC" \
       --test-category "$(python -c "import json;print(','.join(json.load(open('$REPO/stage_a/bfcl_test_case_ids.json'))))")" \
       --partial-eval > "$D/bfcl_evaluate.log" 2>&1 )
-  log "bfcl $M exit $?"
+  rc=$?; log "bfcl $M exit $rc"
+  [ $rc = 0 ] || { log "FAILED bfcl $M"; tail -30 "$D/bfcl_generate.log" "$D/bfcl_evaluate.log" 2>/dev/null; exit 1; }
   # tau-bench 2.0: the frozen 30 tasks, one trial each, same simulated user for both checkpoints
   for dom in airline retail telecom; do
     IDS=$(python -c "import json;print(' '.join(json.load(open('$REPO/stage_a/tau2_task_ids.json'))['$dom']))")
-    HOSTED_VLLM_API_KEY="$KEY" /root/venv_tau2/bin/tau2 run --domain "$dom" --task-split-name train --task-ids $IDS \
-      --agent-llm "hosted_vllm/$M" --agent-llm-args "{\"api_base\":\"http://127.0.0.1:8500/v1\"}" \
-      --user-llm "hosted_vllm/user-sim" --user-llm-args "{\"api_base\":\"http://127.0.0.1:8600/v1\",\"temperature\":0.0}" \
-      --num-trials 1 --seed 2027 --max-concurrency 4 --save-to "$D/tau2_$dom" > "$D/tau2_$dom.log" 2>&1
-    log "tau2 $M $dom exit $?"
+    ( cd /root/tau2-bench && HOSTED_VLLM_API_KEY="$KEY" /root/venv_tau2/bin/tau2 run --domain "$dom" \
+      --task-split-name train --task-ids $IDS \
+      --agent-llm "hosted_vllm/$M" --agent-llm-args "{\"api_base\":\"http://127.0.0.1:8500/v1\",\"api_key\":\"$KEY\"}" \
+      --user-llm "hosted_vllm/user-sim" --user-llm-args "{\"api_base\":\"http://127.0.0.1:8600/v1\",\"api_key\":\"$KEY\",\"temperature\":0.0}" \
+      --num-trials 1 --seed 2027 --max-concurrency 4 --save-to "$D/tau2_$dom" ) > "$D/tau2_$dom.log" 2>&1
+    rc=$?; log "tau2 $M $dom exit $rc"
+    [ $rc = 0 ] || { log "FAILED tau2 $M $dom"; tail -30 "$D/tau2_$dom.log"; exit 1; }
   done
   stop 8500
 done
 stop 8600
 pip freeze 2>/dev/null | grep -iE "^(vllm|torch|transformers)==" > "$OUT/pip_versions.txt"
-/root/venv_bfcl/bin/pip freeze | grep -i bfcl >> "$OUT/pip_versions.txt"; /root/venv_tau2/bin/pip freeze | grep -iE "^tau2|litellm" >> "$OUT/pip_versions.txt"
+/root/venv_bfcl/bin/pip freeze | grep -i bfcl >> "$OUT/pip_versions.txt"; uv pip freeze --python /root/venv_tau2/bin/python | grep -iE "^-e|^tau2|litellm" >> "$OUT/pip_versions.txt"; echo "tau2-bench $TAU2_COMMIT" >> "$OUT/pip_versions.txt"
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader > "$OUT/gpu.txt"
 git -C "$REPO" rev-parse HEAD > "$OUT/commit.txt"; git -C "$REPO" status --porcelain | wc -l >> "$OUT/commit.txt"
 log ALL_DONE

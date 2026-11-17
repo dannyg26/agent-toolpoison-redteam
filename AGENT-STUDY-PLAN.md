@@ -85,8 +85,10 @@ Measured:
 Official grading is used, and any component that depends on an AI judge is documented.
 
 **[impl] τ-bench setup.**
-- Package: `tau2` 4.0.1, released 2026-11-13. τ-bench 2.0 English results are not input-identical to
-  v1.0.1.
+- Source: the `sierra-research/tau2-bench` repository at tag `v2.0.0` (commit `989d3285`), installed
+  editable in a Python 3.12 environment. **Corrected 2026-11-16:** an earlier version of this note named
+  the PyPI package `tau2` 4.0.1, which is an unrelated physics tool. See `stage_a/RUN-LOG.md`, attempt 3.
+  τ-bench 2.0 English results are not input-identical to v1.0.1.
 - Models are reached through LiteLLM, so a hosted vLLM endpoint works.
 - **It needs a simulated user, which is an AI component in the grading loop.** The default is a hosted
   OpenAI model. Proposal: a local model, the same for every condition, so no outside API or data leaves the

@@ -28,3 +28,33 @@ under test was served and no benchmark ran. Cost about $0.92.
 - **Memory shares:** 0.45 for the simulated user and 0.47 for the checkpoint under test, together 0.92 of
   the GPU.
 - **Unchanged:** precision (FP8), context length (32,768) and every gate setting.
+
+## Attempt 3 (2026-11-16, A100 PCIe, pod kxhq5gwzgw929v, commit 3341b00)
+
+**What worked.** Fix A1: all three models served, the simulated user in 11 minutes including downloads and
+each checkpoint in about 5 minutes.
+
+**What failed.** Both benchmarks exited within seconds, so no benchmark item was attempted and no score
+exists. Cost about $0.87.
+
+- **BFCL** failed at import. BFCL's Qwen API handler imports `qwen_agent`, which needs `soundfile`, and
+  that was not installed.
+- **τ-bench was the wrong package.** The runner installed the PyPI package named `tau2` (4.0.1), which is
+  an unrelated physics tool for magnetic relaxation. The name and release date had been mistaken for
+  τ-bench. It only printed its help. The plan's note naming it is corrected.
+- **The runner kept going after the failures** and reported ALL_DONE.
+
+**Fix A2** (`run_stage_a.sh`):
+- **BFCL:** install `soundfile` alongside `bfcl-eval==2026.3.23`.
+- **τ-bench:** install from `github.com/sierra-research/tau2-bench` at tag `v2.0.0` (commit `989d3285`),
+  editable, in a Python 3.12 environment from `uv`, since the benchmark needs Python 3.12 or newer. The
+  frozen 30 task IDs were checked to be in that release's `train` split.
+- **Pre-flight checks before any model download:**
+  - BFCL imports with both adapter entries present;
+  - `bfcl generate` accepts `--run-ids`;
+  - `tau2 run` accepts `--task-ids` and `--user-llm`;
+  - the three domains' task data exists.
+- **Fail fast.** A non-zero exit from either benchmark now stops the run with a FAILED line.
+- **Keys.** τ-bench gets the server key through `api_key` in the LiteLLM arguments as well as the
+  environment. It is a temporary key that exists only on the pod.
+- **Unchanged:** the gate criteria, task lists, checkpoints and serving settings.
