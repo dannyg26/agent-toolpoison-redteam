@@ -76,3 +76,48 @@ $1.52.
 - **Faster stall rule.** The watcher's stall limit drops from 30 to 15 minutes. The watcher runs locally
   and is not part of the repository.
 - **Unchanged:** the gate, tasks, checkpoints, precision and context length.
+
+## Attempt 5 (2026-11-16/17, A100 SXM, pod zz3t3fhor4iyg0, commit db9e922)
+
+**What worked.**
+- Fix A3: setup, the pre-flight checks and both servers succeeded.
+- BFCL on the abliterated checkpoint ran all 221 cases and scored (exit 0, 29 minutes).
+- τ-bench airline finished, and retail reached 9 of 10.
+
+**How it ended.** At 01:24 local the pod stopped answering. RunPod then reported it as not found, and the
+watcher's terminate call had nothing left to stop. The balance was not exhausted ($10.01 afterwards), so the
+cause is on RunPod's side and unknown. The outputs had been copied back before it disappeared. The aligned
+checkpoint never ran. Cost about $5.30.
+
+**The τ-bench results are invalid** and are not scored, because of two integration faults:
+- **Tool calls were never parsed.** Through vLLM's chat endpoint, Qwen3.8's own chat template has the model
+  write tool calls in Qwen's XML form (`<tool_call><function=…><parameter=…>`). The server's `hermes` parser
+  expects JSON, so it failed on every call (9,552 parser errors in the log). All 143 tool calls the agent
+  wrote in airline and retail stayed as plain text, and the environment executed none. The 5 airline tasks
+  scored 1 needed no database change. BFCL was unaffected: its Qwen handler writes the prompt itself and
+  asks for JSON inside `<tool_call>`, and 1 of 221 outputs failed to decode.
+- **τ-bench 2.0's graders call OpenAI by default.**
+  - Airline's `COMMUNICATE` check uses an LLM judge, `gpt-5.5`, unless `--communicate-scorer` or
+    `--communicate-judge` is given.
+  - Retail's `NL_ASSERTION` check uses `gpt-5.4-mini`, fixed in `tau2/config.py` with no command-line
+    option.
+  - With no OpenAI key, 5 tasks (airline 3 and 7, retail 67, 89 and 113) ended in `infrastructure_error`.
+  - Telecom grades with environment assertions and actions only, so it needs no judge.
+
+**Partial BFCL result (abliterated, reported, not a gate result).** Official accuracy per category:
+
+| category | accuracy | category | accuracy |
+|---|---|---|---|
+| `simple_python` | 20/20 | `live_simple` | 17/20 |
+| `multiple` | 20/20 | `live_multiple` | 17/20 |
+| `parallel` | 15/20 | `live_parallel` | 14/16 |
+| `parallel_multiple` | 19/20 | `multi_turn_base` | 13/15 |
+| `irrelevance` | 8/20 | `live_irrelevance` | 13/20 |
+| `multi_turn_miss_param` | 10/15 | `multi_turn_miss_func` | 8/15 |
+
+**Fix A4** (`run_stage_a.sh`):
+- **Parser:** `--tool-call-parser qwen3_coder`, the vLLM parser for this XML form, for all three servers.
+- **Pre-flight:** check that the installed vLLM registers that parser.
+- **Tool check after each server starts:** one chat request offering a tool. The run stops unless the
+  server returns a parsed call with arguments. This would have caught the fault in minutes.
+- **Unchanged:** the gate, task lists, checkpoints, precision, context length and BFCL path.

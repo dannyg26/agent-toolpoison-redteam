@@ -31,6 +31,8 @@ grep -q -- "--task-ids" "$OUT/preflight_tau2.log" && grep -q -- "--user-llm" "$O
   || { log "FAILED preflight tau2"; tail -20 "$OUT/preflight_tau2.log"; exit 1; }
 for dom in airline retail telecom; do [ -f "/root/tau2-bench/data/tau2/domains/$dom/split_tasks.json" ] \
   || { log "FAILED preflight tau2 data $dom"; exit 1; }; done
+VLLM_DIR=$(python -c "import vllm,os;print(os.path.dirname(vllm.__file__))")
+grep -rqsE --include='*.py' "[\"']qwen3_coder[\"']" "$VLLM_DIR" || { log "FAILED preflight vllm qwen3_coder parser"; exit 1; }
 log "preflight OK"
 for m in "${CHECKPOINTS[@]}" "$USER_SIM"; do                      # pin revisions before serving
   python -c "from huggingface_hub import HfApi;print('$m', HfApi().model_info('$m').sha)" >> "$OUT/revisions.txt" \
@@ -43,7 +45,7 @@ serve(){ # model port util name  -> waits until the model is listed (authenticat
   nohup vllm serve "$1" --revision "$rev" --served-model-name "$4" --port "$2" --host 127.0.0.1 \
     --quantization fp8 --max-model-len 32768 --gpu-memory-utilization "$3" --max-num-seqs 32 \
     --limit-mm-per-prompt '{"image":0,"video":0}' \
-    --enable-auto-tool-choice --tool-call-parser hermes --reasoning-parser qwen3 > "$OUT/serve_$2.log" 2>&1 </dev/null &
+    --enable-auto-tool-choice --tool-call-parser qwen3_coder --reasoning-parser qwen3 > "$OUT/serve_$2.log" 2>&1 </dev/null &
   for i in $(seq 1 240); do
     curl -s -m 3 "http://127.0.0.1:$2/v1/models" -H "Authorization: Bearer $KEY" | grep -q "\"$4\"" && {
       curl -s "http://127.0.0.1:$2/v1/models" -H "Authorization: Bearer $KEY" > "$OUT/models_$2_$(echo "$4" | tr '/' '_').json"
@@ -51,14 +53,34 @@ serve(){ # model port util name  -> waits until the model is listed (authenticat
     sleep 5
   done; log "FAILED serve $4"; tail -40 "$OUT/serve_$2.log"; return 1
 }
+toolcheck(){ # port name -> one chat request with a tool; the server must return a PARSED tool call (fix A4)
+  python - "$1" "$2" > "$OUT/toolcheck_$1.json" 2>&1 <<'PY' || { log "FAILED toolcheck $2"; cat "$OUT/toolcheck_$1.json"; return 1; }
+import json, sys, urllib.request
+port, name = sys.argv[1], sys.argv[2]
+body = {"model": name, "max_tokens": 4096, "temperature": 0,
+        "messages": [{"role": "user", "content": "What is the weather in Paris? Use the tool."}],
+        "tools": [{"type": "function", "function": {"name": "get_weather", "description": "Current weather for a city",
+                   "parameters": {"type": "object", "properties": {"city": {"type": "string"}}, "required": ["city"]}}}]}
+req = urllib.request.Request(f"http://127.0.0.1:{port}/v1/chat/completions", data=json.dumps(body).encode(),
+                             headers={"Content-Type": "application/json"})
+msg = json.load(urllib.request.urlopen(req, timeout=600))["choices"][0]["message"]
+calls = msg.get("tool_calls") or []
+print(json.dumps({"tool_calls": calls, "content": (msg.get("content") or "")[:300]}))
+assert calls and calls[0]["function"]["name"] == "get_weather", "no parsed tool call"
+assert "city" in json.loads(calls[0]["function"]["arguments"])
+PY
+  log "toolcheck OK $2"
+}
 stop(){ pkill -f "vllm serve .*--port $1 " ; sleep 20; }
 
 serve "$USER_SIM" 8600 0.45 user-sim || exit 1                    # the simulated user stays up throughout
+toolcheck 8600 user-sim || exit 1                                  # telecom's simulated user also calls tools
 
 for M in "${CHECKPOINTS[@]}"; do
   TAG=$(echo "$M" | tr '/' '_'); D="$OUT/$TAG"; mkdir -p "$D"
   log "=== checkpoint $M"
   serve "$M" 8500 0.47 "$M" || exit 1
+  toolcheck 8500 "$M" || exit 1
   # BFCL: generate the frozen subset against the running server, then score only those IDs
   ( cd "$D" && cp "$REPO/stage_a/bfcl_test_case_ids.json" test_case_ids_to_generate.json &&
     BFCL_PROJECT_ROOT="$D" LOCAL_SERVER_ENDPOINT=127.0.0.1 LOCAL_SERVER_PORT=8500 OPENAI_API_KEY="$KEY" \
