@@ -201,6 +201,17 @@ def main():
     pod = None
     try:
         pod = request("POST", "/pods", key, payload)  # NEVER retry a creation request blindly
+    except urllib.error.HTTPError as exc:
+        try:
+            problem = json.loads(exc.read())
+            detail = str(problem.get("detail") or problem.get("message") or problem.get("errors") or "request refused")
+        except (ValueError, OSError):
+            detail = "request refused"
+        detail = detail.replace(key, "[REDACTED]")[:500]
+        (out / "allocation_error.json").write_text(json.dumps({"status": exc.code, "detail": detail}) + "\n")
+        if exc.code < 500:
+            raise SystemExit(f"RunPod refused allocation: HTTP {exc.code}: {detail}; no blind retry") from None
+        raise RuntimeError(f"RunPod server returned HTTP {exc.code}; inspect named pods before any retry") from None
     except (OSError, ValueError):
         # A timed-out create might have succeeded; discover that named pod rather than rent another.
         rows = request("GET", "/pods", key)

@@ -1,5 +1,5 @@
 {
-  "prepared_utc": "2026-11-17T21:41:13.144038+00:00",
+  "prepared_utc": "2026-11-17T21:42:47.807674+00:00",
   "note": "local snapshot; external timestamp requires publishing this commit before test collection",
   "files": {
     "pilot_config.json": "338a4e7661e26fd0c73b831a2ccaaedc0d714b06c876ff75bd9f81a37dc78ba5",
@@ -12,7 +12,7 @@
     "select_pilot_cases.py": "0038859ec1849303cdb290ebca66e79d740ecf0c3ad63ce8e25cb35f90923e32",
     "PILOT.md": "06772866df03888c9c2e3fbc8894be01393e5fe33028527432d35ce9c35e8e83",
     "bootstrap_pilot.py": "0d977082405af0bbc012633a369361fb4ff1a6e57badb0f5663632ef0e3f25c1",
-    "launch_pilot.py": "22d2b64e7ebda868d5e047ee46966a189715775730138d20c011a88710faca99",
+    "launch_pilot.py": "0983bda584535ab3fcc12956b97f605b7f77bf72f2a646a1c75dc963ed11cf09",
     "test_pilot.py": "4e7c80894ad987fb7961f038662b836142fca113fa3c3f04f39ee50f238cbee0",
     "test_harness.py": "567aea9e396d8fc103d0fb5144f210c6528f40adf8a6b72c1c6fc9989fd22178",
     "select_cases.py": "345097be1bb7af5fb852d97c1d820bd9f6ebb84d9e31d85ccf3ae697c9e355a5",
