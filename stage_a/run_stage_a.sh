@@ -25,7 +25,8 @@ done
 serve(){ # model port util name  -> waits until the model is listed (authenticated)
   local rev; rev=$(awk -v m="$1" '$1==m{print $2}' "$OUT/revisions.txt")
   nohup vllm serve "$1" --revision "$rev" --served-model-name "$4" --port "$2" --host 127.0.0.1 --api-key "$KEY" \
-    --quantization fp8 --max-model-len 32768 --gpu-memory-utilization "$3" \
+    --quantization fp8 --max-model-len 32768 --gpu-memory-utilization "$3" --max-num-seqs 32 \
+    --limit-mm-per-prompt '{"image":0,"video":0}' \
     --enable-auto-tool-choice --tool-call-parser hermes --reasoning-parser qwen3 > "$OUT/serve_$2.log" 2>&1 </dev/null &
   for i in $(seq 1 240); do
     curl -s -m 3 "http://127.0.0.1:$2/v1/models" -H "Authorization: Bearer $KEY" | grep -q "\"$4\"" && {
@@ -36,12 +37,12 @@ serve(){ # model port util name  -> waits until the model is listed (authenticat
 }
 stop(){ pkill -f "vllm serve .*--port $1 " ; sleep 20; }
 
-serve "$USER_SIM" 8600 0.42 user-sim || exit 1                    # the simulated user stays up throughout
+serve "$USER_SIM" 8600 0.45 user-sim || exit 1                    # the simulated user stays up throughout
 
 for M in "${CHECKPOINTS[@]}"; do
   TAG=$(echo "$M" | tr '/' '_'); D="$OUT/$TAG"; mkdir -p "$D"
   log "=== checkpoint $M"
-  serve "$M" 8500 0.45 "$M" || exit 1
+  serve "$M" 8500 0.47 "$M" || exit 1
   # BFCL: generate the frozen subset against the running server, then score only those IDs
   ( cd "$D" && cp "$REPO/stage_a/bfcl_test_case_ids.json" test_case_ids_to_generate.json &&
     BFCL_PROJECT_ROOT="$D" LOCAL_SERVER_ENDPOINT=127.0.0.1 LOCAL_SERVER_PORT=8500 OPENAI_API_KEY="$KEY" \
