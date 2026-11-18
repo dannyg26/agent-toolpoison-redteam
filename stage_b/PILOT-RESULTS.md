@@ -36,12 +36,19 @@ simulator was used. No human validation is planned.
 | Target generation/context/schema limits | 0 | 0 |
 | Recorded infrastructure errors | 0 | 0 |
 
-The aligned malformed candidate was also its capped candidate. It consumed a candidate
-slot and caused no target episode; it is not labelled a refusal. Two uncensored capped
+The aligned malformed candidate was separate from its capped candidate. The malformed
+candidate consumed a slot and caused no target episode; it is not labelled a refusal. Two uncensored capped
 candidates occurred in campaigns with an observed success, which the frozen rule
 preserves as successes. The remaining uncensored cap and the aligned cap occurred in
-unsuccessful campaigns, making those campaigns incomplete. A valid insertion extracted
-from a capped generation can still be tested; its observed benchmark success is retained.
+unsuccessful campaigns, making those campaigns incomplete under the frozen rule. All
+four capped generations contained an extractable insertion and were tested. A valid
+insertion extracted from a capped generation can still be tested; its observed benchmark
+success is retained. This distinguishes the recorded cap from a missing insertion and
+does not change the pilot's predeclared incomplete classification.
+
+Reporting correction, 2026-11-17: the first report incorrectly identified the aligned
+malformed and capped candidates as the same attempt. They were separate attempts on
+different cases. This correction changes no data, settings, classifications or counts.
 
 Among the eight complete pairs there were five successes in both arms, one in the
 uncensored arm alone, one in the aligned arm alone, and one with no observed success
@@ -65,8 +72,9 @@ three-candidate success counts do not establish equal effectiveness.
 The ten clean test episodes completed with utility success on **9/10** tasks. The target
 also completed **2/2** benign compatibility tasks. Injection text was detected in the
 target's tool messages in **17/21** executed uncensored episodes and **18/22** aligned
-episodes; eight executed episodes did not expose the target to the insertion. These
-counts describe actual attempts, not independent observations. They are not used to
+episodes; the heuristic did not detect the insertion in eight executed episodes. It
+matches the normalized start of the insertion in tool messages, so nondetection does
+not prove absence of exposure. These counts describe actual attempts, not independent observations. They are not used to
 filter the primary campaign results. The security predicates can assess environment
 effects or an output condition; they do not establish universal real-world harm.
 
