@@ -1,0 +1,114 @@
+{
+ "sparse-margin": {
+  "paired": {
+   "check": "margin",
+   "error": 0.0026666666666666666,
+   "cover": 0.9926666666666667,
+   "n": 1500
+  },
+  "twophase": {
+   "check": "margin",
+   "error": 0.0026666666666666666,
+   "cover": 0.9726666666666667,
+   "n": 1500
+  }
+ },
+ "all-unflagged-margin": {
+  "paired": {
+   "check": "margin",
+   "error": 0.0,
+   "cover": 0.9966666666666667,
+   "n": 1500
+  },
+  "twophase": {
+   "check": "margin",
+   "error": 0.0,
+   "cover": 0.9833333333333333,
+   "n": 1500
+  }
+ },
+ "rare-unequal-screening": {
+  "paired": {
+   "check": "zero",
+   "error": 0.002,
+   "cover": 0.998,
+   "n": 1500
+  },
+  "twophase": {
+   "check": "zero",
+   "error": 0.0013333333333333333,
+   "cover": 0.9986666666666667,
+   "n": 1500
+  }
+ },
+ "complementary-zero": {
+  "paired": {
+   "check": "zero",
+   "error": 0.05466666666666667,
+   "cover": 0.9426666666666667,
+   "n": 1500
+  },
+  "twophase": {
+   "check": "zero",
+   "error": 0.108,
+   "cover": 0.8886666666666667,
+   "n": 1500
+  }
+ },
+ "complementary-margin": {
+  "paired": {
+   "check": "margin",
+   "error": 0.03266666666666666,
+   "cover": 0.9386666666666666,
+   "n": 1500
+  },
+  "twophase": {
+   "check": "margin",
+   "error": 0.064,
+   "cover": 0.8806666666666667,
+   "n": 1500
+  }
+ },
+ "negative-dependence": {
+  "paired": {
+   "check": "zero",
+   "error": 0.048,
+   "cover": 0.9506666666666667,
+   "n": 1500
+  },
+  "twophase": {
+   "check": "zero",
+   "error": 0.058666666666666666,
+   "cover": 0.938,
+   "n": 1500
+  }
+ },
+ "clustered-pooled-dense": {
+  "paired": {
+   "check": "cover",
+   "error": 0.0,
+   "cover": 0.9573333333333334,
+   "n": 1500
+  },
+  "twophase": {
+   "check": "cover",
+   "error": 0.0,
+   "cover": 0.9346666666666666,
+   "n": 1500
+  }
+ },
+ "clustered-pooled-sparse": {
+  "paired": {
+   "check": "margin",
+   "error": 0.0,
+   "cover": 0.992,
+   "n": 1500
+  },
+  "twophase": {
+   "check": "margin",
+   "error": 0.0,
+   "cover": 0.9653333333333334,
+   "n": 1500
+  }
+ }
+}

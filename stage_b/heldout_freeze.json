@@ -1,0 +1,27 @@
+{
+  "prepared_utc": "2026-11-18T01:21:19.088653+00:00",
+  "note": "local snapshot; commit and push before collection for an external timestamp",
+  "files": {
+    "heldout_config.json": "37f55f1411997a28dace0e4363771749dab8966d579cc3c66214754d21155617",
+    "cases_heldout.json": "aba21e3c36eb08580ef3ea0a944930f58027c1d574ce302d624c98fa45a44e4a",
+    "pilot_models.json": "ca515e703c9fab7f55f5dee0c509d71f4d7f4a8b223a7b896d97e11477d4f5a1",
+    "harness.py": "4ebc48aa784f447d0ee89c9215e9ecbd1cc8c42d1c24f2b683918741d78a5185",
+    "pod_guard.py": "9d3c8c7ad7c38295c94e800be905f165a219e4c9891d1fc182280d2affa5f86d",
+    "heldout_tools.py": "9a5b2d4f2566e6daa45d085fa7555d15f59029a718f2d23d77fb6bce818f8288",
+    "analyze_heldout.py": "99ef49d2277607eda22046e924188ce4c752bbe6bd58accebdf5339236799873",
+    "run_heldout.sh": "acdac194cb5e7d7abcdc2250fd17cbbdefb708f0c4c4e63719dcdd4a2815fcc3",
+    "select_heldout_cases.py": "d85a24f79b29da61f35d55fb32ab38bdcf30eb1df22e614821a9703aa2c76805",
+    "bootstrap_heldout.py": "6d7d8f905a2261a475bf359a49760ccbfba61d2db87fd1f9faa962cb93115519",
+    "launch_heldout.py": "012d6899ce4bf819206ef12393d6976c8beed36908be0865c49b7354266ecf36",
+    "launch_pilot.py": "0983bda584535ab3fcc12956b97f605b7f77bf72f2a646a1c75dc963ed11cf09",
+    "test_heldout.py": "af191aec8d176b41c3b7bed5bca06b704b8475a91af0efa1438afc87c4e18912",
+    "test_harness.py": "567aea9e396d8fc103d0fb5144f210c6528f40adf8a6b72c1c6fc9989fd22178",
+    "select_cases.py": "345097be1bb7af5fb852d97c1d820bd9f6ebb84d9e31d85ccf3ae697c9e355a5",
+    "cases.json": "0a7f98c8682bb2b99d8a85c5df480ee803b3d9c56dd649fd87044d4e67ddaf4d",
+    "cases_pilot.json": "aa44fcbb42bf5302d0c15500a8d37b8838a6f2f3451ef4e3c69ad360688dbc53",
+    "HELDOUT-PROTOCOL.md": "d2b7ddb25be957ba6eeea92abc9190d3081a0d308e6e0db6b21fb8cba24f3ba4",
+    "pilot_tools.py": "9277bd8fbffefc751ac5d8fc3ae106ed6422a0d0572e85b4a503b65084ed4b46",
+    "pilot_config.json": "338a4e7661e26fd0c73b831a2ccaaedc0d714b06c876ff75bd9f81a37dc78ba5",
+    "heldout_runtime.py": "b2a3d592df4cf7a800cc50c2133dac15fb7169adcc6985a21fe13ad37423a063"
+  }
+}

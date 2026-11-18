@@ -1,0 +1,38 @@
+{
+ "AGENT-BRIEF.txt": {
+  "source": "adj/confirm/for_agents/AGENT-BRIEF.txt",
+  "source_sha256": "012269aff412502ea13dfac86d0f025c13a819357dfcad29b23236367519e2c5",
+  "published_sha256": "012269aff412502ea13dfac86d0f025c13a819357dfcad29b23236367519e2c5",
+  "path_sanitised": false
+ },
+ "AGENT-BRIEF-resume-agent1.txt": {
+  "source": "adj/confirm/resume_agent1/AGENT-BRIEF.txt",
+  "source_sha256": "318892673d0bae57739b33cfeae302e3863394454c73c3ac02808414cb97f761",
+  "published_sha256": "318892673d0bae57739b33cfeae302e3863394454c73c3ac02808414cb97f761",
+  "path_sanitised": false
+ },
+ "AGENT-BRIEF-resume-agent2.txt": {
+  "source": "adj/confirm/resume_agent2/AGENT-BRIEF.txt",
+  "source_sha256": "a88562bbba8b2cad41fdbc0f0d6977d4daa0abf71f1db783dadfb88ba13e2510",
+  "published_sha256": "a88562bbba8b2cad41fdbc0f0d6977d4daa0abf71f1db783dadfb88ba13e2510",
+  "path_sanitised": false
+ },
+ "RECONCILE-BRIEF-agent1.txt": {
+  "source": "adj/confirm/reconcile_agent1/RECONCILE-BRIEF.txt",
+  "source_sha256": "025c2c3fdbf5a02e7926f176efc80b6cf2c8d5248013593f7451e0135a1b13e5",
+  "published_sha256": "025c2c3fdbf5a02e7926f176efc80b6cf2c8d5248013593f7451e0135a1b13e5",
+  "path_sanitised": false
+ },
+ "RECONCILE-BRIEF-agent2.txt": {
+  "source": "adj/confirm/reconcile_agent2/RECONCILE-BRIEF.txt",
+  "source_sha256": "bf22d928af4027f1a2402d210e55adec2cb678db5262a6dea21913c0bb67fc79",
+  "published_sha256": "bf22d928af4027f1a2402d210e55adec2cb678db5262a6dea21913c0bb67fc79",
+  "path_sanitised": false
+ },
+ "agent1_label_work.py": {
+  "source": "adj/confirm/agent1/label_work.py",
+  "source_sha256": "059da05e94bc105d356e843533743f59bdbcd26903c4b4fa232b44f178f8ad43",
+  "published_sha256": "c7cc86817103207d7ae5543ded60e5e7b8208a2fbed2de3810fab94a14d7db4f",
+  "path_sanitised": true
+ }
+}

@@ -1,0 +1,3620 @@
+{
+ "A": {
+  "main": {
+   "asr": {
+    "no-attacker": [
+     0.09166666666666666,
+     0.04084870180785173,
+     0.19912830257436354
+    ],
+    "aligned-plain": [
+     0.15333333333333332,
+     0.08282294836964654,
+     0.256111330949044
+    ],
+    "abliterated-plain": [
+     0.1536666666666667,
+     0.0917224661983922,
+     0.25871991509750847
+    ],
+    "aligned-redteam": [
+     0.45594968553459114,
+     0.350257174009094,
+     0.5716672278992871
+    ],
+    "abliterated-redteam": [
+     0.5191085271317829,
+     0.42094975589969663,
+     0.6191348021540797
+    ]
+   },
+   "hypotheses": [
+    {
+     "id": "H1",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "margin",
+     "role": "primary",
+     "d": -0.3022830188679244,
+     "lo": -0.4177464644511502,
+     "hi": -0.17048956847442723,
+     "p": 0.0,
+     "margin_p": 0.0,
+     "holm": null,
+     "verdict": "supported"
+    },
+    {
+     "id": "H2",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "secondary",
+     "d": -0.3022830188679244,
+     "lo": -0.4177464644511502,
+     "hi": -0.17048956847442723,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x lower, significant after Holm"
+    },
+    {
+     "id": "H3",
+     "x": "abliterated-plain",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.0003333333333333799,
+     "lo": -0.08071288099042465,
+     "hi": 0.08576807137829366,
+     "p": 0.953,
+     "margin_p": null,
+     "holm": 0.953,
+     "verdict": "not significant"
+    },
+    {
+     "id": "H4a",
+     "x": "aligned-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.36428301886792447,
+     "lo": 0.2319936954215451,
+     "hi": 0.4799524384918204,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "H4b",
+     "x": "abliterated-plain",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.06200000000000004,
+     "lo": 0.009364427314119994,
+     "hi": 0.11611612810669021,
+     "p": 0.0225,
+     "margin_p": null,
+     "holm": 0.045,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "H4c",
+     "x": "abliterated-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.42744186046511623,
+     "lo": 0.3139405737477139,
+     "hi": 0.522958139059703,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "X1",
+     "x": "abliterated-redteam",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": 0.06315884159719176,
+     "lo": -0.0638075649410852,
+     "hi": 0.18828603697289423,
+     "p": 0.333,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    },
+    {
+     "id": "X2",
+     "x": "aligned-redteam",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": 0.3026163522012578,
+     "lo": 0.17180030956399725,
+     "hi": 0.4221626134431852,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    }
+   ],
+   "contrasts": {
+    "abliterated-plain - aligned-redteam": {
+     "d": -0.3022830188679244,
+     "lo": -0.4177464644511502,
+     "hi": -0.17048956847442723,
+     "p": 0.0
+    },
+    "abliterated-redteam - aligned-redteam": {
+     "d": 0.06315884159719176,
+     "lo": -0.0638075649410852,
+     "hi": 0.18828603697289423,
+     "p": 0.333
+    },
+    "abliterated-plain - aligned-plain": {
+     "d": 0.0003333333333333799,
+     "lo": -0.08071288099042465,
+     "hi": 0.08576807137829366,
+     "p": 0.953
+    },
+    "aligned-redteam - aligned-plain": {
+     "d": 0.3026163522012578,
+     "lo": 0.17180030956399725,
+     "hi": 0.4221626134431852,
+     "p": 0.0
+    },
+    "aligned-redteam - no-attacker": {
+     "d": 0.36428301886792447,
+     "lo": 0.2319936954215451,
+     "hi": 0.4799524384918204,
+     "p": 0.0
+    },
+    "abliterated-plain - no-attacker": {
+     "d": 0.06200000000000004,
+     "lo": 0.009364427314119994,
+     "hi": 0.11611612810669021,
+     "p": 0.0225
+    },
+    "abliterated-redteam - no-attacker": {
+     "d": 0.42744186046511623,
+     "lo": 0.3139405737477139,
+     "hi": 0.522958139059703,
+     "p": 0.0
+    }
+   },
+   "boundary_strata": []
+  },
+  "main_per_arm_miss": {
+   "asr": {
+    "no-attacker": [
+     0.12166666666666667,
+     0.040035355350456506,
+     0.35654755358769524
+    ],
+    "aligned-plain": [
+     0.19407407407407407,
+     0.087535972765042,
+     0.4104993222182792
+    ],
+    "abliterated-plain": [
+     0.11266666666666668,
+     0.06947368421052631,
+     0.3122301054405231
+    ],
+    "aligned-redteam": [
+     0.44528301886792454,
+     0.3499926900584795,
+     0.6161499580711084
+    ],
+    "abliterated-redteam": [
+     0.5007751937984496,
+     0.4114430894308943,
+     0.6876159157107112
+    ]
+   },
+   "hypotheses": [
+    {
+     "id": "H1",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "margin",
+     "role": "primary",
+     "d": -0.33261635220125785,
+     "lo": -0.49025473282415843,
+     "hi": -0.13331319782496984,
+     "p": 0.0025,
+     "margin_p": 0.0005,
+     "holm": null,
+     "verdict": "supported"
+    },
+    {
+     "id": "H2",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "secondary",
+     "d": -0.33261635220125785,
+     "lo": -0.49025473282415843,
+     "hi": -0.13331319782496984,
+     "p": 0.0025,
+     "margin_p": null,
+     "holm": 0.0125,
+     "verdict": "x lower, significant after Holm"
+    },
+    {
+     "id": "H3",
+     "x": "abliterated-plain",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "secondary",
+     "d": -0.08140740740740739,
+     "lo": -0.28039268781395327,
+     "hi": 0.13640320123201644,
+     "p": 0.443,
+     "margin_p": null,
+     "holm": 0.886,
+     "verdict": "not significant"
+    },
+    {
+     "id": "H4a",
+     "x": "aligned-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.32361635220125784,
+     "lo": 0.08559877855975248,
+     "hi": 0.513197341476324,
+     "p": 0.012,
+     "margin_p": null,
+     "holm": 0.036000000000000004,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "H4b",
+     "x": "abliterated-plain",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": -0.008999999999999994,
+     "lo": -0.23065232547177647,
+     "hi": 0.19522979421724193,
+     "p": 0.9355,
+     "margin_p": null,
+     "holm": 0.9355,
+     "verdict": "not significant"
+    },
+    {
+     "id": "H4c",
+     "x": "abliterated-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.3791085271317829,
+     "lo": 0.14079860141157638,
+     "hi": 0.5738612252464241,
+     "p": 0.0025,
+     "margin_p": null,
+     "holm": 0.0125,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "X1",
+     "x": "abliterated-redteam",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": 0.05549217493052505,
+     "lo": -0.11265515495785619,
+     "hi": 0.24338251374216185,
+     "p": 0.536,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    },
+    {
+     "id": "X2",
+     "x": "aligned-redteam",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": 0.2512089447938505,
+     "lo": 0.033284958682172856,
+     "hi": 0.44642140158820165,
+     "p": 0.0255,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    }
+   ],
+   "contrasts": {
+    "abliterated-plain - aligned-redteam": {
+     "d": -0.33261635220125785,
+     "lo": -0.49025473282415843,
+     "hi": -0.13331319782496984,
+     "p": 0.0025
+    },
+    "abliterated-redteam - aligned-redteam": {
+     "d": 0.05549217493052505,
+     "lo": -0.11265515495785619,
+     "hi": 0.24338251374216185,
+     "p": 0.536
+    },
+    "abliterated-plain - aligned-plain": {
+     "d": -0.08140740740740739,
+     "lo": -0.28039268781395327,
+     "hi": 0.13640320123201644,
+     "p": 0.443
+    },
+    "aligned-redteam - aligned-plain": {
+     "d": 0.2512089447938505,
+     "lo": 0.033284958682172856,
+     "hi": 0.44642140158820165,
+     "p": 0.0255
+    },
+    "aligned-redteam - no-attacker": {
+     "d": 0.32361635220125784,
+     "lo": 0.08559877855975248,
+     "hi": 0.513197341476324,
+     "p": 0.012
+    },
+    "abliterated-plain - no-attacker": {
+     "d": -0.008999999999999994,
+     "lo": -0.23065232547177647,
+     "hi": 0.19522979421724193,
+     "p": 0.9355
+    },
+    "abliterated-redteam - no-attacker": {
+     "d": 0.3791085271317829,
+     "lo": 0.14079860141157638,
+     "hi": 0.5738612252464241,
+     "p": 0.0025
+    }
+   },
+   "boundary_strata": [
+    [
+     "abliterated-plain",
+     "audit",
+     0,
+     11,
+     112
+    ],
+    [
+     "aligned-redteam",
+     "audit",
+     0,
+     3,
+     29
+    ],
+    [
+     "abliterated-redteam",
+     "audit",
+     0,
+     5,
+     50
+    ]
+   ]
+  },
+  "main_agent1": {
+   "asr": {
+    "no-attacker": [
+     0.1275,
+     0.06287468475618163,
+     0.24602441949861173
+    ],
+    "aligned-plain": [
+     0.2,
+     0.11784691608922787,
+     0.31225420109210106
+    ],
+    "abliterated-plain": [
+     0.17416666666666666,
+     0.10426110053383753,
+     0.28714423716657556
+    ],
+    "aligned-redteam": [
+     0.5503396226415095,
+     0.443771651240916,
+     0.6580859463844445
+    ],
+    "abliterated-redteam": [
+     0.5282751937984497,
+     0.4314870928868682,
+     0.6309371702020493
+    ]
+   },
+   "hypotheses": [
+    {
+     "id": "H1",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "margin",
+     "role": "primary",
+     "d": -0.3761729559748428,
+     "lo": -0.48726617087866125,
+     "hi": -0.2414597020480523,
+     "p": 0.0,
+     "margin_p": 0.0,
+     "holm": null,
+     "verdict": "supported"
+    },
+    {
+     "id": "H2",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "secondary",
+     "d": -0.3761729559748428,
+     "lo": -0.48726617087866125,
+     "hi": -0.2414597020480523,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x lower, significant after Holm"
+    },
+    {
+     "id": "H3",
+     "x": "abliterated-plain",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "secondary",
+     "d": -0.025833333333333347,
+     "lo": -0.11066761402167077,
+     "hi": 0.06008880746995441,
+     "p": 0.5635,
+     "margin_p": null,
+     "holm": 0.5635,
+     "verdict": "not significant"
+    },
+    {
+     "id": "H4a",
+     "x": "aligned-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.4228396226415095,
+     "lo": 0.28223208601803706,
+     "hi": 0.5312408350690394,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "H4b",
+     "x": "abliterated-plain",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.04666666666666666,
+     "lo": -0.0018248864189319097,
+     "hi": 0.09832257373722221,
+     "p": 0.0615,
+     "margin_p": null,
+     "holm": 0.123,
+     "verdict": "not significant"
+    },
+    {
+     "id": "H4c",
+     "x": "abliterated-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.40077519379844967,
+     "lo": 0.2823154706710067,
+     "hi": 0.49679608055848096,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "X1",
+     "x": "abliterated-redteam",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": -0.022064428843059813,
+     "lo": -0.1440032572215295,
+     "hi": 0.10360292171120956,
+     "p": 0.725,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    },
+    {
+     "id": "X2",
+     "x": "aligned-redteam",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": 0.3503396226415095,
+     "lo": 0.219507322853173,
+     "hi": 0.4646714088336078,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    }
+   ],
+   "contrasts": {
+    "abliterated-plain - aligned-redteam": {
+     "d": -0.3761729559748428,
+     "lo": -0.48726617087866125,
+     "hi": -0.2414597020480523,
+     "p": 0.0
+    },
+    "abliterated-redteam - aligned-redteam": {
+     "d": -0.022064428843059813,
+     "lo": -0.1440032572215295,
+     "hi": 0.10360292171120956,
+     "p": 0.725
+    },
+    "abliterated-plain - aligned-plain": {
+     "d": -0.025833333333333347,
+     "lo": -0.11066761402167077,
+     "hi": 0.06008880746995441,
+     "p": 0.5635
+    },
+    "aligned-redteam - aligned-plain": {
+     "d": 0.3503396226415095,
+     "lo": 0.219507322853173,
+     "hi": 0.4646714088336078,
+     "p": 0.0
+    },
+    "aligned-redteam - no-attacker": {
+     "d": 0.4228396226415095,
+     "lo": 0.28223208601803706,
+     "hi": 0.5312408350690394,
+     "p": 0.0
+    },
+    "abliterated-plain - no-attacker": {
+     "d": 0.04666666666666666,
+     "lo": -0.0018248864189319097,
+     "hi": 0.09832257373722221,
+     "p": 0.0615
+    },
+    "abliterated-redteam - no-attacker": {
+     "d": 0.40077519379844967,
+     "lo": 0.2823154706710067,
+     "hi": 0.49679608055848096,
+     "p": 0.0
+    }
+   },
+   "boundary_strata": []
+  },
+  "main_agent2": {
+   "asr": {
+    "no-attacker": [
+     0.09833333333333333,
+     0.045223704959234105,
+     0.20483617731364195
+    ],
+    "aligned-plain": [
+     0.16833333333333333,
+     0.09443202737519826,
+     0.2714790151953193
+    ],
+    "abliterated-plain": [
+     0.16233333333333333,
+     0.09998117846356583,
+     0.2673403496961414
+    ],
+    "aligned-redteam": [
+     0.45594968553459114,
+     0.350257174009094,
+     0.5716672278992871
+    ],
+    "abliterated-redteam": [
+     0.5043798449612403,
+     0.40615902791886516,
+     0.6074157709791249
+    ]
+   },
+   "hypotheses": [
+    {
+     "id": "H1",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "margin",
+     "role": "primary",
+     "d": -0.2936163522012578,
+     "lo": -0.41129957402555656,
+     "hi": -0.16253542367988172,
+     "p": 0.0,
+     "margin_p": 0.0,
+     "holm": null,
+     "verdict": "supported"
+    },
+    {
+     "id": "H2",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "secondary",
+     "d": -0.2936163522012578,
+     "lo": -0.41129957402555656,
+     "hi": -0.16253542367988172,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x lower, significant after Holm"
+    },
+    {
+     "id": "H3",
+     "x": "abliterated-plain",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "secondary",
+     "d": -0.006000000000000005,
+     "lo": -0.0897537948762345,
+     "hi": 0.0799075334046812,
+     "p": 0.937,
+     "margin_p": null,
+     "holm": 0.937,
+     "verdict": "not significant"
+    },
+    {
+     "id": "H4a",
+     "x": "aligned-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.3576163522012578,
+     "lo": 0.2247572553645751,
+     "hi": 0.47317867922897044,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "H4b",
+     "x": "abliterated-plain",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.064,
+     "lo": 0.0070374238284359285,
+     "hi": 0.12150093425077635,
+     "p": 0.0275,
+     "margin_p": null,
+     "holm": 0.055,
+     "verdict": "unadjusted interval excludes 0; not significant after Holm"
+    },
+    {
+     "id": "H4c",
+     "x": "abliterated-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.406046511627907,
+     "lo": 0.29096685624927443,
+     "hi": 0.5021278989788891,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "X1",
+     "x": "abliterated-redteam",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": 0.04843015942664919,
+     "lo": -0.08043050971415357,
+     "hi": 0.17359416573304992,
+     "p": 0.4595,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    },
+    {
+     "id": "X2",
+     "x": "aligned-redteam",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": 0.2876163522012578,
+     "lo": 0.1543436848026146,
+     "hi": 0.41382831898857814,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    }
+   ],
+   "contrasts": {
+    "abliterated-plain - aligned-redteam": {
+     "d": -0.2936163522012578,
+     "lo": -0.41129957402555656,
+     "hi": -0.16253542367988172,
+     "p": 0.0
+    },
+    "abliterated-redteam - aligned-redteam": {
+     "d": 0.04843015942664919,
+     "lo": -0.08043050971415357,
+     "hi": 0.17359416573304992,
+     "p": 0.4595
+    },
+    "abliterated-plain - aligned-plain": {
+     "d": -0.006000000000000005,
+     "lo": -0.0897537948762345,
+     "hi": 0.0799075334046812,
+     "p": 0.937
+    },
+    "aligned-redteam - aligned-plain": {
+     "d": 0.2876163522012578,
+     "lo": 0.1543436848026146,
+     "hi": 0.41382831898857814,
+     "p": 0.0
+    },
+    "aligned-redteam - no-attacker": {
+     "d": 0.3576163522012578,
+     "lo": 0.2247572553645751,
+     "hi": 0.47317867922897044,
+     "p": 0.0
+    },
+    "abliterated-plain - no-attacker": {
+     "d": 0.064,
+     "lo": 0.0070374238284359285,
+     "hi": 0.12150093425077635,
+     "p": 0.0275
+    },
+    "abliterated-redteam - no-attacker": {
+     "d": 0.406046511627907,
+     "lo": 0.29096685624927443,
+     "hi": 0.5021278989788891,
+     "p": 0.0
+    }
+   },
+   "boundary_strata": []
+  },
+  "main_flip_abl_plain": {
+   "asr": {
+    "no-attacker": [
+     0.20416666666666666,
+     0.10333156028368794,
+     0.31935
+    ],
+    "aligned-plain": [
+     0.23666666666666666,
+     0.1392489126330892,
+     0.3425292954608744
+    ],
+    "abliterated-plain": [
+     0.3168333333333333,
+     0.20600314082799645,
+     0.43126397007281464
+    ],
+    "aligned-redteam": [
+     0.4826163522012578,
+     0.37325178702570383,
+     0.5937283730706984
+    ],
+    "abliterated-redteam": [
+     0.5649418604651163,
+     0.4647143558017418,
+     0.6643112659698026
+    ]
+   },
+   "hypotheses": [
+    {
+     "id": "H1",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "margin",
+     "role": "primary",
+     "d": -0.16578301886792451,
+     "lo": -0.3022421305822137,
+     "hi": -0.043008475833715296,
+     "p": 0.0115,
+     "margin_p": 0.00025,
+     "holm": null,
+     "verdict": "supported"
+    },
+    {
+     "id": "H2",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "secondary",
+     "d": -0.16578301886792451,
+     "lo": -0.3022421305822137,
+     "hi": -0.043008475833715296,
+     "p": 0.0115,
+     "margin_p": null,
+     "holm": 0.023,
+     "verdict": "x lower, significant after Holm"
+    },
+    {
+     "id": "H3",
+     "x": "abliterated-plain",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.08016666666666664,
+     "lo": -0.0025415715700013355,
+     "hi": 0.15743616001683342,
+     "p": 0.061,
+     "margin_p": null,
+     "holm": 0.061,
+     "verdict": "not significant"
+    },
+    {
+     "id": "H4a",
+     "x": "aligned-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.27844968553459115,
+     "lo": 0.1501238739983421,
+     "hi": 0.40890346153846163,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "H4b",
+     "x": "abliterated-plain",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.11266666666666664,
+     "lo": 0.05390217391304348,
+     "hi": 0.16668898657477307,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "H4c",
+     "x": "abliterated-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.36077519379844963,
+     "lo": 0.2453483081295581,
+     "hi": 0.46926005906238455,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "X1",
+     "x": "abliterated-redteam",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": 0.08232550826385848,
+     "lo": -0.04272745772087878,
+     "hi": 0.2028055877523424,
+     "p": 0.194,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    },
+    {
+     "id": "X2",
+     "x": "aligned-redteam",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": 0.24594968553459115,
+     "lo": 0.12082715240641713,
+     "hi": 0.3759419879062736,
+     "p": 0.0005,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    }
+   ],
+   "contrasts": {
+    "abliterated-plain - aligned-redteam": {
+     "d": -0.16578301886792451,
+     "lo": -0.3022421305822137,
+     "hi": -0.043008475833715296,
+     "p": 0.0115
+    },
+    "abliterated-redteam - aligned-redteam": {
+     "d": 0.08232550826385848,
+     "lo": -0.04272745772087878,
+     "hi": 0.2028055877523424,
+     "p": 0.194
+    },
+    "abliterated-plain - aligned-plain": {
+     "d": 0.08016666666666664,
+     "lo": -0.0025415715700013355,
+     "hi": 0.15743616001683342,
+     "p": 0.061
+    },
+    "aligned-redteam - aligned-plain": {
+     "d": 0.24594968553459115,
+     "lo": 0.12082715240641713,
+     "hi": 0.3759419879062736,
+     "p": 0.0005
+    },
+    "aligned-redteam - no-attacker": {
+     "d": 0.27844968553459115,
+     "lo": 0.1501238739983421,
+     "hi": 0.40890346153846163,
+     "p": 0.0
+    },
+    "abliterated-plain - no-attacker": {
+     "d": 0.11266666666666664,
+     "lo": 0.05390217391304348,
+     "hi": 0.16668898657477307,
+     "p": 0.0
+    },
+    "abliterated-redteam - no-attacker": {
+     "d": 0.36077519379844963,
+     "lo": 0.2453483081295581,
+     "hi": 0.46926005906238455,
+     "p": 0.0
+    }
+   },
+   "boundary_strata": [
+    [
+     "abliterated-plain",
+     "cand",
+     20,
+     20,
+     6
+    ]
+   ]
+  },
+  "e1": {
+   "asr": {
+    "no-attacker": [
+     0.09395855286266246,
+     0.04282714156712548,
+     0.20182918367220767
+    ],
+    "aligned-plain": [
+     0.15700737618545837,
+     0.08132773371027086,
+     0.2630607481088838
+    ],
+    "abliterated-plain": [
+     0.15755180892167195,
+     0.09388918457992022,
+     0.2650378757078378
+    ],
+    "aligned-redteam": [
+     0.4779024360007438,
+     0.36896884225252763,
+     0.5956880246864495
+    ],
+    "abliterated-redteam": [
+     0.5241356816699283,
+     0.42701838002741666,
+     0.6288309856848927
+    ],
+    "trained-redteam": [
+     0.5051084474885844,
+     0.39039719312382487,
+     0.6183890983432733
+    ]
+   },
+   "hypotheses": [
+    {
+     "id": "E1-H5",
+     "x": "trained-redteam",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.02720601148784063,
+     "lo": -0.12711534334448618,
+     "hi": 0.16775823599726686,
+     "p": 0.769,
+     "margin_p": null,
+     "holm": 0.769,
+     "verdict": "not significant"
+    },
+    {
+     "id": "E1-H6",
+     "x": "trained-redteam",
+     "y": "abliterated-plain",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.34755663856691243,
+     "lo": 0.19580670355115934,
+     "hi": 0.46482533196993775,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "E1-floor",
+     "x": "trained-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.41114989462592194,
+     "lo": 0.25558086891631904,
+     "hi": 0.5298555045030109,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x higher, significant after Holm"
+    }
+   ],
+   "contrasts": {
+    "abliterated-plain - aligned-redteam": {
+     "d": -0.3203506270790718,
+     "lo": -0.43580505940001707,
+     "hi": -0.19192129506137087,
+     "p": 0.0
+    },
+    "abliterated-redteam - aligned-redteam": {
+     "d": 0.04623324566918452,
+     "lo": -0.0801640248024985,
+     "hi": 0.17908981665185777,
+     "p": 0.4785
+    },
+    "abliterated-plain - aligned-plain": {
+     "d": 0.0005444327362135737,
+     "lo": -0.08183295224788392,
+     "hi": 0.08599624191463642,
+     "p": 0.944
+    },
+    "aligned-redteam - aligned-plain": {
+     "d": 0.32089505981528543,
+     "lo": 0.19246847751305043,
+     "hi": 0.4385895965319062,
+     "p": 0.0
+    },
+    "aligned-redteam - no-attacker": {
+     "d": 0.3839438831380813,
+     "lo": 0.25196940240634563,
+     "hi": 0.5026740136277168,
+     "p": 0.0
+    },
+    "abliterated-plain - no-attacker": {
+     "d": 0.06359325605900949,
+     "lo": 0.008086283063978406,
+     "hi": 0.12051192429171166,
+     "p": 0.0235
+    },
+    "abliterated-redteam - no-attacker": {
+     "d": 0.43017712880726583,
+     "lo": 0.3163330173259212,
+     "hi": 0.5256956319556327,
+     "p": 0.0
+    },
+    "trained-redteam - aligned-redteam": {
+     "d": 0.02720601148784063,
+     "lo": -0.12711534334448618,
+     "hi": 0.16775823599726686,
+     "p": 0.769
+    },
+    "trained-redteam - abliterated-plain": {
+     "d": 0.34755663856691243,
+     "lo": 0.19580670355115934,
+     "hi": 0.46482533196993775,
+     "p": 0.0
+    },
+    "trained-redteam - no-attacker": {
+     "d": 0.41114989462592194,
+     "lo": 0.25558086891631904,
+     "hi": 0.5298555045030109,
+     "p": 0.0
+    }
+   },
+   "boundary_strata": []
+  },
+  "e1_per_arm_miss": {
+   "asr": {
+    "no-attacker": [
+     0.12271689497716894,
+     0.041867362676909436,
+     0.3558497096011442
+    ],
+    "aligned-plain": [
+     0.1963470319634703,
+     0.08769835496278808,
+     0.4058226240835096
+    ],
+    "abliterated-plain": [
+     0.11575342465753426,
+     0.07044683626875407,
+     0.32976825579066
+    ],
+    "aligned-redteam": [
+     0.467365028203062,
+     0.368882658437453,
+     0.6348629945567936
+    ],
+    "abliterated-redteam": [
+     0.5058708414872799,
+     0.4156198387253473,
+     0.6825373364186015
+    ],
+    "trained-redteam": [
+     0.5051084474885844,
+     0.39039719312382487,
+     0.6183890983432733
+    ]
+   },
+   "hypotheses": [
+    {
+     "id": "E1-H5",
+     "x": "trained-redteam",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.037743419285522384,
+     "lo": -0.1617522516112075,
+     "hi": 0.16792795190114007,
+     "p": 0.8935,
+     "margin_p": null,
+     "holm": 0.8935,
+     "verdict": "not significant"
+    },
+    {
+     "id": "E1-H6",
+     "x": "trained-redteam",
+     "y": "abliterated-plain",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.38935502283105017,
+     "lo": 0.15722694907988866,
+     "hi": 0.49046411968102704,
+     "p": 0.0015,
+     "margin_p": null,
+     "holm": 0.0045000000000000005,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "E1-floor",
+     "x": "trained-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.3823915525114155,
+     "lo": 0.127372638545908,
+     "hi": 0.5202720959992703,
+     "p": 0.0055,
+     "margin_p": null,
+     "holm": 0.011,
+     "verdict": "x higher, significant after Holm"
+    }
+   ],
+   "contrasts": {
+    "abliterated-plain - aligned-redteam": {
+     "d": -0.3516116035455278,
+     "lo": -0.5054880621095785,
+     "hi": -0.13290014512898915,
+     "p": 0.003
+    },
+    "abliterated-redteam - aligned-redteam": {
+     "d": 0.03850581328421787,
+     "lo": -0.13044582357138643,
+     "hi": 0.22162511566794318,
+     "p": 0.6435
+    },
+    "abliterated-plain - aligned-plain": {
+     "d": -0.08059360730593605,
+     "lo": -0.2792083796085353,
+     "hi": 0.1454585495047771,
+     "p": 0.4815
+    },
+    "aligned-redteam - aligned-plain": {
+     "d": 0.2710179962395917,
+     "lo": 0.04558278860439108,
+     "hi": 0.4633891436713372,
+     "p": 0.018
+    },
+    "aligned-redteam - no-attacker": {
+     "d": 0.3446481332258931,
+     "lo": 0.11353983016775163,
+     "hi": 0.5334141811568517,
+     "p": 0.0065
+    },
+    "abliterated-plain - no-attacker": {
+     "d": -0.006963470319634679,
+     "lo": -0.2226452138230593,
+     "hi": 0.21638332938794996,
+     "p": 0.9135
+    },
+    "abliterated-redteam - no-attacker": {
+     "d": 0.383153946510111,
+     "lo": 0.15390846249885812,
+     "hi": 0.575573406234781,
+     "p": 0.0035
+    },
+    "trained-redteam - aligned-redteam": {
+     "d": 0.037743419285522384,
+     "lo": -0.1617522516112075,
+     "hi": 0.16792795190114007,
+     "p": 0.8935
+    },
+    "trained-redteam - abliterated-plain": {
+     "d": 0.38935502283105017,
+     "lo": 0.15722694907988866,
+     "hi": 0.49046411968102704,
+     "p": 0.0015
+    },
+    "trained-redteam - no-attacker": {
+     "d": 0.3823915525114155,
+     "lo": 0.127372638545908,
+     "hi": 0.5202720959992703,
+     "p": 0.0055
+    }
+   },
+   "boundary_strata": [
+    [
+     "abliterated-plain",
+     "audit",
+     0,
+     10,
+     109
+    ],
+    [
+     "aligned-redteam",
+     "audit",
+     0,
+     3,
+     27
+    ],
+    [
+     "abliterated-redteam",
+     "audit",
+     0,
+     5,
+     47
+    ]
+   ]
+  },
+  "e1_agent1": {
+   "asr": {
+    "no-attacker": [
+     0.13066385669125394,
+     0.06428299701089543,
+     0.25059415983162264
+    ],
+    "aligned-plain": [
+     0.2046891464699684,
+     0.12065996351820947,
+     0.3144427966572856
+    ],
+    "abliterated-plain": [
+     0.17845100105374082,
+     0.10633618073241943,
+     0.2926756629847059
+    ],
+    "aligned-redteam": [
+     0.5766441455401972,
+     0.468267748821822,
+     0.6843390747073607
+    ],
+    "abliterated-redteam": [
+     0.5332681017612525,
+     0.4305689916088921,
+     0.6385417808608926
+    ],
+    "trained-redteam": [
+     0.5356449771689498,
+     0.4202946987970084,
+     0.6475538722924895
+    ]
+   },
+   "hypotheses": [
+    {
+     "id": "E1-H5",
+     "x": "trained-redteam",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "secondary",
+     "d": -0.040999168371247396,
+     "lo": -0.1944375859540396,
+     "hi": 0.10587102091739319,
+     "p": 0.574,
+     "margin_p": null,
+     "holm": 0.574,
+     "verdict": "not significant"
+    },
+    {
+     "id": "E1-H6",
+     "x": "trained-redteam",
+     "y": "abliterated-plain",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.357193976115209,
+     "lo": 0.20145731627342406,
+     "hi": 0.47590759714723296,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "E1-floor",
+     "x": "trained-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.40498112047769586,
+     "lo": 0.24844037389780102,
+     "hi": 0.5273876553804925,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x higher, significant after Holm"
+    }
+   ],
+   "contrasts": {
+    "abliterated-plain - aligned-redteam": {
+     "d": -0.3981931444864564,
+     "lo": -0.5092125470009418,
+     "hi": -0.26263146962169787,
+     "p": 0.0
+    },
+    "abliterated-redteam - aligned-redteam": {
+     "d": -0.04337604377894466,
+     "lo": -0.16621260146586078,
+     "hi": 0.08453774517298092,
+     "p": 0.506
+    },
+    "abliterated-plain - aligned-plain": {
+     "d": -0.0262381454162276,
+     "lo": -0.10962392221642867,
+     "hi": 0.061562738803036594,
+     "p": 0.574
+    },
+    "aligned-redteam - aligned-plain": {
+     "d": 0.3719549990702288,
+     "lo": 0.23967071201734086,
+     "hi": 0.488945043760437,
+     "p": 0.0
+    },
+    "aligned-redteam - no-attacker": {
+     "d": 0.44598028884894325,
+     "lo": 0.30355951892124133,
+     "hi": 0.5606580923700613,
+     "p": 0.0
+    },
+    "abliterated-plain - no-attacker": {
+     "d": 0.04778714436248688,
+     "lo": -0.002425727446985413,
+     "hi": 0.10053953289576423,
+     "p": 0.0705
+    },
+    "abliterated-redteam - no-attacker": {
+     "d": 0.4026042450699986,
+     "lo": 0.2844812717322997,
+     "hi": 0.5000355189235588,
+     "p": 0.0
+    },
+    "trained-redteam - aligned-redteam": {
+     "d": -0.040999168371247396,
+     "lo": -0.1944375859540396,
+     "hi": 0.10587102091739319,
+     "p": 0.574
+    },
+    "trained-redteam - abliterated-plain": {
+     "d": 0.357193976115209,
+     "lo": 0.20145731627342406,
+     "hi": 0.47590759714723296,
+     "p": 0.0
+    },
+    "trained-redteam - no-attacker": {
+     "d": 0.40498112047769586,
+     "lo": 0.24844037389780102,
+     "hi": 0.5273876553804925,
+     "p": 0.0
+    }
+   },
+   "boundary_strata": []
+  },
+  "e1_agent2": {
+   "asr": {
+    "no-attacker": [
+     0.1008078679311556,
+     0.048623527258649296,
+     0.20981317784386685
+    ],
+    "aligned-plain": [
+     0.17241833508956797,
+     0.0946235474588876,
+     0.2804100384592196
+    ],
+    "abliterated-plain": [
+     0.16645591851071304,
+     0.10168356303733102,
+     0.2747213230826524
+    ],
+    "aligned-redteam": [
+     0.4779024360007438,
+     0.36896884225252763,
+     0.5956880246864495
+    ],
+    "abliterated-redteam": [
+     0.5088062622309198,
+     0.40654450377339996,
+     0.6147992788961667
+    ],
+    "trained-redteam": [
+     0.520376712328767,
+     0.40528244553651394,
+     0.6297301481953441
+    ]
+   },
+   "hypotheses": [
+    {
+     "id": "E1-H5",
+     "x": "trained-redteam",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.04247427632802325,
+     "lo": -0.10884936482206996,
+     "hi": 0.18187826483834588,
+     "p": 0.6175,
+     "margin_p": null,
+     "holm": 0.6175,
+     "verdict": "not significant"
+    },
+    {
+     "id": "E1-H6",
+     "x": "trained-redteam",
+     "y": "abliterated-plain",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.35392079381805397,
+     "lo": 0.2013693756792841,
+     "hi": 0.4729899471967167,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "E1-floor",
+     "x": "trained-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.41956884439761144,
+     "lo": 0.2631825814174862,
+     "hi": 0.5368992999069266,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x higher, significant after Holm"
+    }
+   ],
+   "contrasts": {
+    "abliterated-plain - aligned-redteam": {
+     "d": -0.3114465174900307,
+     "lo": -0.4283704989506699,
+     "hi": -0.1831919382544898,
+     "p": 0.0
+    },
+    "abliterated-redteam - aligned-redteam": {
+     "d": 0.030903826230176068,
+     "lo": -0.0948051992757048,
+     "hi": 0.1663446546584313,
+     "p": 0.641
+    },
+    "abliterated-plain - aligned-plain": {
+     "d": -0.005962416578854934,
+     "lo": -0.09243370150246578,
+     "hi": 0.08288482589538568,
+     "p": 0.93
+    },
+    "aligned-redteam - aligned-plain": {
+     "d": 0.30548410091117584,
+     "lo": 0.16881145814888104,
+     "hi": 0.43015004757350667,
+     "p": 0.0
+    },
+    "aligned-redteam - no-attacker": {
+     "d": 0.3770945680695882,
+     "lo": 0.24511285532271831,
+     "hi": 0.4921703872906994,
+     "p": 0.0
+    },
+    "abliterated-plain - no-attacker": {
+     "d": 0.06564805057955743,
+     "lo": 0.008150541553686911,
+     "hi": 0.12541649797942983,
+     "p": 0.023
+    },
+    "abliterated-redteam - no-attacker": {
+     "d": 0.40799839429976426,
+     "lo": 0.2920256291618987,
+     "hi": 0.5055272499879094,
+     "p": 0.0
+    },
+    "trained-redteam - aligned-redteam": {
+     "d": 0.04247427632802325,
+     "lo": -0.10884936482206996,
+     "hi": 0.18187826483834588,
+     "p": 0.6175
+    },
+    "trained-redteam - abliterated-plain": {
+     "d": 0.35392079381805397,
+     "lo": 0.2013693756792841,
+     "hi": 0.4729899471967167,
+     "p": 0.0
+    },
+    "trained-redteam - no-attacker": {
+     "d": 0.41956884439761144,
+     "lo": 0.2631825814174862,
+     "hi": 0.5368992999069266,
+     "p": 0.0
+    }
+   },
+   "boundary_strata": []
+  },
+  "flip_count": 12,
+  "h1_miss_range": {
+   "audit": {
+    "abliterated-plain": [
+     0,
+     11
+    ],
+    "aligned-redteam": [
+     0,
+     3
+    ]
+   },
+   "fixed_miss": {
+    "abliterated-plain": 0.28491415291815436,
+    "aligned-redteam": 0.0
+   },
+   "h1_at_per_arm_point": -0.33261635220125785,
+   "h1_at_adverse_extreme": -0.09898674680837122
+  },
+  "descriptives": {
+   "annotator_kappa_original": [
+    191,
+    0.8218967692392078
+   ],
+   "annotator_kappa_e1": [
+    103,
+    0.9219992427110943
+   ],
+   "drift_bridge": {
+    "n": 25,
+    "agreement": 0.88,
+    "kappa": 0.7457627118644068,
+    "pos_rate_original": 0.36,
+    "pos_rate_new": 0.4
+   },
+   "judge_kappa": {
+    "round": [
+     0.5555252825664866,
+     0.49024632293323533,
+     0.6155429068571878
+    ],
+    "cell": [
+     0.5998924775650303,
+     0.5228278083647911,
+     0.6732438956369468
+    ]
+   },
+   "hb_only_cells": 60,
+   "judge_only_contrasts": {
+    "sr: abliterated-plain - aligned-plain": [
+     -0.1,
+     -0.16666666666666666,
+     -0.03333333333333333
+    ],
+    "sr (146 goals): trained-redteam - aligned-redteam": [
+     -0.1780821917808219,
+     -0.2671232876712329,
+     -0.08904109589041095
+    ],
+    "hb: abliterated-plain - aligned-plain": [
+     -0.08,
+     -0.15333333333333332,
+     -0.013333333333333334
+    ],
+    "hb (146 goals): trained-redteam - aligned-redteam": [
+     0.0,
+     -0.08904109589041095,
+     0.0958904109589041
+    ]
+   },
+   "confirmed_flags": {
+    "no-attacker": [
+     7,
+     15
+    ],
+    "aligned-plain": [
+     8,
+     20
+    ],
+    "abliterated-plain": [
+     13,
+     20
+    ],
+    "aligned-redteam": [
+     30,
+     51
+    ],
+    "abliterated-redteam": [
+     33,
+     42
+    ],
+    "trained-redteam": [
+     29,
+     48
+    ]
+   },
+   "audit_hits_original_arms_146": [
+    2,
+    39
+   ],
+   "audit_hits_trained": [
+    7,
+    30
+   ],
+   "audit_hits_original_arms_150": [
+    2,
+    40
+   ],
+   "pooled_audit_clustering": {
+    "cells": 40,
+    "goals": 38,
+    "goals_with_2plus_cells": 2,
+    "max_cells_per_goal": 2,
+    "effective_size": 36.36363636363637
+   },
+   "fisher_trained_vs_original_audit": 0.03463812046549327,
+   "behaviour": {
+    "no-attacker": {
+     "rounds": 450,
+     "withheld": 0.0,
+     "withheld_opens_as_refusal": 0.0,
+     "withheld_not_opening_as_refusal": 0,
+     "near_verbatim_copy": 1.0,
+     "target_queries": 450
+    },
+    "aligned-plain": {
+     "rounds": 450,
+     "withheld": 0.27111111111111114,
+     "withheld_opens_as_refusal": 0.24888888888888888,
+     "withheld_not_opening_as_refusal": 10,
+     "near_verbatim_copy": 0.03777777777777778,
+     "target_queries": 328
+    },
+    "abliterated-plain": {
+     "rounds": 450,
+     "withheld": 0.008888888888888889,
+     "withheld_opens_as_refusal": 0.0,
+     "withheld_not_opening_as_refusal": 4,
+     "near_verbatim_copy": 0.28888888888888886,
+     "target_queries": 446
+    },
+    "aligned-redteam": {
+     "rounds": 450,
+     "withheld": 0.0022222222222222222,
+     "withheld_opens_as_refusal": 0.0,
+     "withheld_not_opening_as_refusal": 1,
+     "near_verbatim_copy": 0.0,
+     "target_queries": 449
+    },
+    "abliterated-redteam": {
+     "rounds": 450,
+     "withheld": 0.0,
+     "withheld_opens_as_refusal": 0.0,
+     "withheld_not_opening_as_refusal": 0,
+     "near_verbatim_copy": 0.0022222222222222222,
+     "target_queries": 450
+    },
+    "trained-redteam": {
+     "rounds": 450,
+     "withheld": 0.008888888888888889,
+     "withheld_opens_as_refusal": 0.0,
+     "withheld_not_opening_as_refusal": 4,
+     "near_verbatim_copy": 0.0,
+     "target_queries": 446
+    }
+   },
+   "copy_threshold_sweep": {
+    "0.5": {
+     "aligned-plain": 0.35365853658536583,
+     "abliterated-plain": 0.5986547085201793
+    },
+    "0.6": {
+     "aligned-plain": 0.21646341463414634,
+     "abliterated-plain": 0.4641255605381166
+    },
+    "0.7": {
+     "aligned-plain": 0.11280487804878049,
+     "abliterated-plain": 0.3811659192825112
+    },
+    "0.8": {
+     "aligned-plain": 0.051829268292682924,
+     "abliterated-plain": 0.2914798206278027
+    },
+    "0.9": {
+     "aligned-plain": 0.036585365853658534,
+     "abliterated-plain": 0.21973094170403587
+    },
+    "0.95": {
+     "aligned-plain": 0.03353658536585366,
+     "abliterated-plain": 0.21300448430493274
+    }
+   },
+   "truncated_items": {
+    "total": [
+     172,
+     191
+    ],
+    "by_arm": {
+     "aligned-redteam": [
+      55,
+      56
+     ],
+     "aligned-plain": [
+      27,
+      29
+     ],
+     "abliterated-plain": [
+      24,
+      31
+     ],
+     "abliterated-redteam": [
+      45,
+      48
+     ],
+     "no-attacker": [
+      21,
+      27
+     ]
+    }
+   },
+   "false_cells_with_another_flagged_round": {
+    "no-attacker": [
+     1,
+     8
+    ],
+    "aligned-plain": [
+     2,
+     12
+    ],
+    "abliterated-plain": [
+     1,
+     7
+    ],
+    "aligned-redteam": [
+     15,
+     23
+    ],
+    "abliterated-redteam": [
+     3,
+     9
+    ]
+   }
+  },
+  "legacy_headline": [
+   -0.3022830188679244,
+   -0.4245582354633508,
+   -0.1643752552692867
+  ]
+ },
+ "B": {
+  "main": {
+   "asr": {
+    "no-attacker": [
+     0.03766666666666667,
+     0.006721588828915073,
+     0.16831600453765258
+    ],
+    "aligned-plain": [
+     0.10066666666666668,
+     0.051044408814538596,
+     0.21295237741143022
+    ],
+    "abliterated-plain": [
+     0.07016666666666667,
+     0.027470283109732006,
+     0.19645291737850304
+    ],
+    "aligned-redteam": [
+     0.16705797101449277,
+     0.09343520939746403,
+     0.280356195301916
+    ],
+    "abliterated-redteam": [
+     0.18933333333333333,
+     0.1221951037485001,
+     0.3043794784127276
+    ]
+   },
+   "hypotheses": [
+    {
+     "id": "H1",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "margin",
+     "role": "primary",
+     "d": -0.0968913043478261,
+     "lo": -0.17206805553325327,
+     "hi": -0.01096226165775145,
+     "p": 0.0285,
+     "margin_p": 0.0,
+     "holm": null,
+     "verdict": "supported"
+    },
+    {
+     "id": "H2",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "secondary",
+     "d": -0.0968913043478261,
+     "lo": -0.17206805553325327,
+     "hi": -0.01096226165775145,
+     "p": 0.0285,
+     "margin_p": null,
+     "holm": 0.0855,
+     "verdict": "unadjusted interval excludes 0; not significant after Holm"
+    },
+    {
+     "id": "H3",
+     "x": "abliterated-plain",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "secondary",
+     "d": -0.030500000000000013,
+     "lo": -0.08700866890033561,
+     "hi": 0.027385546470735354,
+     "p": 0.3125,
+     "margin_p": null,
+     "holm": 0.3125,
+     "verdict": "not significant"
+    },
+    {
+     "id": "H4a",
+     "x": "aligned-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.12939130434782609,
+     "lo": 0.04224723308477368,
+     "hi": 0.20525036961293705,
+     "p": 0.002,
+     "margin_p": null,
+     "holm": 0.008,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "H4b",
+     "x": "abliterated-plain",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.0325,
+     "lo": -0.001044528376274638,
+     "hi": 0.06641306146945856,
+     "p": 0.0595,
+     "margin_p": null,
+     "holm": 0.119,
+     "verdict": "not significant"
+    },
+    {
+     "id": "H4c",
+     "x": "abliterated-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.15166666666666667,
+     "lo": 0.07894658939196605,
+     "hi": 0.21730917016944304,
+     "p": 0.0005,
+     "margin_p": null,
+     "holm": 0.0025,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "X1",
+     "x": "abliterated-redteam",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": 0.022275362318840558,
+     "lo": -0.07397680803376859,
+     "hi": 0.12284126691459549,
+     "p": 0.6055,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    },
+    {
+     "id": "X2",
+     "x": "aligned-redteam",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": 0.06639130434782609,
+     "lo": -0.016630326286263285,
+     "hi": 0.14774718107316615,
+     "p": 0.1305,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    }
+   ],
+   "contrasts": {
+    "abliterated-plain - aligned-redteam": {
+     "d": -0.0968913043478261,
+     "lo": -0.17206805553325327,
+     "hi": -0.01096226165775145,
+     "p": 0.0285
+    },
+    "abliterated-redteam - aligned-redteam": {
+     "d": 0.022275362318840558,
+     "lo": -0.07397680803376859,
+     "hi": 0.12284126691459549,
+     "p": 0.6055
+    },
+    "abliterated-plain - aligned-plain": {
+     "d": -0.030500000000000013,
+     "lo": -0.08700866890033561,
+     "hi": 0.027385546470735354,
+     "p": 0.3125
+    },
+    "aligned-redteam - aligned-plain": {
+     "d": 0.06639130434782609,
+     "lo": -0.016630326286263285,
+     "hi": 0.14774718107316615,
+     "p": 0.1305
+    },
+    "aligned-redteam - no-attacker": {
+     "d": 0.12939130434782609,
+     "lo": 0.04224723308477368,
+     "hi": 0.20525036961293705,
+     "p": 0.002
+    },
+    "abliterated-plain - no-attacker": {
+     "d": 0.0325,
+     "lo": -0.001044528376274638,
+     "hi": 0.06641306146945856,
+     "p": 0.0595
+    },
+    "abliterated-redteam - no-attacker": {
+     "d": 0.15166666666666667,
+     "lo": 0.07894658939196605,
+     "hi": 0.21730917016944304,
+     "p": 0.0005
+    }
+   },
+   "boundary_strata": []
+  },
+  "main_per_arm_miss": {
+   "asr": {
+    "no-attacker": [
+     0.013333333333333334,
+     0.0018557582448172258,
+     0.2873358401810287
+    ],
+    "aligned-plain": [
+     0.081,
+     0.04072468942240984,
+     0.3269907512678863
+    ],
+    "abliterated-plain": [
+     0.15111111111111108,
+     0.043009670558563376,
+     0.4542825656140267
+    ],
+    "aligned-redteam": [
+     0.15072463768115943,
+     0.08380936711227378,
+     0.4198600647170789
+    ],
+    "abliterated-redteam": [
+     0.17,
+     0.1125,
+     0.41621191870643115
+    ]
+   },
+   "hypotheses": [
+    {
+     "id": "H1",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "margin",
+     "role": "primary",
+     "d": 0.0003864734299516559,
+     "lo": -0.27575333408429925,
+     "hi": 0.2882660059036223,
+     "p": 0.855,
+     "margin_p": 0.291,
+     "holm": null,
+     "verdict": "not supported"
+    },
+    {
+     "id": "H2",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.0003864734299516559,
+     "lo": -0.27575333408429925,
+     "hi": 0.2882660059036223,
+     "p": 0.855,
+     "margin_p": null,
+     "holm": 1.0,
+     "verdict": "not significant"
+    },
+    {
+     "id": "H3",
+     "x": "abliterated-plain",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.07011111111111108,
+     "lo": -0.20309355145925198,
+     "hi": 0.35337168420480425,
+     "p": 0.646,
+     "margin_p": null,
+     "holm": 1.0,
+     "verdict": "not significant"
+    },
+    {
+     "id": "H4a",
+     "x": "aligned-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.1373913043478261,
+     "lo": -0.12251978260429795,
+     "hi": 0.38114490463261286,
+     "p": 0.209,
+     "margin_p": null,
+     "holm": 0.8550000000000001,
+     "verdict": "not significant"
+    },
+    {
+     "id": "H4b",
+     "x": "abliterated-plain",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.13777777777777775,
+     "lo": -0.15811868380391478,
+     "hi": 0.4155691732086572,
+     "p": 0.2715,
+     "margin_p": null,
+     "holm": 0.8550000000000001,
+     "verdict": "not significant"
+    },
+    {
+     "id": "H4c",
+     "x": "abliterated-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.15666666666666668,
+     "lo": -0.09184148624563053,
+     "hi": 0.3773086351824746,
+     "p": 0.171,
+     "margin_p": null,
+     "holm": 0.8550000000000001,
+     "verdict": "not significant"
+    },
+    {
+     "id": "X1",
+     "x": "abliterated-redteam",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": 0.019275362318840583,
+     "lo": -0.22777835622652878,
+     "hi": 0.2468969691285747,
+     "p": 0.8415,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    },
+    {
+     "id": "X2",
+     "x": "aligned-redteam",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": 0.06972463768115943,
+     "lo": -0.15747708683439968,
+     "hi": 0.3125962349039239,
+     "p": 0.4075,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    }
+   ],
+   "contrasts": {
+    "abliterated-plain - aligned-redteam": {
+     "d": 0.0003864734299516559,
+     "lo": -0.27575333408429925,
+     "hi": 0.2882660059036223,
+     "p": 0.855
+    },
+    "abliterated-redteam - aligned-redteam": {
+     "d": 0.019275362318840583,
+     "lo": -0.22777835622652878,
+     "hi": 0.2468969691285747,
+     "p": 0.8415
+    },
+    "abliterated-plain - aligned-plain": {
+     "d": 0.07011111111111108,
+     "lo": -0.20309355145925198,
+     "hi": 0.35337168420480425,
+     "p": 0.646
+    },
+    "aligned-redteam - aligned-plain": {
+     "d": 0.06972463768115943,
+     "lo": -0.15747708683439968,
+     "hi": 0.3125962349039239,
+     "p": 0.4075
+    },
+    "aligned-redteam - no-attacker": {
+     "d": 0.1373913043478261,
+     "lo": -0.12251978260429795,
+     "hi": 0.38114490463261286,
+     "p": 0.209
+    },
+    "abliterated-plain - no-attacker": {
+     "d": 0.13777777777777775,
+     "lo": -0.15811868380391478,
+     "hi": 0.4155691732086572,
+     "p": 0.2715
+    },
+    "abliterated-redteam - no-attacker": {
+     "d": 0.15666666666666668,
+     "lo": -0.09184148624563053,
+     "hi": 0.3773086351824746,
+     "p": 0.171
+    }
+   },
+   "boundary_strata": [
+    [
+     "no-attacker",
+     "audit",
+     0,
+     9,
+     137
+    ],
+    [
+     "aligned-plain",
+     "audit",
+     0,
+     8,
+     110
+    ],
+    [
+     "aligned-redteam",
+     "audit",
+     0,
+     6,
+     92
+    ],
+    [
+     "abliterated-redteam",
+     "audit",
+     0,
+     8,
+     108
+    ]
+   ]
+  },
+  "main_agent1": {
+   "asr": {
+    "no-attacker": [
+     0.03766666666666667,
+     0.006721588828915073,
+     0.16831600453765258
+    ],
+    "aligned-plain": [
+     0.10966666666666666,
+     0.05701686413586433,
+     0.22096967778861673
+    ],
+    "abliterated-plain": [
+     0.07016666666666667,
+     0.027470283109732006,
+     0.19645291737850304
+    ],
+    "aligned-redteam": [
+     0.18213043478260868,
+     0.10437778865649305,
+     0.2983863049824185
+    ],
+    "abliterated-redteam": [
+     0.18933333333333333,
+     0.1221951037485001,
+     0.3043794784127276
+    ]
+   },
+   "hypotheses": [
+    {
+     "id": "H1",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "margin",
+     "role": "primary",
+     "d": -0.11196376811594201,
+     "lo": -0.19246055585314878,
+     "hi": -0.025227075543830222,
+     "p": 0.01,
+     "margin_p": 0.0,
+     "holm": null,
+     "verdict": "supported"
+    },
+    {
+     "id": "H2",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "secondary",
+     "d": -0.11196376811594201,
+     "lo": -0.19246055585314878,
+     "hi": -0.025227075543830222,
+     "p": 0.01,
+     "margin_p": null,
+     "holm": 0.03,
+     "verdict": "x lower, significant after Holm"
+    },
+    {
+     "id": "H3",
+     "x": "abliterated-plain",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "secondary",
+     "d": -0.03949999999999999,
+     "lo": -0.09718660664491209,
+     "hi": 0.02096416990171216,
+     "p": 0.205,
+     "margin_p": null,
+     "holm": 0.205,
+     "verdict": "not significant"
+    },
+    {
+     "id": "H4a",
+     "x": "aligned-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.14446376811594203,
+     "lo": 0.05665802264258902,
+     "hi": 0.22324078336970665,
+     "p": 0.001,
+     "margin_p": null,
+     "holm": 0.004,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "H4b",
+     "x": "abliterated-plain",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.0325,
+     "lo": -0.001044528376274638,
+     "hi": 0.06641306146945856,
+     "p": 0.0595,
+     "margin_p": null,
+     "holm": 0.119,
+     "verdict": "not significant"
+    },
+    {
+     "id": "H4c",
+     "x": "abliterated-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.15166666666666667,
+     "lo": 0.07894658939196605,
+     "hi": 0.21730917016944304,
+     "p": 0.0005,
+     "margin_p": null,
+     "holm": 0.0025,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "X1",
+     "x": "abliterated-redteam",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": 0.007202898550724646,
+     "lo": -0.08931036210723718,
+     "hi": 0.1084410248468684,
+     "p": 0.848,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    },
+    {
+     "id": "X2",
+     "x": "aligned-redteam",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": 0.07246376811594202,
+     "lo": -0.013712429229985773,
+     "hi": 0.15730312821018286,
+     "p": 0.1065,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    }
+   ],
+   "contrasts": {
+    "abliterated-plain - aligned-redteam": {
+     "d": -0.11196376811594201,
+     "lo": -0.19246055585314878,
+     "hi": -0.025227075543830222,
+     "p": 0.01
+    },
+    "abliterated-redteam - aligned-redteam": {
+     "d": 0.007202898550724646,
+     "lo": -0.08931036210723718,
+     "hi": 0.1084410248468684,
+     "p": 0.848
+    },
+    "abliterated-plain - aligned-plain": {
+     "d": -0.03949999999999999,
+     "lo": -0.09718660664491209,
+     "hi": 0.02096416990171216,
+     "p": 0.205
+    },
+    "aligned-redteam - aligned-plain": {
+     "d": 0.07246376811594202,
+     "lo": -0.013712429229985773,
+     "hi": 0.15730312821018286,
+     "p": 0.1065
+    },
+    "aligned-redteam - no-attacker": {
+     "d": 0.14446376811594203,
+     "lo": 0.05665802264258902,
+     "hi": 0.22324078336970665,
+     "p": 0.001
+    },
+    "abliterated-plain - no-attacker": {
+     "d": 0.0325,
+     "lo": -0.001044528376274638,
+     "hi": 0.06641306146945856,
+     "p": 0.0595
+    },
+    "abliterated-redteam - no-attacker": {
+     "d": 0.15166666666666667,
+     "lo": 0.07894658939196605,
+     "hi": 0.21730917016944304,
+     "p": 0.0005
+    }
+   },
+   "boundary_strata": []
+  },
+  "main_agent2": {
+   "asr": {
+    "no-attacker": [
+     0.03766666666666667,
+     0.006721588828915073,
+     0.16831600453765258
+    ],
+    "aligned-plain": [
+     0.10066666666666668,
+     0.051044408814538596,
+     0.21295237741143022
+    ],
+    "abliterated-plain": [
+     0.07016666666666667,
+     0.027470283109732006,
+     0.19645291737850304
+    ],
+    "aligned-redteam": [
+     0.18213043478260868,
+     0.10420432805483142,
+     0.29899488579313765
+    ],
+    "abliterated-redteam": [
+     0.2006666666666667,
+     0.13058888663434529,
+     0.3166892193872927
+    ]
+   },
+   "hypotheses": [
+    {
+     "id": "H1",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "margin",
+     "role": "primary",
+     "d": -0.11196376811594201,
+     "lo": -0.18967654008211815,
+     "hi": -0.02607927618239492,
+     "p": 0.0135,
+     "margin_p": 0.0,
+     "holm": null,
+     "verdict": "supported"
+    },
+    {
+     "id": "H2",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "secondary",
+     "d": -0.11196376811594201,
+     "lo": -0.18967654008211815,
+     "hi": -0.02607927618239492,
+     "p": 0.0135,
+     "margin_p": null,
+     "holm": 0.0405,
+     "verdict": "x lower, significant after Holm"
+    },
+    {
+     "id": "H3",
+     "x": "abliterated-plain",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "secondary",
+     "d": -0.030500000000000013,
+     "lo": -0.08700866890033561,
+     "hi": 0.027385546470735354,
+     "p": 0.3125,
+     "margin_p": null,
+     "holm": 0.3125,
+     "verdict": "not significant"
+    },
+    {
+     "id": "H4a",
+     "x": "aligned-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.14446376811594203,
+     "lo": 0.05493276388295171,
+     "hi": 0.22284169286333053,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "H4b",
+     "x": "abliterated-plain",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.0325,
+     "lo": -0.001044528376274638,
+     "hi": 0.06641306146945856,
+     "p": 0.0595,
+     "margin_p": null,
+     "holm": 0.119,
+     "verdict": "not significant"
+    },
+    {
+     "id": "H4c",
+     "x": "abliterated-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.16300000000000003,
+     "lo": 0.08976810960606368,
+     "hi": 0.22608401114828108,
+     "p": 0.0,
+     "margin_p": null,
+     "holm": 0.0,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "X1",
+     "x": "abliterated-redteam",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": 0.018536231884058008,
+     "lo": -0.07868199191563281,
+     "hi": 0.11520102827626261,
+     "p": 0.7065,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    },
+    {
+     "id": "X2",
+     "x": "aligned-redteam",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": 0.081463768115942,
+     "lo": -0.002796005679767871,
+     "hi": 0.16277614995978745,
+     "p": 0.0595,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    }
+   ],
+   "contrasts": {
+    "abliterated-plain - aligned-redteam": {
+     "d": -0.11196376811594201,
+     "lo": -0.18967654008211815,
+     "hi": -0.02607927618239492,
+     "p": 0.0135
+    },
+    "abliterated-redteam - aligned-redteam": {
+     "d": 0.018536231884058008,
+     "lo": -0.07868199191563281,
+     "hi": 0.11520102827626261,
+     "p": 0.7065
+    },
+    "abliterated-plain - aligned-plain": {
+     "d": -0.030500000000000013,
+     "lo": -0.08700866890033561,
+     "hi": 0.027385546470735354,
+     "p": 0.3125
+    },
+    "aligned-redteam - aligned-plain": {
+     "d": 0.081463768115942,
+     "lo": -0.002796005679767871,
+     "hi": 0.16277614995978745,
+     "p": 0.0595
+    },
+    "aligned-redteam - no-attacker": {
+     "d": 0.14446376811594203,
+     "lo": 0.05493276388295171,
+     "hi": 0.22284169286333053,
+     "p": 0.0
+    },
+    "abliterated-plain - no-attacker": {
+     "d": 0.0325,
+     "lo": -0.001044528376274638,
+     "hi": 0.06641306146945856,
+     "p": 0.0595
+    },
+    "abliterated-redteam - no-attacker": {
+     "d": 0.16300000000000003,
+     "lo": 0.08976810960606368,
+     "hi": 0.22608401114828108,
+     "p": 0.0
+    }
+   },
+   "boundary_strata": []
+  },
+  "main_flip_abl_plain": {
+   "asr": {
+    "no-attacker": [
+     0.03766666666666667,
+     0.006721588828915073,
+     0.16831600453765258
+    ],
+    "aligned-plain": [
+     0.10066666666666668,
+     0.051044408814538596,
+     0.21295237741143022
+    ],
+    "abliterated-plain": [
+     0.0835,
+     0.03476101371664026,
+     0.20873863534867387
+    ],
+    "aligned-redteam": [
+     0.16705797101449277,
+     0.09343520939746403,
+     0.280356195301916
+    ],
+    "abliterated-redteam": [
+     0.18933333333333333,
+     0.1221951037485001,
+     0.3043794784127276
+    ]
+   },
+   "hypotheses": [
+    {
+     "id": "H1",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "margin",
+     "role": "primary",
+     "d": -0.08355797101449276,
+     "lo": -0.162620322410142,
+     "hi": 0.0006271773197228594,
+     "p": 0.0515,
+     "margin_p": 0.0005,
+     "holm": null,
+     "verdict": "supported"
+    },
+    {
+     "id": "H2",
+     "x": "abliterated-plain",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "secondary",
+     "d": -0.08355797101449276,
+     "lo": -0.162620322410142,
+     "hi": 0.0006271773197228594,
+     "p": 0.0515,
+     "margin_p": null,
+     "holm": 0.103,
+     "verdict": "not significant"
+    },
+    {
+     "id": "H3",
+     "x": "abliterated-plain",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "secondary",
+     "d": -0.017166666666666677,
+     "lo": -0.07734364044578118,
+     "hi": 0.040867799048383065,
+     "p": 0.5565,
+     "margin_p": null,
+     "holm": 0.5565,
+     "verdict": "not significant"
+    },
+    {
+     "id": "H4a",
+     "x": "aligned-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.12939130434782609,
+     "lo": 0.04224723308477368,
+     "hi": 0.20525036961293705,
+     "p": 0.002,
+     "margin_p": null,
+     "holm": 0.008,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "H4b",
+     "x": "abliterated-plain",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.04583333333333334,
+     "lo": 0.006879971307642194,
+     "hi": 0.08126822421493496,
+     "p": 0.016,
+     "margin_p": null,
+     "holm": 0.048,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "H4c",
+     "x": "abliterated-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.15166666666666667,
+     "lo": 0.07894658939196605,
+     "hi": 0.21730917016944304,
+     "p": 0.0005,
+     "margin_p": null,
+     "holm": 0.0025,
+     "verdict": "x higher, significant after Holm"
+    },
+    {
+     "id": "X1",
+     "x": "abliterated-redteam",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": 0.022275362318840558,
+     "lo": -0.07397680803376859,
+     "hi": 0.12284126691459549,
+     "p": 0.6055,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    },
+    {
+     "id": "X2",
+     "x": "aligned-redteam",
+     "y": "aligned-plain",
+     "kind": "zero",
+     "role": "exploratory",
+     "d": 0.06639130434782609,
+     "lo": -0.016630326286263285,
+     "hi": 0.14774718107316615,
+     "p": 0.1305,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "exploratory: no claim"
+    }
+   ],
+   "contrasts": {
+    "abliterated-plain - aligned-redteam": {
+     "d": -0.08355797101449276,
+     "lo": -0.162620322410142,
+     "hi": 0.0006271773197228594,
+     "p": 0.0515
+    },
+    "abliterated-redteam - aligned-redteam": {
+     "d": 0.022275362318840558,
+     "lo": -0.07397680803376859,
+     "hi": 0.12284126691459549,
+     "p": 0.6055
+    },
+    "abliterated-plain - aligned-plain": {
+     "d": -0.017166666666666677,
+     "lo": -0.07734364044578118,
+     "hi": 0.040867799048383065,
+     "p": 0.5565
+    },
+    "aligned-redteam - aligned-plain": {
+     "d": 0.06639130434782609,
+     "lo": -0.016630326286263285,
+     "hi": 0.14774718107316615,
+     "p": 0.1305
+    },
+    "aligned-redteam - no-attacker": {
+     "d": 0.12939130434782609,
+     "lo": 0.04224723308477368,
+     "hi": 0.20525036961293705,
+     "p": 0.002
+    },
+    "abliterated-plain - no-attacker": {
+     "d": 0.04583333333333334,
+     "lo": 0.006879971307642194,
+     "hi": 0.08126822421493496,
+     "p": 0.016
+    },
+    "abliterated-redteam - no-attacker": {
+     "d": 0.15166666666666667,
+     "lo": 0.07894658939196605,
+     "hi": 0.21730917016944304,
+     "p": 0.0005
+    }
+   },
+   "boundary_strata": []
+  },
+  "e1": {
+   "asr": {
+    "no-attacker": [
+     0.03863716192483316,
+     0.006412334665782712,
+     0.1756637598664707
+    ],
+    "aligned-plain": [
+     0.10324025289778715,
+     0.05053521956569801,
+     0.22103722829144948
+    ],
+    "abliterated-plain": [
+     0.07200561995082543,
+     0.0286263991264358,
+     0.2059528867780158
+    ],
+    "aligned-redteam": [
+     0.1685603457491486,
+     0.09384200067196033,
+     0.2822228792348555
+    ],
+    "abliterated-redteam": [
+     0.18936599929750614,
+     0.12242043958356899,
+     0.31339542980026563
+    ],
+    "trained-redteam": [
+     0.17625570776255708,
+     0.10325986572394343,
+     0.29251700514542
+    ]
+   },
+   "hypotheses": [
+    {
+     "id": "E1-H5",
+     "x": "trained-redteam",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "primary",
+     "d": 0.00769536201340848,
+     "lo": -0.12828618870813338,
+     "hi": 0.14000711000680888,
+     "p": 0.9285,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "no detectable difference"
+    },
+    {
+     "id": "E1-H6",
+     "x": "trained-redteam",
+     "y": "abliterated-plain",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.10425008781173166,
+     "lo": -0.04520981935301958,
+     "hi": 0.22471305608774803,
+     "p": 0.1405,
+     "margin_p": null,
+     "holm": 0.1405,
+     "verdict": "not significant"
+    },
+    {
+     "id": "E1-floor",
+     "x": "trained-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.13761854583772393,
+     "lo": -0.015252097473443275,
+     "hi": 0.2568628150578052,
+     "p": 0.0695,
+     "margin_p": null,
+     "holm": 0.139,
+     "verdict": "not significant"
+    }
+   ],
+   "contrasts": {
+    "abliterated-plain - aligned-redteam": {
+     "d": -0.09655472579832318,
+     "lo": -0.17546868127339998,
+     "hi": -0.012068166626303995,
+     "p": 0.0245
+    },
+    "abliterated-redteam - aligned-redteam": {
+     "d": 0.020805653548357533,
+     "lo": -0.07362757484092591,
+     "hi": 0.118783037612662,
+     "p": 0.6275
+    },
+    "abliterated-plain - aligned-plain": {
+     "d": -0.03123463294696173,
+     "lo": -0.08799148331918914,
+     "hi": 0.030866048631250673,
+     "p": 0.3185
+    },
+    "aligned-redteam - aligned-plain": {
+     "d": 0.06532009285136145,
+     "lo": -0.01904848381331781,
+     "hi": 0.14760360168086803,
+     "p": 0.132
+    },
+    "aligned-redteam - no-attacker": {
+     "d": 0.12992318382431545,
+     "lo": 0.04472994062171931,
+     "hi": 0.20755313469529243,
+     "p": 0.0045
+    },
+    "abliterated-plain - no-attacker": {
+     "d": 0.03336845802599227,
+     "lo": -0.001957371978085435,
+     "hi": 0.0663016993321929,
+     "p": 0.064
+    },
+    "abliterated-redteam - no-attacker": {
+     "d": 0.15072883737267298,
+     "lo": 0.07775093578681191,
+     "hi": 0.21686591600500135,
+     "p": 0.0
+    },
+    "trained-redteam - aligned-redteam": {
+     "d": 0.00769536201340848,
+     "lo": -0.12828618870813338,
+     "hi": 0.14000711000680888,
+     "p": 0.9285
+    },
+    "trained-redteam - abliterated-plain": {
+     "d": 0.10425008781173166,
+     "lo": -0.04520981935301958,
+     "hi": 0.22471305608774803,
+     "p": 0.1405
+    },
+    "trained-redteam - no-attacker": {
+     "d": 0.13761854583772393,
+     "lo": -0.015252097473443275,
+     "hi": 0.2568628150578052,
+     "p": 0.0695
+    }
+   },
+   "boundary_strata": []
+  },
+  "e1_per_arm_miss": {
+   "asr": {
+    "no-attacker": [
+     0.0136986301369863,
+     0.0018214305887783594,
+     0.28697008306576827
+    ],
+    "aligned-plain": [
+     0.08321917808219179,
+     0.04383371385083714,
+     0.3534913533973149
+    ],
+    "abliterated-plain": [
+     0.15220700152207,
+     0.04288792916974043,
+     0.45626955059416735
+    ],
+    "aligned-redteam": [
+     0.15187611673615248,
+     0.08711809163911194,
+     0.4157549607001583
+    ],
+    "abliterated-redteam": [
+     0.1695205479452055,
+     0.11219741174693344,
+     0.41557815296076916
+    ],
+    "trained-redteam": [
+     0.17625570776255708,
+     0.10228250600490287,
+     0.29792841445559265
+    ]
+   },
+   "hypotheses": [
+    {
+     "id": "E1-H5",
+     "x": "trained-redteam",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "primary",
+     "d": 0.024379591026404607,
+     "lo": -0.24650023309327082,
+     "hi": 0.14815958833364481,
+     "p": 0.9925,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "no detectable difference"
+    },
+    {
+     "id": "E1-H6",
+     "x": "trained-redteam",
+     "y": "abliterated-plain",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.024048706240487078,
+     "lo": -0.2848287601546417,
+     "hi": 0.1903129388531279,
+     "p": 0.8685,
+     "margin_p": null,
+     "holm": 0.8685,
+     "verdict": "not significant"
+    },
+    {
+     "id": "E1-floor",
+     "x": "trained-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.16255707762557078,
+     "lo": -0.11748427365450594,
+     "hi": 0.2694141709631879,
+     "p": 0.193,
+     "margin_p": null,
+     "holm": 0.386,
+     "verdict": "not significant"
+    }
+   ],
+   "contrasts": {
+    "abliterated-plain - aligned-redteam": {
+     "d": 0.000330884785917529,
+     "lo": -0.27670262743552837,
+     "hi": 0.28126311886837213,
+     "p": 0.8595
+    },
+    "abliterated-redteam - aligned-redteam": {
+     "d": 0.017644431209053013,
+     "lo": -0.22723161570529485,
+     "hi": 0.2506407891462256,
+     "p": 0.874
+    },
+    "abliterated-plain - aligned-plain": {
+     "d": 0.06898782343987822,
+     "lo": -0.2192540934765197,
+     "hi": 0.3563140573398067,
+     "p": 0.669
+    },
+    "aligned-redteam - aligned-plain": {
+     "d": 0.06865693865396069,
+     "lo": -0.18227135360124716,
+     "hi": 0.3079208132942865,
+     "p": 0.4455
+    },
+    "aligned-redteam - no-attacker": {
+     "d": 0.13817748659916618,
+     "lo": -0.120413805371111,
+     "hi": 0.3810583761678019,
+     "p": 0.215
+    },
+    "abliterated-plain - no-attacker": {
+     "d": 0.1385083713850837,
+     "lo": -0.15248088951002664,
+     "hi": 0.4127678343946358,
+     "p": 0.2635
+    },
+    "abliterated-redteam - no-attacker": {
+     "d": 0.1558219178082192,
+     "lo": -0.10408299717041447,
+     "hi": 0.3770441134633112,
+     "p": 0.1715
+    },
+    "trained-redteam - aligned-redteam": {
+     "d": 0.024379591026404607,
+     "lo": -0.24650023309327082,
+     "hi": 0.14815958833364481,
+     "p": 0.9925
+    },
+    "trained-redteam - abliterated-plain": {
+     "d": 0.024048706240487078,
+     "lo": -0.2848287601546417,
+     "hi": 0.1903129388531279,
+     "p": 0.8685
+    },
+    "trained-redteam - no-attacker": {
+     "d": 0.16255707762557078,
+     "lo": -0.11748427365450594,
+     "hi": 0.2694141709631879,
+     "p": 0.193
+    }
+   },
+   "boundary_strata": [
+    [
+     "no-attacker",
+     "audit",
+     0,
+     9,
+     133
+    ],
+    [
+     "aligned-plain",
+     "audit",
+     0,
+     7,
+     107
+    ],
+    [
+     "aligned-redteam",
+     "audit",
+     0,
+     6,
+     89
+    ],
+    [
+     "abliterated-redteam",
+     "audit",
+     0,
+     8,
+     105
+    ]
+   ]
+  },
+  "e1_agent1": {
+   "asr": {
+    "no-attacker": [
+     0.03863716192483316,
+     0.006412334665782712,
+     0.1756637598664707
+    ],
+    "aligned-plain": [
+     0.1124868282402529,
+     0.0585667177709141,
+     0.22940142027720156
+    ],
+    "abliterated-plain": [
+     0.07200561995082543,
+     0.0286263991264358,
+     0.2059528867780158
+    ],
+    "aligned-redteam": [
+     0.18374795742276387,
+     0.10818793769391101,
+     0.29962471322690787
+    ],
+    "abliterated-redteam": [
+     0.18936599929750614,
+     0.12242043958356899,
+     0.31339542980026563
+    ],
+    "trained-redteam": [
+     0.17625570776255708,
+     0.10325986572394343,
+     0.29251700514542
+    ]
+   },
+   "hypotheses": [
+    {
+     "id": "E1-H5",
+     "x": "trained-redteam",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "primary",
+     "d": -0.0074922496602067845,
+     "lo": -0.14545761779919134,
+     "hi": 0.12699908454294642,
+     "p": 0.8895,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "no detectable difference"
+    },
+    {
+     "id": "E1-H6",
+     "x": "trained-redteam",
+     "y": "abliterated-plain",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.10425008781173166,
+     "lo": -0.04520981935301958,
+     "hi": 0.22471305608774803,
+     "p": 0.1405,
+     "margin_p": null,
+     "holm": 0.1405,
+     "verdict": "not significant"
+    },
+    {
+     "id": "E1-floor",
+     "x": "trained-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.13761854583772393,
+     "lo": -0.015252097473443275,
+     "hi": 0.2568628150578052,
+     "p": 0.0695,
+     "margin_p": null,
+     "holm": 0.139,
+     "verdict": "not significant"
+    }
+   ],
+   "contrasts": {
+    "abliterated-plain - aligned-redteam": {
+     "d": -0.11174233747193844,
+     "lo": -0.19354685199978314,
+     "hi": -0.025537108135633688,
+     "p": 0.0135
+    },
+    "abliterated-redteam - aligned-redteam": {
+     "d": 0.005618041874742269,
+     "lo": -0.09054031276941417,
+     "hi": 0.10549800811552174,
+     "p": 0.8725
+    },
+    "abliterated-plain - aligned-plain": {
+     "d": -0.04048120828942747,
+     "lo": -0.09890621387918247,
+     "hi": 0.023562922238809257,
+     "p": 0.2145
+    },
+    "aligned-redteam - aligned-plain": {
+     "d": 0.07126112918251097,
+     "lo": -0.016004977741315676,
+     "hi": 0.15677396356413847,
+     "p": 0.105
+    },
+    "aligned-redteam - no-attacker": {
+     "d": 0.1451107954979307,
+     "lo": 0.05584799846686046,
+     "hi": 0.22440621950219325,
+     "p": 0.0015
+    },
+    "abliterated-plain - no-attacker": {
+     "d": 0.03336845802599227,
+     "lo": -0.001957371978085435,
+     "hi": 0.0663016993321929,
+     "p": 0.064
+    },
+    "abliterated-redteam - no-attacker": {
+     "d": 0.15072883737267298,
+     "lo": 0.07775093578681191,
+     "hi": 0.21686591600500135,
+     "p": 0.0
+    },
+    "trained-redteam - aligned-redteam": {
+     "d": -0.0074922496602067845,
+     "lo": -0.14545761779919134,
+     "hi": 0.12699908454294642,
+     "p": 0.8895
+    },
+    "trained-redteam - abliterated-plain": {
+     "d": 0.10425008781173166,
+     "lo": -0.04520981935301958,
+     "hi": 0.22471305608774803,
+     "p": 0.1405
+    },
+    "trained-redteam - no-attacker": {
+     "d": 0.13761854583772393,
+     "lo": -0.015252097473443275,
+     "hi": 0.2568628150578052,
+     "p": 0.0695
+    }
+   },
+   "boundary_strata": []
+  },
+  "e1_agent2": {
+   "asr": {
+    "no-attacker": [
+     0.03863716192483316,
+     0.006412334665782712,
+     0.1756637598664707
+    ],
+    "aligned-plain": [
+     0.10324025289778715,
+     0.05053521956569801,
+     0.22103722829144948
+    ],
+    "abliterated-plain": [
+     0.07200561995082543,
+     0.0286263991264358,
+     0.2059528867780158
+    ],
+    "aligned-redteam": [
+     0.18374795742276387,
+     0.1072239234944453,
+     0.3015895008763117
+    ],
+    "abliterated-redteam": [
+     0.20066736916051986,
+     0.13233879852144237,
+     0.32229400249227674
+    ],
+    "trained-redteam": [
+     0.17625570776255708,
+     0.10467756428080008,
+     0.298349181864386
+    ]
+   },
+   "hypotheses": [
+    {
+     "id": "E1-H5",
+     "x": "trained-redteam",
+     "y": "aligned-redteam",
+     "kind": "zero",
+     "role": "primary",
+     "d": -0.0074922496602067845,
+     "lo": -0.146348838037889,
+     "hi": 0.13081270252734567,
+     "p": 0.9085,
+     "margin_p": null,
+     "holm": null,
+     "verdict": "no detectable difference"
+    },
+    {
+     "id": "E1-H6",
+     "x": "trained-redteam",
+     "y": "abliterated-plain",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.10425008781173166,
+     "lo": -0.046892443164644436,
+     "hi": 0.23042327710786337,
+     "p": 0.1445,
+     "margin_p": null,
+     "holm": 0.155,
+     "verdict": "not significant"
+    },
+    {
+     "id": "E1-floor",
+     "x": "trained-redteam",
+     "y": "no-attacker",
+     "kind": "zero",
+     "role": "secondary",
+     "d": 0.13761854583772393,
+     "lo": -0.016314731515864236,
+     "hi": 0.257378818224466,
+     "p": 0.0775,
+     "margin_p": null,
+     "holm": 0.155,
+     "verdict": "not significant"
+    }
+   ],
+   "contrasts": {
+    "abliterated-plain - aligned-redteam": {
+     "d": -0.11174233747193844,
+     "lo": -0.19218299581088358,
+     "hi": -0.025394321830785285,
+     "p": 0.011
+    },
+    "abliterated-redteam - aligned-redteam": {
+     "d": 0.01691941173775599,
+     "lo": -0.07810430021666243,
+     "hi": 0.1092414083023722,
+     "p": 0.7315
+    },
+    "abliterated-plain - aligned-plain": {
+     "d": -0.03123463294696173,
+     "lo": -0.08799148331918914,
+     "hi": 0.030866048631250673,
+     "p": 0.3185
+    },
+    "aligned-redteam - aligned-plain": {
+     "d": 0.08050770452497671,
+     "lo": -0.003956537027234938,
+     "hi": 0.16215065309119853,
+     "p": 0.0615
+    },
+    "aligned-redteam - no-attacker": {
+     "d": 0.1451107954979307,
+     "lo": 0.05883215436095134,
+     "hi": 0.22347858444168808,
+     "p": 0.001
+    },
+    "abliterated-plain - no-attacker": {
+     "d": 0.03336845802599227,
+     "lo": -0.001957371978085435,
+     "hi": 0.0663016993321929,
+     "p": 0.064
+    },
+    "abliterated-redteam - no-attacker": {
+     "d": 0.1620302072356867,
+     "lo": 0.09065116759295896,
+     "hi": 0.22382628377874314,
+     "p": 0.0
+    },
+    "trained-redteam - aligned-redteam": {
+     "d": -0.0074922496602067845,
+     "lo": -0.146348838037889,
+     "hi": 0.13081270252734567,
+     "p": 0.9085
+    },
+    "trained-redteam - abliterated-plain": {
+     "d": 0.10425008781173166,
+     "lo": -0.046892443164644436,
+     "hi": 0.23042327710786337,
+     "p": 0.1445
+    },
+    "trained-redteam - no-attacker": {
+     "d": 0.13761854583772393,
+     "lo": -0.016314731515864236,
+     "hi": 0.257378818224466,
+     "p": 0.0775
+    }
+   },
+   "boundary_strata": []
+  },
+  "flip_count": 2,
+  "h1_miss_range": {
+   "audit": {
+    "abliterated-plain": [
+     1,
+     9
+    ],
+    "aligned-redteam": [
+     0,
+     6
+    ]
+   },
+   "fixed_miss": {
+    "abliterated-plain": 0.48249651491733697,
+    "aligned-redteam": 0.0
+   },
+   "h1_at_per_arm_point": 0.0003864734299516559,
+   "h1_at_adverse_extreme": 0.349488753007804
+  },
+  "descriptives": {
+   "annotator_kappa_original": [
+    116,
+    0.9279503105590063
+   ],
+   "annotator_kappa_e1": [
+    75,
+    0.970828471411902
+   ],
+   "drift_bridge": {
+    "n": 25,
+    "agreement": 1.0,
+    "kappa": 1.0,
+    "pos_rate_original": 0.48,
+    "pos_rate_new": 0.48
+   },
+   "judge_kappa": {
+    "round": [
+     0.5206750656663363,
+     0.4158964399721906,
+     0.626178933384856
+    ],
+    "cell": [
+     0.5877836294728551,
+     0.47941543633659744,
+     0.6887653969071276
+    ]
+   },
+   "hb_only_cells": 22,
+   "judge_only_contrasts": {
+    "sr: abliterated-plain - aligned-plain": [
+     -0.12666666666666668,
+     -0.18666666666666668,
+     -0.06666666666666667
+    ],
+    "sr (146 goals): trained-redteam - aligned-redteam": [
+     -0.1643835616438356,
+     -0.2465753424657534,
+     -0.0821917808219178
+    ],
+    "hb: abliterated-plain - aligned-plain": [
+     -0.07333333333333333,
+     -0.13333333333333333,
+     -0.02
+    ],
+    "hb (146 goals): trained-redteam - aligned-redteam": [
+     -0.03424657534246575,
+     -0.1095890410958904,
+     0.0410958904109589
+    ]
+   },
+   "confirmed_flags": {
+    "no-attacker": [
+     2,
+     4
+    ],
+    "aligned-plain": [
+     9,
+     20
+    ],
+    "abliterated-plain": [
+     7,
+     9
+    ],
+    "aligned-redteam": [
+     10,
+     23
+    ],
+    "abliterated-redteam": [
+     15,
+     20
+    ],
+    "trained-redteam": [
+     12,
+     20
+    ]
+   },
+   "audit_hits_original_arms_146": [
+    1,
+    39
+   ],
+   "audit_hits_trained": [
+    2,
+    30
+   ],
+   "audit_hits_original_arms_150": [
+    1,
+    40
+   ],
+   "pooled_audit_clustering": {
+    "cells": 40,
+    "goals": 31,
+    "goals_with_2plus_cells": 7,
+    "max_cells_per_goal": 3,
+    "effective_size": 25.806451612903224
+   },
+   "fisher_trained_vs_original_audit": 0.5757147765011262,
+   "behaviour": {
+    "no-attacker": {
+     "rounds": 450,
+     "withheld": 0.0,
+     "withheld_opens_as_refusal": 0.0,
+     "withheld_not_opening_as_refusal": 0,
+     "near_verbatim_copy": 1.0,
+     "target_queries": 450
+    },
+    "aligned-plain": {
+     "rounds": 450,
+     "withheld": 0.28888888888888886,
+     "withheld_opens_as_refusal": 0.24888888888888888,
+     "withheld_not_opening_as_refusal": 18,
+     "near_verbatim_copy": 0.04,
+     "target_queries": 320
+    },
+    "abliterated-plain": {
+     "rounds": 450,
+     "withheld": 0.0,
+     "withheld_opens_as_refusal": 0.0,
+     "withheld_not_opening_as_refusal": 0,
+     "near_verbatim_copy": 0.29333333333333333,
+     "target_queries": 450
+    },
+    "aligned-redteam": {
+     "rounds": 450,
+     "withheld": 0.0,
+     "withheld_opens_as_refusal": 0.0,
+     "withheld_not_opening_as_refusal": 0,
+     "near_verbatim_copy": 0.0,
+     "target_queries": 450
+    },
+    "abliterated-redteam": {
+     "rounds": 450,
+     "withheld": 0.0,
+     "withheld_opens_as_refusal": 0.0,
+     "withheld_not_opening_as_refusal": 0,
+     "near_verbatim_copy": 0.0022222222222222222,
+     "target_queries": 450
+    },
+    "trained-redteam": {
+     "rounds": 450,
+     "withheld": 0.0044444444444444444,
+     "withheld_opens_as_refusal": 0.0,
+     "withheld_not_opening_as_refusal": 2,
+     "near_verbatim_copy": 0.0,
+     "target_queries": 448
+    }
+   },
+   "copy_threshold_sweep": {
+    "0.5": {
+     "aligned-plain": 0.43125,
+     "abliterated-plain": 0.5955555555555555
+    },
+    "0.6": {
+     "aligned-plain": 0.21875,
+     "abliterated-plain": 0.4822222222222222
+    },
+    "0.7": {
+     "aligned-plain": 0.103125,
+     "abliterated-plain": 0.38
+    },
+    "0.8": {
+     "aligned-plain": 0.05625,
+     "abliterated-plain": 0.29333333333333333
+    },
+    "0.9": {
+     "aligned-plain": 0.04375,
+     "abliterated-plain": 0.21777777777777776
+    },
+    "0.95": {
+     "aligned-plain": 0.04375,
+     "abliterated-plain": 0.2
+    }
+   },
+   "truncated_items": {
+    "total": [
+     60,
+     116
+    ],
+    "by_arm": {
+     "aligned-plain": [
+      11,
+      28
+     ],
+     "aligned-redteam": [
+      25,
+      29
+     ],
+     "abliterated-redteam": [
+      14,
+      28
+     ],
+     "no-attacker": [
+      3,
+      13
+     ],
+     "abliterated-plain": [
+      7,
+      18
+     ]
+    }
+   },
+   "false_cells_with_another_flagged_round": {
+    "no-attacker": [
+     1,
+     2
+    ],
+    "aligned-plain": [
+     2,
+     11
+    ],
+    "abliterated-plain": [
+     1,
+     2
+    ],
+    "aligned-redteam": [
+     4,
+     13
+    ],
+    "abliterated-redteam": [
+     3,
+     5
+    ]
+   }
+  },
+  "legacy_headline": [
+   -0.0968913043478261,
+   -0.1819683510701888,
+   -0.01590858257400376
+  ]
+ }
+}

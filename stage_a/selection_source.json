@@ -1,0 +1,19 @@
+{
+ "seed": 2027,
+ "bfcl_source": "github ShishirPatil/gorilla@main bfcl_eval/data/BFCL_v4_*.json",
+ "bfcl_inventory": {
+  "simple_python": 400,
+  "live_simple": 258,
+  "multiple": 200,
+  "live_multiple": 1053,
+  "parallel": 200,
+  "parallel_multiple": 200,
+  "live_parallel": 16,
+  "irrelevance": 240,
+  "live_irrelevance": 884,
+  "multi_turn_base": 200,
+  "multi_turn_miss_param": 200,
+  "multi_turn_miss_func": 200
+ },
+ "tau2_source": "github sierra-research/tau2-bench@main data/tau2/domains/*/split_tasks.json, 'train' split only"
+}

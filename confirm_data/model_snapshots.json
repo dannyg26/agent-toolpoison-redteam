@@ -1,0 +1,12 @@
+{
+ "source": "HF hub cache on the collection pod (refs/main and snapshots/), read after phases 1-2",
+ "read_utc_date": "2026-11-13",
+ "models": {
+  "Qwen/Qwen3-8B": "b968826d9c46dd6066d109eabc6255188de91218",
+  "huihui-ai/Huihui-Qwen3-8B-abliterated-v2": "7d89db76029281fd8f3e6698a8e30738608105a9",
+  "yukiyounai/Jailbreak-R1": "d095f88daef10d16b312c3d48db1b36ea2372260",
+  "Qwen/Qwen2.5-7B-Instruct": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "NousResearch/Meta-Llama-3.1-8B-Instruct": "d10aef7999a2b5ba950ab3974312feeedbfe0b77"
+ },
+ "single_snapshot_per_model": true
+}

@@ -1,0 +1,79 @@
+{
+ "written_utc": "2026-11-13T20:32:11.243572+00:00",
+ "git_commit": "9c174d70da1788f2521cfee46e0c704bf9dfec09",
+ "git_dirty": false,
+ "args": {
+  "selftest": false,
+  "attacker_safe_url": "http://localhost:8500/v1",
+  "attacker_safe_model": "aligned",
+  "attacker_abliterated_url": "http://localhost:8600/v1",
+  "attacker_abliterated_model": "abliterated",
+  "target_url": "http://localhost:8300/v1",
+  "target_model": "targetB",
+  "judge_url": null,
+  "judge_model": null,
+  "judge_kind": "none",
+  "dataset": "strongreject",
+  "goals": null,
+  "n_goals": 163,
+  "goal_start": 150,
+  "expect_goals_sha256": "723293588508a73f488c424b3e03b6df48bd1612784e43761fe6fc630ea993c8",
+  "rounds": 3,
+  "repeats": 1,
+  "attacker_custom_url": null,
+  "attacker_custom_model": null,
+  "attacker_template": null,
+  "arms": "",
+  "attacker_temp": 0.7,
+  "concurrency": 16,
+  "out": "/root/out/B_conf_raw.json",
+  "disable_thinking": true,
+  "refusal_check": "legacy"
+ },
+ "goals": {
+  "n": 163,
+  "start": 150,
+  "sha256": "723293588508a73f488c424b3e03b6df48bd1612784e43761fe6fc630ea993c8"
+ },
+ "decoding": {
+  "builtin_attackers": {
+   "temperature": 0.7,
+   "max_tokens": 300
+  },
+  "target": {
+   "temperature": 0.7,
+   "max_tokens": 400
+  },
+  "disable_thinking": true
+ },
+ "endpoints": {
+  "attacker_safe_url": {
+   "url": "http://localhost:8500/v1",
+   "models": {
+    "error": "HTTP Error 401: Unauthorized"
+   },
+   "version": {
+    "version": "0.33.0"
+   }
+  },
+  "attacker_abliterated_url": {
+   "url": "http://localhost:8600/v1",
+   "models": {
+    "error": "HTTP Error 401: Unauthorized"
+   },
+   "version": {
+    "version": "0.33.0"
+   }
+  },
+  "target_url": {
+   "url": "http://localhost:8300/v1",
+   "models": {
+    "error": "HTTP Error 401: Unauthorized"
+   },
+   "version": {
+    "version": "0.33.0"
+   }
+  }
+ },
+ "attacker_template": null
+}

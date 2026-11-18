@@ -1,4 +1,47 @@
-# Do Safeguards Matter? Verified Data Leaks in Modern Tool-Using LLM Agents
+# Safety-removal studies on open-weight LLMs
+
+**2026-11-18 held-out agent study:** a recent uncensored attacker
+(`huihui-ai/Huihui-Qwen3.8-27B-abliterated`) and its aligned control (`Qwen/Qwen3.8-27B`)
+were compared on 32 held-out AgentDojo cases against Gemma 4 26B-A4B, under a procedure
+frozen and pushed before collection. The uncensored attacker succeeded on 17/32 cases and the aligned
+control on 16/32: +3.1 points, Tango 95% CI −16.5 to +22.7, exact McNemar p = 1.00. No difference was
+detected, which is inconclusive, not equivalence. Both checkpoints completed the same 11 of 12 benign
+tool-using capability tasks; broader preservation of agent capability was not established. Cost: $1.94.
+See [results](stage_b/HELDOUT-RESULTS.md), the [paper draft](stage_b/AGENT-PAPER-DRAFT.md) and the
+[frozen protocol](stage_b/HELDOUT-PROTOCOL.md).
+
+**2026-11-17 agent pilot:** a recent, general-purpose uncensored Qwen3.8 attacker and
+its aligned control were tested on ten AgentDojo cases against Gemma 4. Each recorded
+six successful campaigns, three with no observed success and one incomplete campaign;
+two pairs are incomplete. This descriptive pilot does not establish an abliteration
+advantage. Actual additional RunPod charge: **$1.52**, with the pod terminated.
+See [pilot results](stage_b/PILOT-RESULTS.md) and the [frozen budget scope](stage_b/PILOT.md).
+
+This repository holds several studies. **The StrongREJECT red-team attacker study** is documented below:
+
+> **Is abliterating your red-team attacker worth it?** It compares three ways of getting a willing
+> attacker LLM: prompting an aligned model, abliterating it (weight surgery that removes refusals), and
+> downloading a model trained for red-teaming (Jailbreak-R1). The main study runs five arms (a 2x2 of
+> aligned/abliterated weights by plain/red-team prompt, plus a no-attacker floor) on 150 StrongREJECT
+> goals; extension E1 adds Jailbreak-R1 on 146 of them. Both run against two targets, with a fixed
+> 3-attempt budget, and are labelled blind by two AI agents (not yet validated by humans).
+>
+> - Design and status: [RED-TEAM-STUDY.md](RED-TEAM-STUDY.md)
+> - Results: [RESULTS.md](RESULTS.md)
+> - Pre-registered plan, deviations and corrections: [ANALYSIS-PLAN.md](ANALYSIS-PLAN.md)
+> - Labelling rule: [LABELING-PROTOCOL.md](LABELING-PROTOCOL.md)
+> - Models, revisions and settings: [MANIFEST.md](MANIFEST.md)
+> - Code: `redteam.py` (collection), `rescore.py` + `sr_judge.py` (scoring), `estimate.py` (sampling and
+>   estimates; `--selftest`), `reproduce_results.py` (the reported numbers), `summarize.py`,
+>   `adjudicate.py`
+>
+> Transcripts, scores and labels are gitignored: they contain model-generated harmful text.
+
+The rest of this README describes the earlier tool-poisoning study.
+
+---
+
+## Earlier study: Do Safeguards Matter? Verified Data Leaks in Modern Tool-Using LLM Agents
 
 A red-teaming framework that drives **modern, agent-capable open-weight models** through a
 **real multi-step tool-execution loop** under MCP **tool-poisoning** attacks (a malicious

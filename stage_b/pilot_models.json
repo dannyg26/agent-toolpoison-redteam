@@ -1,0 +1,17 @@
+{
+  "google/gemma-4-26B-A4B-it": {
+    "revision": "4d7ae4984b7db7de8f8457170b3f1a419ee76d52",
+    "created_at": "2026-03-11T21:25:57.000Z",
+    "publisher_card_checked": true
+  },
+  "Qwen/Qwen3.8-27B": {
+    "revision": "37561816e66b5b9153b1b64c10968c18c1e6f4a0",
+    "created_at": "2026-08-05T08:22:59.000Z",
+    "publisher_card_checked": true
+  },
+  "huihui-ai/Huihui-Qwen3.8-27B-abliterated": {
+    "revision": "739e3c5b89849f6c238ce1e5b70008612ae42cdd",
+    "created_at": "2026-08-16T08:22:24.000Z",
+    "publisher_card_checked": true
+  }
+}
