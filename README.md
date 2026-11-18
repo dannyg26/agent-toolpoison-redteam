@@ -1,5 +1,15 @@
 # Safety-removal studies on open-weight LLMs
 
+**2026-11-18 held-out agent study:** a recent uncensored attacker
+(`huihui-ai/Huihui-Qwen3.8-27B-abliterated`) and its aligned control (`Qwen/Qwen3.8-27B`)
+were compared on 32 held-out AgentDojo cases against Gemma 4 26B-A4B, under a procedure
+frozen and pushed before collection. The uncensored attacker succeeded on 17/32 cases and the aligned
+control on 16/32: +3.1 points, Tango 95% CI −16.5 to +22.7, exact McNemar p = 1.00. No difference was
+detected, which is inconclusive, not equivalence. Both checkpoints completed 11/12 benign tool-using
+capability tasks. Cost: $1.94.
+See [results](stage_b/HELDOUT-RESULTS.md), the [paper draft](stage_b/AGENT-PAPER-DRAFT.md) and the
+[frozen protocol](stage_b/HELDOUT-PROTOCOL.md).
+
 **2026-11-17 agent pilot:** a recent, general-purpose uncensored Qwen3.8 attacker and
 its aligned control were tested on ten AgentDojo cases against Gemma 4. Each recorded
 six successful campaigns, three with no observed success and one incomplete campaign;
