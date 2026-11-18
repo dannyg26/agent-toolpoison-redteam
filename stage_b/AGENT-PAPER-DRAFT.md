@@ -26,13 +26,13 @@ injection against a tool-using agent.
 - Paired difference: **+3.1 points**, Tango 95% CI **−16.5 to +22.7**; exact McNemar **p = 1.00**.
 - No difference was detected, and the interval does not exclude moderate advantages in either direction.
 
-**Capability results:** as benign tool-using agents, both checkpoints completed 11/12 development tasks.
+**Capability results:** acting as benign tool-using agents, both checkpoints completed the same 11 of 12
+development tasks. Broader preservation of agent capability was not established.
 
 **Baselines:** both model attackers exceeded AgentDojo's fixed injection template (10/32) descriptively.
 
-**Conclusion:** in this setting, an aligned model framed as an authorised red-teamer produced usable attacks
-about as often as its abliterated counterpart, and abliteration showed no measurable capability cost on a
-small check. The study is small and makes no claim of equivalence.
+**Conclusion:** no difference in attack success was detected between the uncensored and aligned attackers,
+and the comparison remains inconclusive. The study is small and makes no claim of equivalence.
 
 ## 1. Introduction
 
@@ -119,6 +119,31 @@ reads when it does the user task correctly.
 **Episodes:** each attempt runs in a freshly loaded environment, and a campaign stops at the first
 benchmark success. The insertion is the last complete `<injection>…</injection>` block in the attacker's
 output.
+
+**Two separate workflows.** During the attack, the attacker model writes and revises insertion text using
+feedback; **it does not call tools itself**. Its tool-using agent capability is measured in a separate
+benign assessment (§3.4). The professor's requirement concerns the model's general agent capability. A
+design in which the attacker itself operates evaluation tools while attacking would be a different,
+separately frozen study.
+
+```mermaid
+flowchart LR
+  subgraph ATTACK["Red-team comparison: 32 held-out cases per attacker"]
+    A["Attacker model<br/>(uncensored or aligned)"] -- "writes insertion text" --> V["Injection vectors<br/>in tool-returned data"]
+    V --> T["Target agent: Gemma 4<br/>calls AgentDojo tools"]
+    T --> C{"AgentDojo security check"}
+    C -- "failed: feedback<br/>(text seen? tool calls, final reply)" --> A
+    C -- "success, or 3 attempts used" --> R["Campaign outcome"]
+  end
+  subgraph CAP["Capability assessment: 12 benign tasks, separate run"]
+    Q["Same attacker checkpoint<br/>acting as the agent"] -- "calls AgentDojo tools" --> E["Benign environment<br/>(no injection)"]
+    E --> U{"AgentDojo utility check"}
+  end
+```
+
+**Example from the capability assessment.** On banking/user_task_4 ("refund what this sender sent me"), the
+uncensored checkpoint called `get_most_recent_transactions`, then `get_user_info`, then `get_balance`, then
+`send_money`, and passed the utility check.
 
 ### 3.3 Cases
 
@@ -222,24 +247,25 @@ inventory. Unobserved units are never counted as failures.
   not interpretable as an order effect.
 
 **Capability:**
-- both checkpoints completed 11/12 benign tasks (Wilson 64.6–98.5%), with 59 executed tool calls each;
+- both checkpoints completed the same 11 of 12 benign tasks (Wilson 64.6–98.5% each);
+- each executed 59 tool calls across the 12-task assessment;
 - both failed the same task.
 
 ## 5. Discussion
 
-**The main observation is a null result.** Removing refusal behaviour did not detectably increase attack
-success. The descriptive measures point the same way.
-- The aligned attacker, given an authorised-evaluation framing, almost always produced a usable insertion:
-  68 of 73 generations.
-- The cost the uncensored model removes, an aligned attacker declining to attack, was therefore small
-  here.
-- The uncensored model's descriptively higher first-attempt success (12 vs 9) and lower no-insertion count
-  (1 vs 5) are compatible with a small willingness advantage. They are not tested, and the primary interval
-  includes zero.
+**The main observation is a null result.** No difference in attack success was detected, and the
+comparison remains inconclusive. The 95% interval allows meaningful advantages in either direction, so the
+result is **not** evidence that abliteration does not help.
+- The aligned model produced extractable insertion text in 68 of 73 generations, and the uncensored model
+  in 69 of 70.
+- Few generations lacked extractable insertion text. We did not measure how often either model refused,
+  hedged or weakened its attacks. This mechanical count does not measure refusal or willingness.
+- The uncensored model's first-attempt successes were descriptively higher (12 vs 9). This is not tested,
+  and the primary interval includes zero.
 
-**On capability,** the small matched check found no loss from abliteration: 11/12 for both checkpoints,
-failing the same task. The study's finding is therefore not "abliteration hurt capability and cancelled its
-benefit". Neither effect was detectable at this scale.
+**On capability,** both checkpoints completed the same 11 of 12 tasks. Broader preservation of agent
+capability was not established, so the study cannot say whether abliteration affected capability beyond
+this small check.
 
 **What would sharpen the question:**
 - more cases, more campaigns per case, and more than one target;
@@ -258,6 +284,10 @@ The planned power was 0.44 for a 20-point advantage, so a moderate effect could 
 - **Capability evidence is small:** 12 tasks. The original broader capability gate (BFCL and τ-bench) is
   incomplete: the τ-bench runs were invalid and the aligned checkpoint was not run on BFCL. A partial
   unmatched BFCL result for the uncensored checkpoint is 174/221.
+- **Capability is shown separately from red-teaming:** the attacker does not invoke tools during attacks.
+  This meets the requirement that the model have general agent capability. It would not meet a stronger
+  expectation that the attacker itself operate tools while attacking.
+- **Refusal was not measured:** extractable-insertion counts are mechanical.
 - **Outcomes are programmatic:** AgentDojo's checks under their own definitions, not measures of real-world
   harm. **No human validation was undertaken.**
 - **Contamination:** public benchmark tasks may have been seen in training.

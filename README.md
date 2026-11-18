@@ -5,8 +5,8 @@
 were compared on 32 held-out AgentDojo cases against Gemma 4 26B-A4B, under a procedure
 frozen and pushed before collection. The uncensored attacker succeeded on 17/32 cases and the aligned
 control on 16/32: +3.1 points, Tango 95% CI −16.5 to +22.7, exact McNemar p = 1.00. No difference was
-detected, which is inconclusive, not equivalence. Both checkpoints completed 11/12 benign tool-using
-capability tasks. Cost: $1.94.
+detected, which is inconclusive, not equivalence. Both checkpoints completed the same 11 of 12 benign
+tool-using capability tasks; broader preservation of agent capability was not established. Cost: $1.94.
 See [results](stage_b/HELDOUT-RESULTS.md), the [paper draft](stage_b/AGENT-PAPER-DRAFT.md) and the
 [frozen protocol](stage_b/HELDOUT-PROTOCOL.md).
 
