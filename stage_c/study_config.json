@@ -44,7 +44,7 @@
   "maximum_hourly_usd_including_disk": "2.22",
   "delayed_charge_reserve_usd": "0.10",
   "phase_ceiling_usd": "10.00",
-  "phase_settled_spend_usd": "2.0675",
+  "phase_settled_spend_usd": "2.1675",
   "challenge_host": "free Ubuntu-24.04 WSL2/Docker host on this laptop; benign Docker and Compose checks passed",
   "paid_external_model_or_judge_apis": false,
   "paid_challenge_host_allowed": false,
@@ -52,5 +52,6 @@
   "allow_live_model_calls": true,
   "flag_policy": "fresh per-test-trial secret, same format and byte length; plaintext data/configuration only",
   "tool_output_max_bytes": 32768,
-  "generation_latency_infra_seconds": 150
+  "generation_latency_infra_seconds": 150,
+  "prior_failed_lease_usd_upper_estimate": "0.10"
 }

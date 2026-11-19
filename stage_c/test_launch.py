@@ -68,6 +68,14 @@ class LaunchTests(unittest.TestCase):
             self.assertNotIn('stage_c/'+forbidden, names)
         self.assertFalse([n for n in names if 'private' in n or 'key' in n.lower()])
 
+    def test_background_pod_commands_release_ssh(self):
+        # A backgrounded command that inherits SSH stdin keeps the session open (lease 1 failure).
+        source = (HERE/'launch_ctf.py').read_text()
+        self.assertGreaterEqual(source.count('nohup'), 3)
+        for line in source.splitlines():
+            if line.rstrip().endswith("&'") or "&' %" in line:
+                self.assertIn('< /dev/null &', line)
+
     def test_quote_includes_disk(self):
         self.assertAlmostEqual(L.quoted_hourly(2.0), 2.0 + 200*0.10/720)
 

@@ -60,3 +60,10 @@ are never pooled with this uncollected CTF study.
     and `finally` termination). Only the guard and model-server files are copied to the pod; grading,
     flag-patching and challenge code stay on this host. Five offline launcher tests were added. Live
     calls were enabled in the configuration and the final freeze was written before any model call.
+14. 2026-11-19 lease 1 (pod irxnr16v4ur3tu) failed during setup before any model call or trial: the
+    first backgrounded SSH command inherited the session's stdin, so the SSH call never returned and
+    the launcher's 120 s timeout fired. The launcher terminated the pod after 2.58 minutes
+    (quoted $0.095; $0.10 is added to the settled phase spend as an upper estimate). No study
+    data exists from it. Fix: every backgrounded pod command now reads from /dev/null, with a
+    regression test. The freeze was regenerated and pushed before any second lease. A second lease
+    does not reset the phase budget.

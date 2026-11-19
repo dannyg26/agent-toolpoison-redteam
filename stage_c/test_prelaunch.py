@@ -20,7 +20,8 @@ class BudgetChecks(unittest.TestCase):
         result = calculate(self.config)
         self.assertEqual(Decimal(result["planned_session_minutes"]), Decimal("161"))
         self.assertEqual(Decimal(result["capped_additional_usd_including_reserve"]), Decimal("6.76"))
-        self.assertEqual(Decimal(result["phase_total_at_cap_usd"]), Decimal("8.8275"))
+        # 2.0675 settled + 0.10 failed lease 1 (upper estimate) + 6.76 cap for lease 2.
+        self.assertEqual(Decimal(result["phase_total_at_cap_usd"]), Decimal("8.9275"))
 
     def test_rate_increase_fails(self):
         self.config["maximum_hourly_usd_including_disk"] = "3.00"

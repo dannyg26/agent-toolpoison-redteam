@@ -177,7 +177,7 @@ def setup_pod(pod, key, pod_id, hourly, config):
     pod.run('umask 077 && cat > %s' % POD_KEY, stdin=(key+'\n').encode())
     # Guard first, before any package or model download.
     pod.run('cd %s/stage_c && RUNPOD_POD_ID=%s nohup python3 guard_adapter.py --arm --key-file %s '
-            '--out %s --verified-all-in-hourly %.4f > /root/out/guard.log 2>&1 &'
+            '--out %s --verified-all-in-hourly %.4f > /root/out/guard.log 2>&1 < /dev/null &'
             % (POD_ROOT, shlex.quote(pod_id), POD_KEY, GUARD_OUT, hourly))
     if not wait_until(lambda: pod.run('test -s %s/guard_ready.json' % GUARD_OUT, check=False).returncode == 0,
                       120, 5):
@@ -188,7 +188,7 @@ def setup_pod(pod, key, pod_id, hourly, config):
         'python3 -c %s && touch /root/out/downloaded-%s' % (shlex.quote(
             'from huggingface_hub import snapshot_download; snapshot_download(%r, revision=%r)'
             % (config[c+'_model'], config[c+'_revision'])), c) for c in ('main', 'control'))
-    pod.run('nohup sh -c %s > /root/out/setup.log 2>&1 &' % shlex.quote(
+    pod.run('nohup sh -c %s > /root/out/setup.log 2>&1 < /dev/null &' % shlex.quote(
         'python3 -m pip install -q vllm==0.33.0 hf_transfer && touch /root/out/installed && '
         'export HF_HUB_ENABLE_HF_TRANSFER=1 && ' + downloads))
     return ready
@@ -202,7 +202,7 @@ def serve(pod, condition, pod_id, hourly, count):
         raise TimeoutError('Checkpoint download did not finish in time: '+condition)
     pod.run('cd %s/stage_c && RUNPOD_POD_ID=%s HF_HUB_OFFLINE=1 nohup python3 inference_server.py '
             '--condition %s --run --guard-ready %s/guard_ready.json --key-file %s '
-            '--verified-all-in-hourly %.4f > /root/out/vllm-%s-%d.log 2>&1 &'
+            '--verified-all-in-hourly %.4f > /root/out/vllm-%s-%d.log 2>&1 < /dev/null &'
             % (POD_ROOT, shlex.quote(pod_id), condition, GUARD_OUT, POD_KEY, hourly, condition, count))
     served = 'csc-'+condition
     def healthy():
