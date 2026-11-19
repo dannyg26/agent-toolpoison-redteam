@@ -3,7 +3,10 @@
 Reuses the stage C launcher's tested helpers (API, SSH, detached commands, termination) and the stage B
 guard. Flow: preflight -> create one pod -> arm guard -> v2_pod.sh (install, download, serve) -> SSH tunnel
 to 127.0.0.1:18000 -> run_arm_v2.py development then test phase on this host -> fetch pod logs ->
-terminate in `finally`. Keys are read from private files and never printed.
+terminate in `finally`. Log fetching is best effort: every fetch has a short timeout, all errors are
+caught, the whole fetch is bounded by LOG_FETCH_TOTAL_SECONDS, and terminate() runs in its own inner
+`finally`, so a hung SSH can never skip termination (R2-02, stage C pattern). Keys are read from private
+files and never printed.
 """
 import argparse
 import hashlib
@@ -27,6 +30,50 @@ CACHE = Path('/home/capstone-study/stage_e')
 CONFIG = json.loads((HERE/'v2_config.json').read_text())
 POD_KEY, GUARD_OUT, POD_OUT = '/root/guard.key', '/root/out/v2_guard', '/root/out/v2'
 ARCHIVE_RESERVE_SECONDS = 5*60
+LOG_FETCH_TIMEOUT_SECONDS, LOG_FETCH_TOTAL_SECONDS = 30, 180
+POD_LOG_FILES = [POD_OUT+'/'+n for n in ('progress.log', 'vllm.log', 'install.log', 'pip-freeze.txt', 'download.log',
+                                        'heartbeat', 'nvidia-smi.txt', 'tokenizer_hashes.json')] + [
+                 '/root/out/guard.log', '/root/out/v2_pod.log', GUARD_OUT+'/*']
+
+
+def fetch_logs(client, out, clock=time.monotonic):
+    """Best-effort pod log download; never raises and never runs longer than about the total bound."""
+    fetched, errors = [], []
+    start = clock()
+    try:
+        (out/'pod_logs').mkdir(exist_ok=True)
+        for path in POD_LOG_FILES:
+            if clock()-start > LOG_FETCH_TOTAL_SECONDS:
+                errors.append('total log-fetch time bound reached')
+                break
+            try:
+                command = ('for f in %s; do [ -f "$f" ] && { echo "== $f"; tail -c 3000000 "$f"; }; done 2>/dev/null'
+                           % path)
+                data = client.run(command, check=False, timeout=LOG_FETCH_TIMEOUT_SECONDS).stdout
+                name = path.replace('/root/out/', '').replace('/', '_').replace('*', 'all')
+                (out/'pod_logs'/name).write_bytes(data)
+                fetched.append(name)
+            except Exception as error:          # logs are best effort; never block termination
+                errors.append('%s: %s' % (path, type(error).__name__))
+    except Exception as error:
+        errors.append(type(error).__name__)
+    return fetched, errors
+
+
+def serving_provenance(out):
+    """SERVING line and tokenizer/template hashes from the fetched logs (for run_status.json)."""
+    result = {}
+    try:
+        progress = (out/'pod_logs'/'v2_progress.log').read_text(errors='replace').splitlines()
+        result['serving_line'] = next((l for l in progress if ' SERVING' in l), None)
+    except OSError:
+        pass
+    try:
+        text = (out/'pod_logs'/'v2_tokenizer_hashes.json').read_text(errors='replace').splitlines()
+        result['tokenizer_hashes'] = json.loads(next(l for l in text if l.startswith('{')))
+    except (OSError, StopIteration, ValueError):
+        pass
+    return result
 
 
 def budget():
@@ -157,14 +204,16 @@ def launch(key, arm, hourly, session_id, out):
                 break
     finally:
         stopped.set()
-        if tunnel:
-            tunnel.terminate()
-        if client:
-            for name in ('progress.log', 'vllm.log', 'install.log', 'pip-freeze.txt', 'download.log'):
-                data = client.run('tail -c 3000000 %s/%s 2>/dev/null' % (POD_OUT, name), check=False, timeout=120).stdout
-                (out/'pod_logs').mkdir(exist_ok=True)
-                (out/'pod_logs'/name).write_bytes(data)
-        status['terminated'] = C.terminate(pod_id, key)
+        try:
+            if tunnel:
+                tunnel.terminate()
+            if client:
+                status['log_fetch'], status['log_fetch_errors'] = fetch_logs(client, out)
+                status.update(serving_provenance(out))
+        except Exception as error:              # never block termination
+            status['log_fetch_errors'] = status.get('log_fetch_errors', []) + [type(error).__name__]
+        finally:
+            status['terminated'] = C.terminate(pod_id, key)
         status['elapsed_minutes_from_creation'] = round((time.time()-created)/60, 2)
         status['maximum_quoted_spend_before_tax'] = round((time.time()-created)/3600*hourly, 3)
         (out/'run_status.json').write_text(json.dumps(status, indent=2)+'\n')

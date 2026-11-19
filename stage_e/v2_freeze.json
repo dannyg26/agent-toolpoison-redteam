@@ -1,0 +1,48 @@
+{
+ "study": "CTF v2",
+ "sha256": {
+  "CTF-V2-DESIGN.md": "d143070d82dd603758bbfacd1613782a3701c172850767f30572db87045fc00d",
+  "V2-PROTOCOL.md": "265f7b901af3c88e2432e605bc45c940ca3bb8151731db8c36a20c8de18bd0c1",
+  "analyze_v2.py": "6b8d7faa40cada76f8ed217bae304a9a100ce5cc5807d99fa7162426230f413c",
+  "build_agent_v2.py": "697bf7786eb15ede605e3260765968c3c8e5316975eb1c7ca8b76aaa3521005c",
+  "check_v2_environment.py": "f4596d677d45762915ef394f409c61b2978dfacfdd5f2c69698cb0ea86cc4c70",
+  "concurrency_smoke.py": "acabfcfbc6843eee6ca2d45a7786e9b53e8aea5caee7b9082f8b453ff9aef3cd",
+  "diagnose_reachability.py": "f601154e51fee8496ae85c8cf029e07732981f474707ba4836242756d2a19dfb",
+  "environment_v2.py": "4efd76fab238ec25e6afe8169f823ea157dd880ecee99780e14344d7f748c7a7",
+  "freeze_v2.py": "e944d41d90b5883b094d4e778bffc98479f97ac9911c0f50106007857401b34c",
+  "launch_v2.py": "aed2f65275a83c6bf6174cc86f402cfc68d89825fa13a4098ccb572585876ec5",
+  "run_arm_v2.py": "0066d47113a67ea1ead22a1041fc17ad1332110a08190eef4b1dc9e0a6338ec6",
+  "test_v2.py": "4cc642685fe018ec40e05460083fbfff35cfd24643e7c8e0ee8683d63bdecec9",
+  "trajectory_v2.py": "719e5b93fec46dcb9d2cba49352214f195b2c8626199c9dfbd348ab2cfe130b8",
+  "v2_config.json": "a43056376e9e6f9ea68bd04bbfbf33c6a882d0fe663ea6e4a58c0b26126cf82d",
+  "v2_pod.sh": "c5cbf81aa0dd7888360057f572949a88d3c9ff76b0e32cd41c94b77f3f1cb07a",
+  "agent_image/Dockerfile": "29686e1943feb739cbcd32f1281fc5693dc3da5439ddd1fbf409623146f58890"
+ },
+ "reused_sha256": {
+  "stage_b/pod_guard.py": "9d3c8c7ad7c38295c94e800be905f165a219e4c9891d1fc182280d2affa5f86d",
+  "stage_c/environment.py": "ecc2158d0d0413ec595e153fe221d98d793f17702cbcc889e22a74fec45a70c5",
+  "stage_c/endpoint_client.py": "1d6474efa88b2beec5a791e814b5d9d6fe7574dda50c7d855959f65992c54c64",
+  "stage_c/trajectory.py": "535ba1de21ce2be6ba8bc853f65e34134d3ca35443312dc3ec345647ee2a70a3",
+  "stage_c/launch_ctf.py": "598a4aa3286987bdaaaffafffd2ffed3950aa4e89dc7e10618183e2b39622c79",
+  "stage_c/analyze_ctf.py": "2409851bb09b3fda2175cd96b0914142b4002573310090a5e283a3af4c653e7a",
+  "stage_c/flag_patch.py": "be8152937d9463a2877b0352ff164335c17f012d5088b6c40a4a35b4ec75c97e",
+  "stage_c/guard_adapter.py": "60e270cd581b1042312cfdfb985d7132c2ef78d1a60d249d7489a9eff7376b74",
+  "stage_c/budget.py": "df51b53d057f3188be06c7ee98654dc7b20ab2df1f85ee35118081395deca60e",
+  "stage_c/challenge_manifest.json": "26347c2a99524e5204074305286f5090cc9e156e23ae23f9ecfbaead21b75ed0",
+  "stage_c/development_manifest.json": "68b50d49929c1dc50956501e86cf894dcfb13bf903a3ded33381dbf04dfd9f6a"
+ },
+ "private_sha256": {
+  "image_lock.json": "cf41965eba7fa1aa8433d3a7b37c5580b546560e0ad562778465837197f55e1f",
+  "asset_hashes.json": "ce41fc45522b2d2f8ae0b3806ad1aa255611f396fbcd0d93f5ba9f22595bc392",
+  "development_asset_hashes.json": "9bcffbc9cdf991dfc02e0c51f68f3f107a90985969aa7f126eb47b786bbfe7ec",
+  "flag_patches.json": "e14041adf3279d20b57c1d5561234787b5c0984279e0b7f6bc06a80462580962",
+  "resolved_tasks.json": "6a933f193f120f0ff623c08aef2fec1829d3c6ecc51254ab89356cb8efa7d2db",
+  "resolved_development_tasks.json": "f6918e8f4951f49e53c5d02f17ebb0797dd021bfe06902d23264c9379064489d"
+ },
+ "agent_v2_image": "sha256:c8e12084b0f61f81d3115217364a4c4574162932d3f610443af30e58f8befed6",
+ "agent_v2_dockerfile_sha256": "29686e1943feb739cbcd32f1281fc5693dc3da5439ddd1fbf409623146f58890",
+ "environment_check_sha256": "88cc3804500bcb3fd4a5ccf2a0f7245ea5cbf28130e134b67e78212494d477b7",
+ "prepared_at": "2026-11-19T23:21:35.501671+00:00",
+ "status": "collection freeze; counts only once its commit is pushed",
+ "externally_timestamped_before_collection": true
+}

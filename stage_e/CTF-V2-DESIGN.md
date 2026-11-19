@@ -1,7 +1,13 @@
 # CTF v2 design draft (stage E, run 2)
 
-**Status: draft for the review loop. Nothing frozen, built, rented or spent.** Stage C results stand
-alone and are never pooled with v2.
+> **SUPERSEDED by `V2-PROTOCOL.md`.** This is the historical design draft, kept for the record only. Where
+> it differs from `V2-PROTOCOL.md` (for example: concurrency 4 here vs 3 in the protocol; "counts are the
+> primary limits" here vs "all limits apply, the ending reason is reported" in the protocol; a 15-minute
+> cap here vs 1,200 s; cost $4.50–5 here vs a $6.76 cap; an optional second attempt and Cybench here, both
+> dropped), **the protocol governs**. Nothing in this file is a pre-registered rule.
+
+**Status (original): draft for the review loop. Nothing frozen, built, rented or spent.** Stage C results
+stand alone and are never pooled with v2.
 
 ## Why v2
 

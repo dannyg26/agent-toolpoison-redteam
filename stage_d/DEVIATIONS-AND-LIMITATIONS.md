@@ -271,3 +271,15 @@ the filesystem. The official NYU harness states the server address separately. O
 also lacked its execute bit. **Wording:** "In stage C, 8 of 14 prompts omitted the target address
 because of a harness omission; the stage C solve counts therefore understate both models' capability
 and are not comparable to standard CTFTiny results. CTF v2 states the address for every task."
+
+### D-27 (REVIEW-002 R2-01, 2026-11-19): no reachability gate in the stage C trial path
+
+Before the v2 freeze, the v2 environment check saw the target refuse or miss the first fresh connection on
+4 of 14 tasks across two runs (pilot, get_it, bigboy, unlimited_subway), even though the stage C health
+probe (`wait_healthy`, a python connect) had just passed. A later targeted diagnosis (12 sandboxes, 72
+probes) and the repaired check did not reproduce it, so the root cause is unconfirmed (see
+`stage_e/V2-EXECUTION-NOTES.md`). Stage C started the model right after `wait_healthy`, with no second
+connection check, so a stage C trial could in principle have lost early steps to the same transient.
+**Wording:** "Stage C had no post-health reachability check; an intermittent first-connection failure
+seen later on this host cannot be ruled out for individual stage C trials. CTF v2 adds such a gate before
+the trial clock starts."
