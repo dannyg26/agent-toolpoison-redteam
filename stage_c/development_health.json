@@ -1,0 +1,19 @@
+{
+  "scope": "compatibility environment checks only, not model results",
+  "tasks": [
+    {
+      "id": "2016f-pwn-detective",
+      "healthy": true
+    },
+    {
+      "id": "2015f-pwn-hipster",
+      "healthy": true
+    },
+    {
+      "id": "2014f-web-webroot",
+      "healthy": true
+    }
+  ],
+  "model_calls": 0,
+  "paid_spend_usd": 0
+}

@@ -1,0 +1,118 @@
+{
+  "status": "metadata-only proposal; no solutions or outcomes inspected",
+  "source_url": "https://github.com/NYU-LLM-CTF/CTFTiny/blob/f1c9531672c45b24b7fb5f3aa44a7ac33d3602f8/README.md",
+  "source_sha256": "3333d3c4053561f1be536f8b32dbb80046749e20f8d902aa130d08b7fa7007c1",
+  "selection": "Every web and pwn task in the pinned published list; no difficulty exclusion",
+  "full_benchmark_tasks": 50,
+  "selected_tasks": 14,
+  "category_counts": {
+    "pwn": 11,
+    "web": 3
+  },
+  "difficulty_counts": {
+    "Hard": 7,
+    "Moderate": 3,
+    "Easy": 3,
+    "Very Easy": 1
+  },
+  "tasks": [
+    {
+      "id": "2017q-pwn-pilot",
+      "category": "pwn",
+      "event": "2017q",
+      "name": "pilot",
+      "published_difficulty": "Hard"
+    },
+    {
+      "id": "2018q-pwn-bigboy",
+      "category": "pwn",
+      "event": "2018q",
+      "name": "bigboy",
+      "published_difficulty": "Moderate"
+    },
+    {
+      "id": "2018q-pwn-get_it",
+      "category": "pwn",
+      "event": "2018q",
+      "name": "get_it",
+      "published_difficulty": "Moderate"
+    },
+    {
+      "id": "2019q-pwn-baby_boi",
+      "category": "pwn",
+      "event": "2019q",
+      "name": "baby_boi",
+      "published_difficulty": "Hard"
+    },
+    {
+      "id": "2019q-pwn-got_milk",
+      "category": "pwn",
+      "event": "2019q",
+      "name": "got_milk",
+      "published_difficulty": "Hard"
+    },
+    {
+      "id": "2020q-pwn-roppity",
+      "category": "pwn",
+      "event": "2020q",
+      "name": "roppity",
+      "published_difficulty": "Hard"
+    },
+    {
+      "id": "2020q-pwn-slithery",
+      "category": "pwn",
+      "event": "2020q",
+      "name": "slithery",
+      "published_difficulty": "Hard"
+    },
+    {
+      "id": "2021q-pwn-password_checker",
+      "category": "pwn",
+      "event": "2021q",
+      "name": "password_checker",
+      "published_difficulty": "Moderate"
+    },
+    {
+      "id": "2021q-web-poem_collection",
+      "category": "web",
+      "event": "2021q",
+      "name": "poem_collection",
+      "published_difficulty": "Easy"
+    },
+    {
+      "id": "2023f-web-shreeramquest",
+      "category": "web",
+      "event": "2023f",
+      "name": "shreeramquest",
+      "published_difficulty": "Hard"
+    },
+    {
+      "id": "2023q-pwn-puffin",
+      "category": "pwn",
+      "event": "2023q",
+      "name": "puffin",
+      "published_difficulty": "Very Easy"
+    },
+    {
+      "id": "2023q-pwn-target_practice",
+      "category": "pwn",
+      "event": "2023q",
+      "name": "target_practice",
+      "published_difficulty": "Easy"
+    },
+    {
+      "id": "2023q-pwn-unlimited_subway",
+      "category": "pwn",
+      "event": "2023q",
+      "name": "unlimited_subway",
+      "published_difficulty": "Hard"
+    },
+    {
+      "id": "2023q-web-smug_dino",
+      "category": "web",
+      "event": "2023q",
+      "name": "smug_dino",
+      "published_difficulty": "Easy"
+    }
+  ]
+}

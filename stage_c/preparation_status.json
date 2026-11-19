@@ -1,0 +1,27 @@
+{
+  "checked_at": "2026-11-19",
+  "local_preparation_complete": true,
+  "test_environments_verified": 14,
+  "development_environments_verified": 3,
+  "automated_checks_passed": 42,
+  "synthetic_end_to_end_and_isolation_passed": true,
+  "real_model_calls": 0,
+  "new_paid_spend_usd": "0.00",
+  "new_gpu_rentals": 0,
+  "study_data_collected": false,
+  "externally_frozen": false,
+  "live_collection_enabled": false,
+  "pending_before_heldout_collection": [
+    "review and externally timestamp final protocol/source",
+    "verify current GPU quote, credit and ledger",
+    "check actual cross-host serving/guard integration",
+    "pass the planned model-interface checks on development tasks"
+  ],
+  "financial_plan": {
+    "historical_all_in_hourly_usd": "2.22",
+    "maximum_additional_planned_usd": "6.76",
+    "phase_total_at_cap_usd": "8.8275",
+    "conditions": "current quote at or below rate cap; successful termination; no paid challenge host or external model API"
+  },
+  "runtime_storage": "Ubuntu WSL private Linux cache; benchmark payloads and checker templates excluded from Git"
+}

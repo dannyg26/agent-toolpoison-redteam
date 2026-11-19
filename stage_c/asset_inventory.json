@@ -1,0 +1,190 @@
+{
+  "revision": "f1c9531672c45b24b7fb5f3aa44a7ac33d3602f8",
+  "tasks": [
+    {
+      "id": "2017q-pwn-pilot",
+      "source_path": "ctftiny/pwn/pilot",
+      "files": [
+        "pilot"
+      ],
+      "port": 8024,
+      "compose": true,
+      "compose_files": [
+        "docker-compose.yml"
+      ],
+      "flag_type": "str"
+    },
+    {
+      "id": "2018q-pwn-bigboy",
+      "source_path": "ctftiny/pwn/bigboy",
+      "files": [
+        "boi"
+      ],
+      "port": 1436,
+      "compose": true,
+      "compose_files": [
+        "docker-compose.yml"
+      ],
+      "flag_type": "str"
+    },
+    {
+      "id": "2018q-pwn-get_it",
+      "source_path": "ctftiny/pwn/get_it?",
+      "files": [
+        "get_it"
+      ],
+      "port": 1437,
+      "compose": true,
+      "compose_files": [
+        "docker-compose.yml"
+      ],
+      "flag_type": "str"
+    },
+    {
+      "id": "2019q-pwn-baby_boi",
+      "source_path": "ctftiny/pwn/baby_boi",
+      "files": [
+        "baby_boi",
+        "libc-2.27.so",
+        "baby_boi.c"
+      ],
+      "port": 8000,
+      "compose": true,
+      "compose_files": [
+        "docker-compose.yml"
+      ],
+      "flag_type": "str"
+    },
+    {
+      "id": "2019q-pwn-got_milk",
+      "source_path": "ctftiny/pwn/got_milk",
+      "files": [
+        "dist/gotmilk",
+        "dist/libmylib.so"
+      ],
+      "port": 8000,
+      "compose": true,
+      "compose_files": [
+        "docker-compose.yml"
+      ],
+      "flag_type": "str"
+    },
+    {
+      "id": "2020q-pwn-roppity",
+      "source_path": "ctftiny/pwn/roppity",
+      "files": [
+        "rop",
+        "libc-2.27.so"
+      ],
+      "port": 8000,
+      "compose": true,
+      "compose_files": [
+        "docker-compose.yml"
+      ],
+      "flag_type": "str"
+    },
+    {
+      "id": "2020q-pwn-slithery",
+      "source_path": "ctftiny/pwn/slithery",
+      "files": [
+        "sandbox.py"
+      ],
+      "port": 8000,
+      "compose": true,
+      "compose_files": [
+        "docker-compose.yml"
+      ],
+      "flag_type": "str"
+    },
+    {
+      "id": "2021q-pwn-password_checker",
+      "source_path": "ctftiny/pwn/Password-Checker",
+      "files": [
+        "password_checker"
+      ],
+      "port": 5000,
+      "compose": true,
+      "compose_files": [
+        "docker-compose.yml"
+      ],
+      "flag_type": "str"
+    },
+    {
+      "id": "2021q-web-poem_collection",
+      "source_path": "ctftiny/web/poem-collection",
+      "files": [],
+      "port": 80,
+      "compose": true,
+      "compose_files": [
+        "docker-compose.yml"
+      ],
+      "flag_type": "str"
+    },
+    {
+      "id": "2023f-web-shreeramquest",
+      "source_path": "ctftiny/web/ShreeRamQuest",
+      "files": [],
+      "port": 80,
+      "compose": true,
+      "compose_files": [
+        "docker-compose.yml"
+      ],
+      "flag_type": "str"
+    },
+    {
+      "id": "2023q-pwn-puffin",
+      "source_path": "ctftiny/pwn/puffin",
+      "files": [
+        "puffin",
+        "readme.txt"
+      ],
+      "port": 31140,
+      "compose": true,
+      "compose_files": [
+        "docker-compose.yml"
+      ],
+      "flag_type": "str"
+    },
+    {
+      "id": "2023q-pwn-target_practice",
+      "source_path": "ctftiny/pwn/target practice",
+      "files": [
+        "target_practice"
+      ],
+      "port": 31138,
+      "compose": true,
+      "compose_files": [
+        "docker-compose.yml"
+      ],
+      "flag_type": "str"
+    },
+    {
+      "id": "2023q-pwn-unlimited_subway",
+      "source_path": "ctftiny/pwn/unlimited_subway",
+      "files": [
+        "share.zip"
+      ],
+      "port": 7900,
+      "compose": true,
+      "compose_files": [
+        "docker-compose.yml"
+      ],
+      "flag_type": "str"
+    },
+    {
+      "id": "2023q-web-smug_dino",
+      "source_path": "ctftiny/web/smug-dino",
+      "files": [],
+      "port": 3009,
+      "compose": true,
+      "compose_files": [
+        "docker-compose.yml"
+      ],
+      "flag_type": "str"
+    }
+  ],
+  "files_downloaded": 186,
+  "download_bytes": 4381921,
+  "storage": "private Linux cache; no challenge execution or model calls",
+  "asset_manifest_sha256": "ce41fc45522b2d2f8ae0b3806ad1aa255611f396fbcd0d93f5ba9f22595bc392"
+}

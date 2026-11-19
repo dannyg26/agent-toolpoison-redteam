@@ -1,0 +1,93 @@
+{
+  "scope": "environment and private checker checks only; no model outcomes",
+  "planned": 14,
+  "checked": 14,
+  "tasks": [
+    {
+      "task_id": "2018q-pwn-bigboy",
+      "healthy": true,
+      "fresh_secret_verified": true,
+      "elapsed_seconds": 17.25
+    },
+    {
+      "task_id": "2018q-pwn-get_it",
+      "healthy": true,
+      "fresh_secret_verified": true,
+      "elapsed_seconds": 16.0
+    },
+    {
+      "task_id": "2019q-pwn-baby_boi",
+      "healthy": true,
+      "fresh_secret_verified": true,
+      "elapsed_seconds": 19.34
+    },
+    {
+      "task_id": "2019q-pwn-got_milk",
+      "healthy": true,
+      "fresh_secret_verified": true,
+      "elapsed_seconds": 17.94
+    },
+    {
+      "task_id": "2020q-pwn-roppity",
+      "healthy": true,
+      "fresh_secret_verified": true,
+      "elapsed_seconds": 19.39
+    },
+    {
+      "task_id": "2020q-pwn-slithery",
+      "healthy": true,
+      "fresh_secret_verified": true,
+      "elapsed_seconds": 19.17
+    },
+    {
+      "task_id": "2021q-pwn-password_checker",
+      "healthy": true,
+      "fresh_secret_verified": true,
+      "elapsed_seconds": 16.08
+    },
+    {
+      "task_id": "2021q-web-poem_collection",
+      "healthy": true,
+      "fresh_secret_verified": true,
+      "elapsed_seconds": 15.94
+    },
+    {
+      "task_id": "2023f-web-shreeramquest",
+      "healthy": true,
+      "fresh_secret_verified": true,
+      "elapsed_seconds": 30.13
+    },
+    {
+      "task_id": "2023q-pwn-unlimited_subway",
+      "healthy": true,
+      "fresh_secret_verified": true,
+      "elapsed_seconds": 19.0
+    },
+    {
+      "task_id": "2023q-web-smug_dino",
+      "healthy": true,
+      "fresh_secret_verified": true,
+      "elapsed_seconds": 18.08
+    },
+    {
+      "task_id": "2017q-pwn-pilot",
+      "healthy": true,
+      "fresh_secret_verified": true,
+      "elapsed_seconds": 16.16
+    },
+    {
+      "task_id": "2023q-pwn-puffin",
+      "healthy": true,
+      "fresh_secret_verified": true,
+      "elapsed_seconds": 21.53
+    },
+    {
+      "task_id": "2023q-pwn-target_practice",
+      "healthy": true,
+      "fresh_secret_verified": true,
+      "elapsed_seconds": 17.62
+    }
+  ],
+  "paid_spend_usd": 0,
+  "model_calls": 0
+}

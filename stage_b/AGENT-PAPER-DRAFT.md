@@ -221,7 +221,9 @@ inventory. Unobserved units are never counted as failures.
 ## 4. Results
 
 **Execution:**
-- The run took 56 minutes, cost $1.94, and finished with no deadline, kill, error or incomplete outcome.
+- The run took 56 minutes and finished with no deadline, kill, error or incomplete outcome. The settled
+  held-out run cost was $2.0675; the initial credit snapshot showed $1.9388 before delayed charges.
+  This excludes earlier development and pilot spending.
 - Every recorded setting matched the frozen configuration.
 - The report re-derived from the archive is identical.
 

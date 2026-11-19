@@ -1,0 +1,7 @@
+{
+  "scope": "offline unit tests and local synthetic HTTP transport only",
+  "passed": true,
+  "test_count": 42,
+  "real_model_calls": 0,
+  "new_paid_spend_usd": 0
+}

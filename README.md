@@ -1,13 +1,25 @@
 # Safety-removal studies on open-weight LLMs
 
+**Corrected capstone direction (proposal):** evaluate the recent uncensored model executing web and
+binary-exploitation CTF tasks itself through terminal tools. See the
+[offensive-capability plan](stage_c/REVISED-CAPSTONE-PLAN.md) and
+[14-task inventory](stage_c/challenge_manifest.json). All 14 test environments and three development
+endpoints passed local checks; the software and a synthetic agent/grader/isolation check are prepared.
+See the [current protocol](stage_c/CTF-PROTOCOL.md) and [professor brief](stage_c/PROFESSOR-BRIEF.md).
+Live GPU/model integration and the external pre-collection freeze remain pending.
+No CTF model runs or paid collection have been performed. The completed AgentDojo
+experiment below studies prompt injection and does not establish direct hacking capability.
+
 **2026-11-18 held-out agent study:** a recent uncensored attacker
 (`huihui-ai/Huihui-Qwen3.8-27B-abliterated`) and its aligned control (`Qwen/Qwen3.8-27B`)
 were compared on 32 held-out AgentDojo cases against Gemma 4 26B-A4B, under a procedure
 frozen and pushed before collection. The uncensored attacker succeeded on 17/32 cases and the aligned
 control on 16/32: +3.1 points, Tango 95% CI −16.5 to +22.7, exact McNemar p = 1.00. No difference was
 detected, which is inconclusive, not equivalence. Both checkpoints completed the same 11 of 12 benign
-tool-using capability tasks; broader preservation of agent capability was not established. Cost: $1.94.
-See [results](stage_b/HELDOUT-RESULTS.md), the [paper draft](stage_b/AGENT-PAPER-DRAFT.md) and the
+tool-using capability tasks; broader preservation of agent capability was not established. Settled
+held-out run cost: $2.0675 (the initial credit snapshot showed $1.9388).
+See the [capstone report](stage_b/CAPSTONE-REPORT.md), [results](stage_b/HELDOUT-RESULTS.md),
+the [paper draft](stage_b/AGENT-PAPER-DRAFT.md) and the
 [frozen protocol](stage_b/HELDOUT-PROTOCOL.md).
 
 **2026-11-17 agent pilot:** a recent, general-purpose uncensored Qwen3.8 attacker and

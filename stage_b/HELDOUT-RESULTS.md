@@ -265,7 +265,10 @@ of agent capability was not established.
 | ALL_DONE | 02:32:28 | |
 
 **Cost:**
-- **Measured credit decrease: $1.9388**, from $13.0648 to $11.1260.
+- **Settled held-out run cost: $2.0675**, as recorded in `followup_config.json` after delayed charges.
+  This excludes earlier development and pilot spending.
+- **Initial measured credit decrease: $1.9388**, from $13.0648 to $11.1260. This earlier snapshot remains
+  in `heldout_observed_metrics.json`; it is not the final settled charge.
 - The controller's elapsed-time quote was $2.07.
 - The pre-run estimates were $3.14 normal and $6.52 conservative.
 - No paid API, judge, user simulator, persistent volume or second pod was used.

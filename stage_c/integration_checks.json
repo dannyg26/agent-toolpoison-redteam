@@ -1,0 +1,15 @@
+{
+  "scope": "synthetic fixture only; scripted responses, no real model calls",
+  "model_calls": 0,
+  "paid_spend_usd": 0,
+  "isolation_checks": {
+    "uid": 10001,
+    "docker_socket": false,
+    "windows_mount": false,
+    "default_route": false
+  },
+  "external_route_blocked": true,
+  "external_dns_blocked": true,
+  "scripted_end_to_end_passed": true,
+  "fresh_agent_filesystem_verified": true
+}

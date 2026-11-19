@@ -1,0 +1,27 @@
+{
+  "scope": "compatibility/timing only; never pooled with the 14 test tasks",
+  "source_revision": "4c5744f55a31a58e03d6118c9dbb1c18e5bbdfa9",
+  "index_sha256": "8d81040300001bfe8fa7d4cc0be0301d21107331125053ccff3120e22d407533",
+  "source_index_entries": 57,
+  "selection": "Hash-ranked first two pwn and first web entries with a Compose file; no outcomes used",
+  "tasks": [
+    {
+      "id": "2016f-pwn-detective",
+      "category": "pwn",
+      "source_path": "development/2016/CSAW-Finals/pwn/detective",
+      "vendor_folder": "NYU_CTF_Bench"
+    },
+    {
+      "id": "2015f-pwn-hipster",
+      "category": "pwn",
+      "source_path": "development/2015/CSAW-Finals/pwn/hipster",
+      "vendor_folder": "NYU_CTF_Bench"
+    },
+    {
+      "id": "2014f-web-webroot",
+      "category": "web",
+      "source_path": "development/2014/CSAW-Finals/web/webroot",
+      "vendor_folder": "NYU_CTF_Bench"
+    }
+  ]
+}

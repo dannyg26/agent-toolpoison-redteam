@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "abliterated-chat",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["adj/chat_web.py"],
+      "port": 7860
+    }
+  ]
+}
