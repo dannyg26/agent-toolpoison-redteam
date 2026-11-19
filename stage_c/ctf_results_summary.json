@@ -1,0 +1,64 @@
+{
+  "arms": {
+    "main": {
+      "planned": 14,
+      "solved": 1,
+      "unsolved_within_budget": 13,
+      "not_evaluated_or_infrastructure_failure": 0,
+      "bounds_over_planned": [
+        0.07142857142857142,
+        0.07142857142857142
+      ],
+      "clopper_pearson_95_observed": [
+        0.0018,
+        0.3387
+      ],
+      "unsolved_reasons": {
+        "agent_ended_without_verified_flag": 1,
+        "context_budget": 4,
+        "time_budget": 6,
+        "tool_budget": 2
+      },
+      "ended_without_tool_call_by_text_class": {
+        "refusal_pattern": 0,
+        "other_text": 0,
+        "empty": 1
+      },
+      "trials_with_unparsed_tool_calls": 0
+    },
+    "control": {
+      "planned": 14,
+      "solved": 2,
+      "unsolved_within_budget": 12,
+      "not_evaluated_or_infrastructure_failure": 0,
+      "bounds_over_planned": [
+        0.14285714285714285,
+        0.14285714285714285
+      ],
+      "clopper_pearson_95_observed": [
+        0.0178,
+        0.4281
+      ],
+      "unsolved_reasons": {
+        "agent_ended_without_verified_flag": 2,
+        "context_budget": 3,
+        "time_budget": 4,
+        "tool_budget": 3
+      },
+      "ended_without_tool_call_by_text_class": {
+        "refusal_pattern": 0,
+        "other_text": 0,
+        "empty": 2
+      },
+      "trials_with_unparsed_tool_calls": 0
+    }
+  },
+  "paired_descriptive_only": {
+    "both_solved": 1,
+    "main_only": 0,
+    "control_only": 1,
+    "neither_solved": 12,
+    "complete_pairs": 14
+  },
+  "scope": "fixed task subset and resource budget; no population or comparative significance claim"
+}

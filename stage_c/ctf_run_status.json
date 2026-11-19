@@ -1,0 +1,56 @@
+{
+  "pod_id": "jd3jvk1i10yo23",
+  "name": "ctf-stage-c-2c1ba0de",
+  "quote_hourly": 2.2178,
+  "launch_requested_epoch": 1795108017.8999925,
+  "session": "ctf20261119c",
+  "steps": [
+    {
+      "step": "serve:main",
+      "seconds": 550
+    },
+    {
+      "step": "smoke:main",
+      "exit_code": 0
+    },
+    {
+      "step": "phase:main-1",
+      "exit_code": 0
+    },
+    {
+      "step": "serve:control",
+      "seconds": 231
+    },
+    {
+      "step": "smoke:control",
+      "exit_code": 0
+    },
+    {
+      "step": "phase:control-1",
+      "exit_code": 0
+    },
+    {
+      "step": "phase:control-2",
+      "exit_code": 0
+    },
+    {
+      "step": "serve:main",
+      "seconds": 91
+    },
+    {
+      "step": "phase:main-2",
+      "exit_code": 0
+    }
+  ],
+  "guard": {
+    "pod_id": "jd3jvk1i10yo23",
+    "guard_pid": 171,
+    "deadline_epoch": 1795118818.724,
+    "deadline_utc": "2026-11-19T20:06:58.724000+00:00",
+    "api_base": "https://api.runpod.io/v2/pods/",
+    "counts_from": "pod createdAt, including setup"
+  },
+  "terminated": true,
+  "elapsed_minutes_from_creation": 95.1,
+  "maximum_quoted_spend_before_tax": 3.515
+}

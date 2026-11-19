@@ -75,3 +75,11 @@ are never pooled with this uncollected CTF study.
     `(cd dir || exit 1; nohup cmd > log 2>&1 < /dev/null &)`, and tests run the real commands under
     pipes. The vLLM stop command now uses a bracketed pattern so `pkill -f` cannot kill its own shell.
     Freeze regenerated and pushed before lease 3. Phase spend so far is at most $2.2675 of $10.
+
+## Collection
+
+16. 2026-11-19 lease 3 (pod jd3jvk1i10yo23, freeze eee5d75): the guard armed, but the launcher's
+    `pip install` was refused by PEP 668. Before any model was served or any trial began, the same
+    install-and-download command was re-run on the pod with `PIP_BREAK_SYSTEM_PACKAGES=1`; nothing else
+    changed. All 6 development checks and all 28 test trials then completed with no infrastructure
+    failure; the pod was terminated after 95.1 minutes. Results: [CTF-RESULTS.md](CTF-RESULTS.md).

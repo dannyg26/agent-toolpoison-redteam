@@ -1,14 +1,14 @@
 # Safety-removal studies on open-weight LLMs
 
-**Corrected capstone direction (proposal):** evaluate the recent uncensored model executing web and
-binary-exploitation CTF tasks itself through terminal tools. See the
-[offensive-capability plan](stage_c/REVISED-CAPSTONE-PLAN.md) and
-[14-task inventory](stage_c/challenge_manifest.json). All 14 test environments and three development
-endpoints passed local checks; the software and a synthetic agent/grader/isolation check are prepared.
-See the [current protocol](stage_c/CTF-PROTOCOL.md) and [professor brief](stage_c/PROFESSOR-BRIEF.md).
-Live GPU/model integration and the external pre-collection freeze remain pending.
-No CTF model runs or paid collection have been performed. The completed AgentDojo
-experiment below studies prompt injection and does not establish direct hacking capability.
+**2026-11-19 CTF capability study (stage C):** the recent uncensored model
+(`huihui-ai/Huihui-Qwen3.8-27B-abliterated`) and its aligned parent each ran all 14 CTFTiny web/pwn tasks
+themselves, through terminal tools in isolated Docker environments, with a fresh secret per trial and a
+240-second, 24-tool-call budget. The uncensored model solved **1/14** (exact 95% CI 0.2%–33.9%) and the
+aligned parent **2/14** (1.8%–42.8%). All solves were web tasks; neither solved any pwn task, and neither
+refused. Paired: 1 both, 0 uncensored-only, 1 aligned-only, 12 neither. That is descriptive only and does
+not show a capability difference. 7 of 22 pwn trials ended when a binary dump filled the context.
+All 28 trials were observed with no infrastructure failures, under a freeze pushed before collection.
+Cost ≈ $3.71. See the [results](stage_c/CTF-RESULTS.md) and [protocol](stage_c/CTF-PROTOCOL.md).
 
 **2026-11-18 held-out agent study:** a recent uncensored attacker
 (`huihui-ai/Huihui-Qwen3.8-27B-abliterated`) and its aligned control (`Qwen/Qwen3.8-27B`)
