@@ -1,6 +1,7 @@
 # CTF capability study: operative protocol draft
 
-**Status: prepared locally, not externally frozen, no real model calls or study outcomes collected.**
+**Status: frozen for collection once the commit containing `ctf_freeze.json` is pushed. No real
+model calls or study outcomes were collected before that push.**
 The procedure below supersedes inconsistent proposal details about static flags or unselected development
 IDs. All preparation decisions occurred before any CTF model outcomes. The preparation log records them.
 
@@ -163,9 +164,25 @@ timeout. Archive local results before termination; the pod guard takes priority 
 download. A live GPU integration test of this layout has not been performed.
 
 Before test collection the complete source/configuration, task lists, checker transformations, image
-pins and analysis rules require a checked, externally timestamped freeze. `ctf_freeze_draft.json` is
-only a local review snapshot. `allow_live_model_calls` and automatic launch are currently false.
-No automated rental is included. Paid model compatibility is still untested on this new scaffold.
+pins and analysis rules require a checked, externally timestamped freeze. `ctf_freeze.json` is that
+freeze; it counts only once the commit containing it is pushed, and `launch_ctf.py` refuses to rent
+unless stage C is clean and its commit is on a remote branch. `allow_live_model_calls` is true in the
+frozen configuration; automatic launch stays false. Paid model compatibility is still untested.
+
+`launch_ctf.py` is the single manual launcher. It runs in the WSL host and:
+1. performs a read-only preflight (no existing pods, no active spend, A100 SXM 80GB secure quote plus
+   200 GB disk at or below $2.22/hour, balance covering the cap);
+2. requires `--approved-max-usd` at least the computed cap, which the user approves in chat;
+3. creates exactly one pod, never retried, and copies only the guard and model-server files to it;
+4. arms the unmodified stage B guard before installing vLLM 0.33.0 or downloading either checkpoint;
+5. serves one model at a time on the pod's loopback and reaches it through an SSH tunnel to
+   `127.0.0.1:18000`, so no model port is published;
+6. runs, from this host: main development check, main block 1, control development check, control
+   blocks 1 and 2, then main block 2 (three model loads);
+7. stops new steps five minutes before the 180-minute hard stop, keeps a local watchdog, and
+   terminates the pod in a `finally` block, with the pod guard as the independent backup.
+
+A failed development check or step ends collection for the session; later trials are unobserved.
 
 ## Limitations and reporting
 

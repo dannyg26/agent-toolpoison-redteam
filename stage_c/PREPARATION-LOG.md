@@ -55,3 +55,8 @@ are never pooled with this uncollected CTF study.
     Clopper–Pearson intervals over observed trials. Submission feedback, whitespace stripping, the
     development hash key and six development runs (three per model) are now stated explicitly. Seven
     offline tests were added (42 total pass). No model was called and nothing was spent.
+13. Added `launch_ctf.py`, the single manual launcher (read-only preflight, explicit approved spend
+    ceiling, one guarded pod, SSH-tunnelled loopback model server, protocol step order, local watchdog
+    and `finally` termination). Only the guard and model-server files are copied to the pod; grading,
+    flag-patching and challenge code stay on this host. Five offline launcher tests were added. Live
+    calls were enabled in the configuration and the final freeze was written before any model call.

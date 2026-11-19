@@ -68,7 +68,10 @@ class InventoryChecks(unittest.TestCase):
     def test_automatic_launch_disabled(self):
         config = json.loads((ROOT / "study_config.json").read_text())
         self.assertIs(config["automatic_launch_enabled"], False)
-        self.assertIs(config["allow_live_model_calls"], False)
+        # Live calls may be enabled only in a configuration covered by the final collection freeze.
+        if config["allow_live_model_calls"]:
+            freeze = json.loads((ROOT / "ctf_freeze.json").read_text())
+            self.assertIs(freeze["externally_timestamped_before_collection"], True)
 
 
 if __name__ == "__main__":

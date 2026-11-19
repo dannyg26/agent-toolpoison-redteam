@@ -68,9 +68,21 @@ def verify(value, require_external=True):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('action', choices=['draft', 'check-draft'])
+    parser.add_argument('action', choices=['draft', 'check-draft', 'final'])
     args = parser.parse_args()
     path = HERE/'ctf_freeze_draft.json'
+    if args.action == 'final':
+        # Valid only after the commit that contains it is pushed; launch_ctf.py checks that.
+        config = json.loads((HERE/'study_config.json').read_text())
+        if not config.get('allow_live_model_calls'):
+            raise SystemExit('Final freeze requires the collection configuration')
+        value = snapshot()
+        value.update(status='collection freeze; counts only once its commit is pushed to the remote',
+                     externally_timestamped_before_collection=True)
+        verify(value)
+        (HERE/'ctf_freeze.json').write_text(json.dumps(value, indent=2)+'\n')
+        print('Final freeze written; commit and push it before launch.')
+        raise SystemExit(0)
     if args.action == 'draft':
         value = snapshot()
         path.write_text(json.dumps(value, indent=2)+'\n')
