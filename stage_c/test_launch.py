@@ -1,7 +1,9 @@
 """Offline launcher checks: no network, no pod, no spend."""
 import io
 import json
+import subprocess
 import tarfile
+import time
 import unittest
 from unittest import mock
 
@@ -68,13 +70,39 @@ class LaunchTests(unittest.TestCase):
             self.assertNotIn('stage_c/'+forbidden, names)
         self.assertFalse([n for n in names if 'private' in n or 'key' in n.lower()])
 
-    def test_background_pod_commands_release_ssh(self):
-        # A backgrounded command that inherits SSH stdin keeps the session open (lease 1 failure).
-        source = (HERE/'launch_ctf.py').read_text()
-        self.assertGreaterEqual(source.count('nohup'), 3)
-        for line in source.splitlines():
-            if line.rstrip().endswith("&'") or "&' %" in line:
-                self.assertIn('< /dev/null &', line)
+    def test_background_helper_returns_immediately_under_pipes(self):
+        # bash -c with piped stdout behaves like an SSH session channel; leases 1 and 2 hung here.
+        for workdir in (None, '/tmp'):
+            command = L.background('sleep 8', '/tmp/ctf-bg-test.log', workdir)
+            started = time.monotonic()
+            subprocess.run(['bash', '-c', command], input=b'', capture_output=True, timeout=4, check=True)
+            self.assertLess(time.monotonic()-started, 2)
+
+    def test_old_background_form_is_known_to_hang(self):
+        with self.assertRaises(subprocess.TimeoutExpired):
+            subprocess.run(['bash', '-c', 'cd /tmp && nohup sleep 8 > /tmp/ctf-bg-test.log 2>&1 < /dev/null &'],
+                           input=b'', capture_output=True, timeout=2)
+
+    def test_stop_vllm_does_not_kill_its_own_shell(self):
+        result = subprocess.run(['bash', '-c', L.STOP_VLLM], capture_output=True, timeout=20)
+        self.assertEqual(result.returncode, 0)
+
+    def test_every_detached_pod_command_uses_the_helper(self):
+        commands = []
+        class FakePod:
+            def run(self, command, stdin=None, timeout=120, check=True):
+                commands.append(command)
+                out = json.dumps({'pod_id': 'pod12345', 'deadline_epoch': 1}).encode()
+                return subprocess.CompletedProcess(command, 0, stdout=out if command.startswith('cat ') else
+                                                   ('csc-main' if 'curl' in command else '').encode(), stderr=b'')
+        with mock.patch.object(L, 'wait_until', return_value=True),                 mock.patch.object(L, 'package_source', return_value=b'x'):
+            L.setup_pod(FakePod(), 'k', 'pod12345', 2.2, CONFIG)
+            L.serve(FakePod(), 'main', 'pod12345', 2.2, 1)
+        detached = [c for c in commands if 'nohup' in c]
+        self.assertEqual(len(detached), 3)
+        for command in detached:
+            self.assertTrue(command.startswith('(') and command.endswith('&)'), command)
+        self.assertFalse([c for c in commands if 'pkill' in c and '[v]llm' not in c])
 
     def test_quote_includes_disk(self):
         self.assertAlmostEqual(L.quoted_hourly(2.0), 2.0 + 200*0.10/720)

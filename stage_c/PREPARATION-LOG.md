@@ -67,3 +67,11 @@ are never pooled with this uncollected CTF study.
     data exists from it. Fix: every backgrounded pod command now reads from /dev/null, with a
     regression test. The freeze was regenerated and pushed before any second lease. A second lease
     does not reset the phase budget.
+15. 2026-11-19 lease 2 (pod p89ex97w5ek2pk) failed identically, before any model call or trial, and was
+    terminated after 2.58 minutes (quoted $0.095; $0.10 added to settled spend). The lease 1 diagnosis
+    was incomplete: in `cd dir && nohup cmd > log < /dev/null &` the `&` backgrounds the whole list,
+    whose subshell keeps the SSH session's stdout open; the same happens inside parentheses. This was
+    reproduced locally with bash and pipes. All detached pod commands now go through one helper,
+    `(cd dir || exit 1; nohup cmd > log 2>&1 < /dev/null &)`, and tests run the real commands under
+    pipes. The vLLM stop command now uses a bracketed pattern so `pkill -f` cannot kill its own shell.
+    Freeze regenerated and pushed before lease 3. Phase spend so far is at most $2.2675 of $10.

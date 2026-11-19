@@ -172,13 +172,29 @@ def wait_until(predicate, timeout, interval=10):
     return False
 
 
+def background(command, log, workdir=None):
+    """Start a detached pod process that holds none of the SSH session's pipes.
+
+    The whole chain sits inside a subshell so `&` backgrounds only the inner command and the
+    subshell exits at once. Any `a && b &` form hangs, inside parentheses too: the backgrounded list runs
+    in a subshell that keeps SSH's stdout open (leases 1 and 2).
+    """
+    prefix = 'cd %s || exit 1; ' % shlex.quote(workdir) if workdir else ''
+    return '(%snohup %s > %s 2>&1 < /dev/null &)' % (prefix, command, shlex.quote(log))
+
+
+# Bracketed first letter: the pattern never matches the remote shell running pkill itself.
+STOP_VLLM = ("pkill -f '[v]llm.entrypoints.openai.api_server'; sleep 5; "
+             "pkill -9 -f '[v]llm.entrypoints.openai.api_server'; true")
+
+
 def setup_pod(pod, key, pod_id, hourly, config):
     pod.run('mkdir -p %s /root/out && tar -xzf - -C %s' % (POD_ROOT, POD_ROOT), stdin=package_source())
     pod.run('umask 077 && cat > %s' % POD_KEY, stdin=(key+'\n').encode())
     # Guard first, before any package or model download.
-    pod.run('cd %s/stage_c && RUNPOD_POD_ID=%s nohup python3 guard_adapter.py --arm --key-file %s '
-            '--out %s --verified-all-in-hourly %.4f > /root/out/guard.log 2>&1 < /dev/null &'
-            % (POD_ROOT, shlex.quote(pod_id), POD_KEY, GUARD_OUT, hourly))
+    pod.run(background('env RUNPOD_POD_ID=%s python3 guard_adapter.py --arm --key-file %s --out %s '
+                       '--verified-all-in-hourly %.4f' % (shlex.quote(pod_id), POD_KEY, GUARD_OUT, hourly),
+                       '/root/out/guard.log', POD_ROOT+'/stage_c'))
     if not wait_until(lambda: pod.run('test -s %s/guard_ready.json' % GUARD_OUT, check=False).returncode == 0,
                       120, 5):
         raise RuntimeError('Pod-side guard did not arm; no downloads started')
@@ -188,22 +204,21 @@ def setup_pod(pod, key, pod_id, hourly, config):
         'python3 -c %s && touch /root/out/downloaded-%s' % (shlex.quote(
             'from huggingface_hub import snapshot_download; snapshot_download(%r, revision=%r)'
             % (config[c+'_model'], config[c+'_revision'])), c) for c in ('main', 'control'))
-    pod.run('nohup sh -c %s > /root/out/setup.log 2>&1 < /dev/null &' % shlex.quote(
+    pod.run(background('sh -c %s' % shlex.quote(
         'python3 -m pip install -q vllm==0.33.0 hf_transfer && touch /root/out/installed && '
-        'export HF_HUB_ENABLE_HF_TRANSFER=1 && ' + downloads))
+        'export HF_HUB_ENABLE_HF_TRANSFER=1 && ' + downloads), '/root/out/setup.log'))
     return ready
 
 
 def serve(pod, condition, pod_id, hourly, count):
-    pod.run('pkill -f vllm.entrypoints.openai.api_server; sleep 5; '
-            'pkill -9 -f vllm.entrypoints.openai.api_server; true', timeout=60)
+    pod.run(STOP_VLLM, timeout=60)
     if not wait_until(lambda: pod.run('test -e /root/out/downloaded-'+condition, check=False).returncode == 0,
                       MODEL_LOAD_TIMEOUT):
         raise TimeoutError('Checkpoint download did not finish in time: '+condition)
-    pod.run('cd %s/stage_c && RUNPOD_POD_ID=%s HF_HUB_OFFLINE=1 nohup python3 inference_server.py '
-            '--condition %s --run --guard-ready %s/guard_ready.json --key-file %s '
-            '--verified-all-in-hourly %.4f > /root/out/vllm-%s-%d.log 2>&1 < /dev/null &'
-            % (POD_ROOT, shlex.quote(pod_id), condition, GUARD_OUT, POD_KEY, hourly, condition, count))
+    pod.run(background('env RUNPOD_POD_ID=%s HF_HUB_OFFLINE=1 python3 inference_server.py --condition %s '
+                       '--run --guard-ready %s/guard_ready.json --key-file %s --verified-all-in-hourly %.4f'
+                       % (shlex.quote(pod_id), condition, GUARD_OUT, POD_KEY, hourly),
+                       '/root/out/vllm-%s-%d.log' % (condition, count), POD_ROOT+'/stage_c'))
     served = 'csc-'+condition
     def healthy():
         result = pod.run('curl -sf --max-time 5 http://127.0.0.1:8000/v1/models', check=False, timeout=30)
