@@ -1,0 +1,50 @@
+{
+ "study": "stage D run 1",
+ "sha256": {
+  "EXPANDED-STUDY-PLAN.md": "0cba5937b248bfc909041ac277c5e3697b2a748109f8e09707a7f7ac332868c4",
+  "RUN1-PROTOCOL.md": "dfd79ced7fb0a6eb2c546b0234b75c28ee9e0689143e82b441113ebd7fefddef",
+  "build_items.py": "55340354d20712f793419291bb8a1806cdf6ee4234fe4949c132feb76acc3821",
+  "check_cweval_harness.py": "033127338811d89698bca27c6db84a73b7201bdf1229298d47898aa0489b441d",
+  "fetch_datasets.py": "00399d00c610fa386e3cf8a5ba58742b36eca0ae8b65d54efe5f30d2af674006",
+  "freeze_run1.py": "c22f9e4c4e9045cc50041c45b115c11ac2bc4c8a5d19d65737a5ab69e203b2a1",
+  "injecagent_port.py": "cd8ee476ed6c04818bc8fdf76dffd527f47b60fc4c151cd4dc43a2036b708632",
+  "launch_run1.py": "f51c6da8b250977bcef0353209320591834d80260b0d62f7d08d0e318cd07b99",
+  "pod_generate.py": "df71d2223a3f6be356063af233e47ffee28d3f5e077243ddf62b3e18b055205c",
+  "pod_judge.py": "fb64e8e96b1bba7b4a18f64e0d59be5b0dc9cebafffb6ad294875a3fb5d70dd1",
+  "run1_config.json": "6055a7ff14bb2a73bcbcaf8d960580b6114abe4b61f350b640a230acc58cf0b9",
+  "run1_pod.sh": "0b4e59cac7e96b66aebff5c44c5ac81a548b8d9d9d17a0fa091051b5bca0d374",
+  "score_run1.py": "e5d4de2d9668ded1b6f0d34d255aaa0690ab612157c4df56b428364f6a9bad82",
+  "test_launch_run1.py": "2605655676e24e868fc5dc8d42bf5c6cd004ead5164834b95f17a7482e514189",
+  "test_run1.py": "2e88cdf77cf89a098e4b95493ae1696d3519f9fed8c8896baf93fdac176591ae",
+  "cweval_runner/Dockerfile": "d37ef00efd403f2cb2ac69349317abcdca4afa820c840be21390e83cdcbe5086"
+ },
+ "reused_sha256": {
+  "sr_judge.py": "48a105dddb0048cf43b402580010a6a2cab92a37aeac2422c7351f71d4f653a2",
+  "judge_templates.json": "6d01841899e99f1f57c4f19153056051684ede2a7e1b54ebbb37b5ddff981768",
+  "stage_b/pod_guard.py": "9d3c8c7ad7c38295c94e800be905f165a219e4c9891d1fc182280d2affa5f86d",
+  "stage_c/launch_ctf.py": "598a4aa3286987bdaaaffafffd2ffed3950aa4e89dc7e10618183e2b39622c79",
+  "stage_c/analyze_ctf.py": "2409851bb09b3fda2175cd96b0914142b4002573310090a5e283a3af4c653e7a",
+  "stage_c/guard_adapter.py": "60e270cd581b1042312cfdfb985d7132c2ef78d1a60d249d7489a9eff7376b74",
+  "stage_c/budget.py": "df51b53d057f3188be06c7ee98654dc7b20ab2df1f85ee35118081395deca60e",
+  "stage_c/environment.py": "ecc2158d0d0413ec595e153fe221d98d793f17702cbcc889e22a74fec45a70c5"
+ },
+ "private_sha256": {
+  "dataset_hashes.json": "be1462404666d29306a2a0b87d2e085e2f2f193f86d881db6351781e33c89df6",
+  "items_manifest.json": "4af71272a7b19a3910489846c67ad93ec0aef12704e6212e950912a14484b055",
+  "cweval_harness_check.json": "c0b8f8eac4bae5cabf5cae8156a4a3bace460b11e28fbe911db61df62df29385"
+ },
+ "items_sha256": {
+  "cweval.jsonl": "83018248ebd8c77040d96838af9e02d66123211ea598b640ab3f833b7f7b4f6c",
+  "cybermetric.jsonl": "64304a75dd0c4c8a3a5c20d814c849eac5273896b0fc91e070643252189576e5",
+  "injecagent.jsonl": "83d9120729be2b9a741b6eae02f13e2a3e835479fbdf21c614d4f45be2bb0803",
+  "mitre.jsonl": "d225b95842e41f423aac197ac347ca999303e6bc7ccf21770313b06dccc05806",
+  "mitre_frr.jsonl": "744f26d94203218dd0cea5f8f69f417c0e70835cad0266ccd80edb12c7cd5669",
+  "strongreject.jsonl": "d80c6bf4e0e9fca910c00faca58d02bf735ce3a1aa51a47ec44317106a2f492c",
+  "wmdp.jsonl": "ff9729ffb25a2f3548e624835fe18920d9c0d70b6552ac7194c47f94cb2c0a41",
+  "xstest.jsonl": "f162ea036782baae28ec592a8951c138952517ab212ae3849afd4d24804bcf7d"
+ },
+ "cweval_runner_image": "sha256:9e06bf9e25bb6670367952f5ce48c1351d588af2ea1650706bbc2841cfb41c52",
+ "prepared_at": "2026-11-19T19:26:11.438488+00:00",
+ "status": "collection freeze; counts only once its commit is pushed",
+ "externally_timestamped_before_collection": true
+}

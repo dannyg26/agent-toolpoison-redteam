@@ -1,0 +1,52 @@
+{
+  "status": "frozen collection configuration; live calls only through launch_run1.py after push and approval",
+  "study": "stage D run 1: tests B (reasoning), C (refusal behaviour), D (injection resistance)",
+  "arms": {
+    "aligned": {
+      "model": "Qwen/Qwen3.8-27B",
+      "revision": "37561816e66b5b9153b1b64c10968c18c1e6f4a0"
+    },
+    "abliterated": {
+      "model": "huihui-ai/Huihui-Qwen3.8-27B-abliterated",
+      "revision": "739e3c5b89849f6c238ce1e5b70008612ae42cdd"
+    },
+    "heretic": {
+      "model": "jakejb53/Qwen3.8-27B-heretic",
+      "revision": "5cc999deb3095390015c04d506278e4eb53e7d2b"
+    }
+  },
+  "arm_order": [
+    "aligned",
+    "abliterated",
+    "heretic"
+  ],
+  "quantization": "fp8",
+  "vllm_version": "0.33.0",
+  "context_length": 32768,
+  "enable_thinking": true,
+  "sampling": {
+    "temperature": 0.6,
+    "top_p": 0.95,
+    "top_k": 20
+  },
+  "max_tokens": {
+    "mcq": 2048,
+    "code": 4096,
+    "refusal": 2048,
+    "agent": 2048
+  },
+  "subsample": {
+    "wmdp_cyber": 500,
+    "mitre_per_category": 50
+  },
+  "subsample_key": "stage_d.run1.v1",
+  "judge": {
+    "base": "unsloth/gemma-2b",
+    "adapter": "qylu4156/strongreject-15k-v1"
+  },
+  "gpu": "NVIDIA A100-SXM4-80GB",
+  "maximum_hourly_usd_including_disk": "2.22",
+  "hard_session_minutes": 180,
+  "delayed_charge_reserve_usd": "0.10",
+  "allow_live_model_calls": true
+}
