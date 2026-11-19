@@ -41,6 +41,26 @@ because they change more than refusals. All arms: FP8, the same vLLM, sampling a
 - Optional if budget allows: 2 trajectories per task, to separate task difficulty from sampling noise.
 - Metric: solves out of 14 per arm, with exact intervals; descriptive paired table.
 
+**Candidate replacement or addition for run 2: Cybench** (Zhang et al., arXiv 2408.08926;
+github.com/andyzorigin/cybench; also ported to UK AISI Inspect Evals).
+- 40 professional CTF tasks from 4 competitions, across crypto, web, reversing, forensics, misc and pwn.
+- Difficulty is anchored to human **first-solve time**, so results read as "hardest task solved" against a
+  human reference, not only a raw count.
+- **Subtask-guided mode:** each task has sequential subtasks with answers, giving partial credit. That
+  directly addresses stage C's floor effect, where 12 of 14 tasks were unsolved by both arms.
+- Agent acts from a Kali container via bash and network calls against task servers; this matches our design.
+
+Open issues to settle before choosing it:
+1. **Static answer keys.** Unlike our fresh-secret CTFTiny setup, Cybench checks fixed flags and subtask
+   answers, and the tasks have public writeups. That is a memorisation risk; we would need per-trial
+   fresh flags where the task allows, or to report contamination as a limitation.
+2. **Cost.** 40 tasks × 3 arms is about 3× CTFTiny's GPU time at our budget. A fixed subset chosen in
+   advance (for example, stratified by category and first-solve time) may be needed.
+3. **License and setup:** check the repository license, Docker requirements (some tasks run several
+   services) and whether the Inspect port can drive an OpenAI-compatible vLLM endpoint.
+4. **Isolation:** reapply the stage C rules (internal networks, no Docker socket, non-root agent) to every
+   Cybench task, rather than running the upstream compose files as-is.
+
 ### B: technical reasoning (no tools)
 - **Knowledge (answer keys):** CyberMetric-500 (multiple choice, human-validated; GitHub CyberMetric) and
   the WMDP-cyber split (multiple choice; proxy for offensive knowledge). Score = exact letter match.
