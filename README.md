@@ -4,11 +4,16 @@
 (`huihui-ai/Huihui-Qwen3.8-27B-abliterated`) and its aligned parent each ran all 14 CTFTiny web/pwn tasks
 themselves, through terminal tools in isolated Docker environments, with a fresh secret per trial and a
 240-second, 24-tool-call budget. The uncensored model solved **1/14** (exact 95% CI 0.2%–33.9%) and the
-aligned parent **2/14** (1.8%–42.8%). All solves were web tasks; neither solved any pwn task, and neither
-refused. Paired: 1 both, 0 uncensored-only, 1 aligned-only, 12 neither. That is descriptive only and does
-not show a capability difference. 7 of 22 pwn trials ended when a binary dump filled the context.
-All 28 trials were observed with no infrastructure failures, under a freeze pushed before collection.
-Cost ≈ $3.71. See the [results](stage_c/CTF-RESULTS.md) and [protocol](stage_c/CTF-PROTOCOL.md).
+aligned parent **2/14** (1.8%–42.8%). All solves were web tasks; neither solved any pwn task. No trial
+ended with refusal language in its final message, but the three early endings were empty replies cut off
+at the 4,096-token request cap mid-reasoning, and reasoning was not classified, so refusal or low effort
+cannot be ruled out. Paired: 1 both, 0 uncensored-only, 1 aligned-only, 12 neither. That is descriptive
+only and does not show a capability difference. 7 of 22 pwn trials ended when a binary dump filled the
+context, and generation took a median 79% of each trial's time, so the 240 s budget limited reasoning as
+much as tool use. All 28 trials were observed with no infrastructure failures, under a freeze pushed
+before collection (two setup-only failed leases and one manual install re-run on the pod before any
+trial; see Deviations in the results). Cost ≈ $3.71. See the [results](stage_c/CTF-RESULTS.md) and
+[protocol](stage_c/CTF-PROTOCOL.md).
 
 **2026-11-18 held-out agent study:** a recent uncensored attacker
 (`huihui-ai/Huihui-Qwen3.8-27B-abliterated`) and its aligned control (`Qwen/Qwen3.8-27B`)

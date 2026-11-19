@@ -165,6 +165,7 @@ class EndToEndScoring(unittest.TestCase):
                                               'completion_tokens': 10, 'finish_reason': 'stop', 'arm': arm})+'\n')
                         if entry['source'] in ('strongreject', 'mitre'):
                             judge.write(json.dumps({'id': item_id, 'arm': arm, 'strongreject_score': 0.0 if arm_index == 0 else 0.8})+'\n')
+                (session/'generation'/(arm+'.done')).write_text('ok\n')  # D-02 guard: only finished arms count
             summary = S.score(session, run_code=False)
         cyber = summary['B']['cybermetric500']
         self.assertEqual(cyber['accuracy']['aligned']['rate'], 1.0)
@@ -176,6 +177,90 @@ class EndToEndScoring(unittest.TestCase):
         injec = summary['D']['injecagent_base']['aligned']
         self.assertEqual(injec['asr_all_total'], 0.0)
         self.assertEqual(summary['diagnostics']['heretic']['requests'], len(items))
+        self.assertEqual(summary['unobserved_arms'], [])
+        self.assertTrue(all('p_primary_bound_m2' not in row for row in cyber['paired']))
+
+
+def write_session(session, arms, items, done=True, skip=0, duplicate=False):
+    """Scripted session for the given arms (aligned answers correctly and refuses; others do not)."""
+    (session/'generation').mkdir(exist_ok=True)
+    (session/'judge').mkdir(exist_ok=True)
+    for arm in arms:
+        good = arm == 'aligned'
+        with (session/'generation'/(arm+'.jsonl')).open('w') as gen:
+            for n, (item_id, entry) in enumerate(items.items()):
+                if n < skip:
+                    continue
+                if entry['kind'] == 'mcq':
+                    content = '<answer>%s</answer>' % (entry['key']['answer'] if good else 'A')
+                elif entry['kind'] == 'refusal':
+                    content = "I'm sorry, I can't help." if good else 'Sure, here is an answer.'
+                elif entry['kind'] == 'agent':
+                    content = 'Thought: done\nFinal Answer: I have finished the task you gave me.'
+                else:
+                    content = '```python\ndef f():\n    return None\n```'
+                row = json.dumps({'id': item_id, 'step': 1, 'content': content, 'thinking_closed': True,
+                                  'completion_tokens': 10, 'finish_reason': 'stop', 'arm': arm})+'\n'
+                gen.write(row*(2 if duplicate and n == skip else 1))
+        if done:
+            (session/'generation'/(arm+'.done')).write_text('ok\n')
+
+
+class MissingArms(unittest.TestCase):
+    """Regression for REVIEW-001 R1-01 (pre-scoring bug fix D-01) and the R1-14 guard (D-02)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.items = S.load_items()
+
+    def score(self, arms, **kwargs):
+        with tempfile.TemporaryDirectory() as tmp:
+            write_session(Path(tmp), arms, self.items, **kwargs)
+            return S.score(Path(tmp), run_code=False)
+
+    def test_aligned_only_session_scores(self):
+        summary = self.score(['aligned'])  # raised KeyError: 'abliterated' before the fix
+        self.assertEqual(summary['arms'], ['aligned'])
+        self.assertEqual(summary['unobserved_arms'], ['abliterated', 'heretic'])
+        cyber = summary['B']['cybermetric500']
+        self.assertEqual(cyber['accuracy']['aligned']['rate'], 1.0)
+        self.assertEqual([r['contrast'] for r in cyber['paired']],
+                         ['abliterated vs aligned', 'heretic vs aligned', 'heretic vs abliterated'])
+        for block in [cyber, summary['C']['disallowed_general (strongreject)']]:
+            for row in block['paired']:
+                self.assertFalse(row['available'])
+                self.assertIsNone(row['p_exact_mcnemar'])
+            for row in block['paired'][:2]:
+                self.assertIsNone(row['p_holm_primary'])
+                self.assertNotIn('p_primary_bound_m2', row)
+        self.assertEqual(set(summary['diagnostics']), {'aligned'})
+        self.assertEqual(set(summary['D']['injecagent_base']), {'aligned'})
+
+    def test_two_arms_keep_primary_family_at_two(self):
+        summary = self.score(['aligned', 'abliterated'])
+        first, second, third = summary['B']['cybermetric500']['paired']
+        self.assertTrue(first['available'])
+        self.assertIsNone(first['p_holm_primary'])
+        self.assertEqual(first['p_primary_bound_m2'], min(1.0, 2*first['p_exact_mcnemar']))
+        self.assertFalse(second['available'])
+        self.assertFalse(third['available'])
+
+    def test_bound_is_never_below_final_holm(self):
+        for p, other in [(0.01, 0.03), (0.03, 0.01), (0.2, 0.9), (0.6, 0.6)]:
+            self.assertGreaterEqual(min(1.0, 2*p), S.holm([p, other])[0])
+
+    def test_arm_without_done_marker_is_unobserved(self):
+        summary = self.score(['aligned', 'abliterated'], done=False)
+        self.assertEqual(summary['arms'], [])
+        self.assertEqual(summary['unobserved_arms'], S.ARMS)
+
+    def test_partial_arm_with_done_marker_is_rejected(self):
+        with self.assertRaises(ValueError):
+            self.score(['aligned'], skip=5)
+
+    def test_duplicate_rows_are_rejected(self):
+        with self.assertRaises(ValueError):
+            self.score(['aligned'], duplicate=True)
 
 
 if __name__ == '__main__':
