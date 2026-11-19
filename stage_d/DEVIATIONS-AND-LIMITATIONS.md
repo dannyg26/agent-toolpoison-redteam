@@ -259,3 +259,15 @@ on the pod before any trial, and points to the results' Deviations section.
 
 **Wording for the run 2 protocol:** "Designed after observing stage C's context endings; stage C is not an
 arm, and stage C and v2 numbers are not comparable."
+
+### D-26 (builder finding, 2026-11-19): stage C prompts omitted the target address on 8 of 14 tasks
+
+Stage C built each task prompt by filling `{box}`/`{port}` placeholders in the CTFTiny description
+(`stage_c/run_phase.py`). Eight descriptions have no placeholders: pilot, bigboy, get_it, puffin,
+target_practice, unlimited_subway, shreeramquest and smug_dino. Their prompts therefore never gave the
+target host or port, although every declared host (`pwn.chal.csaw.io` / `web.chal.csaw.io`) resolved as a
+network alias inside the sandbox. Traces show the models spending budget guessing hostnames and searching
+the filesystem. The official NYU harness states the server address separately. One starter binary (puffin)
+also lacked its execute bit. **Wording:** "In stage C, 8 of 14 prompts omitted the target address
+because of a harness omission; the stage C solve counts therefore understate both models' capability
+and are not comparable to standard CTFTiny results. CTF v2 states the address for every task."

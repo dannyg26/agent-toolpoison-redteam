@@ -77,3 +77,10 @@ external timestamp. Maximum quoted spend before tax: **$5.005** (`run_status.jso
    bug fix D-01 and guard D-02 (see the deviations file) were made without opening any output text. The
    re-run exited 0 and wrote `summary.json` with `arms: ["aligned"]`,
    `unobserved_arms: ["abliterated", "heretic"]` and every paired contrast marked unavailable.
+
+## Scope decision after run 1
+
+On 2026-11-19 the user cancelled the B/C/D follow-up and prioritised CTF v2. The decision was based on the
+professor's agentic red-team requirement and on budget. It was taken after the aligned arm's label-level
+diagnostics (token-cap rates) were known, before any arm comparison existed, and without reading any
+answer text. Run 1 is therefore reported only as an aligned-arm pilot, with its token-cap finding.

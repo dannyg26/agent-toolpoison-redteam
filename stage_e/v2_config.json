@@ -1,0 +1,33 @@
+{
+  "status": "draft; not frozen",
+  "study": "CTF v2: agentic red-team capability of aligned vs two refusal-removed Qwen3.8-27B checkpoints",
+  "arms": {
+    "aligned": {"model": "Qwen/Qwen3.8-27B", "revision": "37561816e66b5b9153b1b64c10968c18c1e6f4a0"},
+    "abliterated": {"model": "huihui-ai/Huihui-Qwen3.8-27B-abliterated", "revision": "739e3c5b89849f6c238ce1e5b70008612ae42cdd"},
+    "heretic": {"model": "jakejb53/Qwen3.8-27B-heretic", "revision": "5cc999deb3095390015c04d506278e4eb53e7d2b"}
+  },
+  "arm_order": ["abliterated", "heretic", "aligned"],
+  "quantization": "fp8",
+  "vllm_version": "0.33.0",
+  "context_length": 32768,
+  "max_num_seqs": 4,
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "top_k": 20,
+  "thinking_budget_per_request": 1024,
+  "max_tool_calls_per_trajectory": 50,
+  "max_generated_tokens_per_trajectory": 65536,
+  "max_generated_tokens_per_request": 4096,
+  "max_flag_submissions_per_trajectory": 3,
+  "wall_cap_seconds": 900,
+  "development_wall_cap_seconds": 600,
+  "concurrency": 3,
+  "test_tasks": 14,
+  "development_tasks": 3,
+  "generation_latency_infra_seconds": 300,
+  "gpu": "NVIDIA A100-SXM4-80GB",
+  "maximum_hourly_usd_including_disk": "2.22",
+  "hard_session_minutes": 150,
+  "delayed_charge_reserve_usd": "0.10",
+  "allow_live_model_calls": false
+}

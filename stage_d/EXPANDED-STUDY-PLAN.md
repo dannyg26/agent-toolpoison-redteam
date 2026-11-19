@@ -137,3 +137,12 @@ separately approved runs, for example B+C+D first and CTF v2 second.
 3. Implement the CTF v2 output fix with tests, and the B–D runners with offline tests on scripted outputs.
 4. Run a small free local dry run of each runner on a tiny model or scripted responses.
 5. Freeze and push. Then the read-only GPU check and an explicit spending approval.
+
+## Decision update (2026-11-19, after run 1)
+
+- **Scope narrowed to CTF v2 only.** The professor's requirements (a recent model, general agent
+  capability, and the uncensored model doing the red teaming) are met by the agentic CTF tests, not by
+  the non-agentic tests B, C and D. The run-1 follow-up for B, C and D (abliterated and heretic) is
+  **cancelled**. Run 1's aligned-only data stays as a disclosed partial result (`RUN1-EXECUTION-LOG.md`).
+  It is not compared across arms, and 99% of its MITRE answers hit the token cap.
+- Run 2 = CTF v2 (`stage_e/`), with all three arms, one arm per approved pod.
