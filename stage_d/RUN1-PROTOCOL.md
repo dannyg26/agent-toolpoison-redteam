@@ -112,3 +112,9 @@ base and enhanced settings.
 - CWEval Python only (24 tasks).
 - InjecAgent is single-step, text-ReAct.
 - Third-party "uncensored" checkpoints are reproducible only through their pinned revisions.
+
+## Execution log
+
+1. 2026-11-19, session `run1a`: RunPod refused pod creation (HTTP 400) before any pod existed; nothing was
+   rented, charged or called. The launcher now records RunPod's (key-redacted) explanation. The freeze was
+   regenerated for that launcher change only; no item, rule or setting changed.

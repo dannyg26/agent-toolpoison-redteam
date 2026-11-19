@@ -2,13 +2,13 @@
  "study": "stage D run 1",
  "sha256": {
   "EXPANDED-STUDY-PLAN.md": "0cba5937b248bfc909041ac277c5e3697b2a748109f8e09707a7f7ac332868c4",
-  "RUN1-PROTOCOL.md": "dfd79ced7fb0a6eb2c546b0234b75c28ee9e0689143e82b441113ebd7fefddef",
+  "RUN1-PROTOCOL.md": "ffac16fde797b86a18dd06388849748c16a75019d3f2f9a6a2478d68c5df4c64",
   "build_items.py": "55340354d20712f793419291bb8a1806cdf6ee4234fe4949c132feb76acc3821",
   "check_cweval_harness.py": "033127338811d89698bca27c6db84a73b7201bdf1229298d47898aa0489b441d",
   "fetch_datasets.py": "00399d00c610fa386e3cf8a5ba58742b36eca0ae8b65d54efe5f30d2af674006",
   "freeze_run1.py": "c22f9e4c4e9045cc50041c45b115c11ac2bc4c8a5d19d65737a5ab69e203b2a1",
   "injecagent_port.py": "cd8ee476ed6c04818bc8fdf76dffd527f47b60fc4c151cd4dc43a2036b708632",
-  "launch_run1.py": "f51c6da8b250977bcef0353209320591834d80260b0d62f7d08d0e318cd07b99",
+  "launch_run1.py": "da4583f113c2ec01647ca951e370877e2ca23f8afb6cf87bad7018ce285a160a",
   "pod_generate.py": "df71d2223a3f6be356063af233e47ffee28d3f5e077243ddf62b3e18b055205c",
   "pod_judge.py": "fb64e8e96b1bba7b4a18f64e0d59be5b0dc9cebafffb6ad294875a3fb5d70dd1",
   "run1_config.json": "6055a7ff14bb2a73bcbcaf8d960580b6114abe4b61f350b640a230acc58cf0b9",
@@ -44,7 +44,7 @@
   "xstest.jsonl": "f162ea036782baae28ec592a8951c138952517ab212ae3849afd4d24804bcf7d"
  },
  "cweval_runner_image": "sha256:9e06bf9e25bb6670367952f5ce48c1351d588af2ea1650706bbc2841cfb41c52",
- "prepared_at": "2026-11-19T19:26:11.438488+00:00",
+ "prepared_at": "2026-11-19T19:37:09.587105+00:00",
  "status": "collection freeze; counts only once its commit is pushed",
  "externally_timestamped_before_collection": true
 }

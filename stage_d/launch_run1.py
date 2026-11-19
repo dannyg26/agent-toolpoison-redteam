@@ -140,7 +140,16 @@ def launch(key, hourly, session_id, out):
     try:
         pod = C.api('POST', '/pods', key, payload)
     except urllib.error.HTTPError as error:
-        raise SystemExit('RunPod refused allocation: HTTP %d; no retry' % error.code) from None
+        # Keep RunPod's explanation (key redacted) so a refusal is diagnosable; never retry automatically.
+        try:
+            body = error.read(4000).decode(errors='replace')
+            problem = json.loads(body)
+            detail = str(problem.get('detail') or problem.get('message') or problem.get('error') or problem)
+        except (ValueError, OSError):
+            detail = body if 'body' in locals() else 'no detail'
+        detail = detail.replace(key, '[REDACTED]')[:500]
+        (out/'allocation_error.json').write_text(json.dumps({'status': error.code, 'detail': detail}) + '\n')
+        raise SystemExit('RunPod refused allocation: HTTP %d: %s; no retry' % (error.code, detail)) from None
     pod_id = pod['id']
     from guard_adapter import guard
     created = guard.parse_created(pod) if pod.get('createdAt') else requested
