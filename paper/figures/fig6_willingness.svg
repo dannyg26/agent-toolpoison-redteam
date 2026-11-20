@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="620" height="482" viewBox="0 0 620 482" role="img">
+<title>Capability and willingness per arm</title>
+<rect x="0.0" y="0.0" width="620.0" height="482.0" fill="#ffffff" stroke="none" rx="0"/>
+<text x="20.0" y="28.0" font-family="Helvetica, Arial, sans-serif" font-size="15" text-anchor="start" font-weight="bold" fill="#1f2328">Figure 6. Capability and willingness, per arm (counts and share)</text>
+<text x="20.0" y="46.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#57606a">Separate runs and instruments; bars are not pooled. F2 gives less information than v2.</text>
+<text x="20.0" y="74.0" font-family="Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#1f2328">CTF v2: solved (CTF framing)</text>
+<text x="120.0" y="97.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="end" font-weight="normal" fill="#1f2328">Aligned</text>
+<rect x="130.0" y="84.0" width="380.0" height="18.0" fill="#eaeef2" stroke="none" rx="0"/>
+<rect x="130.0" y="84.0" width="244.3" height="18.0" fill="#1a7f64" stroke="none" rx="0"/>
+<text x="520.0" y="97.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1f2328">9/14 (64%)</text>
+<text x="120.0" y="121.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="end" font-weight="normal" fill="#1f2328">Abliterated</text>
+<rect x="130.0" y="108.0" width="380.0" height="18.0" fill="#eaeef2" stroke="none" rx="0"/>
+<rect x="130.0" y="108.0" width="217.1" height="18.0" fill="#1a7f64" stroke="none" rx="0"/>
+<text x="520.0" y="121.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1f2328">8/14 (57%)</text>
+<text x="120.0" y="145.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="end" font-weight="normal" fill="#1f2328">Heretic</text>
+<rect x="130.0" y="132.0" width="380.0" height="18.0" fill="#eaeef2" stroke="none" rx="0"/>
+<rect x="130.0" y="132.0" width="217.1" height="18.0" fill="#1a7f64" stroke="none" rx="0"/>
+<text x="520.0" y="145.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1f2328">8/14 (57%)</text>
+<text x="20.0" y="176.0" font-family="Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#1f2328">F1: full refusal, 313 harmful requests</text>
+<text x="120.0" y="199.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="end" font-weight="normal" fill="#1f2328">Aligned</text>
+<rect x="130.0" y="186.0" width="380.0" height="18.0" fill="#eaeef2" stroke="none" rx="0"/>
+<rect x="130.0" y="186.0" width="219.7" height="18.0" fill="#b35900" stroke="none" rx="0"/>
+<text x="520.0" y="199.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1f2328">181/313 (58%)</text>
+<text x="120.0" y="223.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="end" font-weight="normal" fill="#1f2328">Abliterated</text>
+<rect x="130.0" y="210.0" width="380.0" height="18.0" fill="#eaeef2" stroke="none" rx="0"/>
+<text x="520.0" y="223.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1f2328">0/313 (0%)</text>
+<text x="120.0" y="247.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="end" font-weight="normal" fill="#1f2328">Heretic</text>
+<rect x="130.0" y="234.0" width="380.0" height="18.0" fill="#eaeef2" stroke="none" rx="0"/>
+<text x="520.0" y="247.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1f2328">0/313 (0%)</text>
+<text x="20.0" y="278.0" font-family="Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#1f2328">F2: refused by rule (criminal framing)</text>
+<text x="120.0" y="301.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="end" font-weight="normal" fill="#1f2328">Aligned</text>
+<rect x="130.0" y="288.0" width="380.0" height="18.0" fill="#eaeef2" stroke="none" rx="0"/>
+<rect x="130.0" y="288.0" width="271.4" height="18.0" fill="#b35900" stroke="none" rx="0"/>
+<text x="520.0" y="301.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1f2328">10/14 (71%)</text>
+<text x="120.0" y="325.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="end" font-weight="normal" fill="#1f2328">Abliterated</text>
+<rect x="130.0" y="312.0" width="380.0" height="18.0" fill="#eaeef2" stroke="none" rx="0"/>
+<text x="520.0" y="325.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1f2328">0/14 (0%)</text>
+<text x="120.0" y="349.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="end" font-weight="normal" fill="#1f2328">Heretic</text>
+<rect x="130.0" y="336.0" width="380.0" height="18.0" fill="#eaeef2" stroke="none" rx="0"/>
+<text x="520.0" y="349.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1f2328">0/14 (0%)</text>
+<text x="20.0" y="380.0" font-family="Helvetica, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#1f2328">F2: solved (criminal framing)</text>
+<text x="120.0" y="403.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="end" font-weight="normal" fill="#1f2328">Aligned</text>
+<rect x="130.0" y="390.0" width="380.0" height="18.0" fill="#eaeef2" stroke="none" rx="0"/>
+<rect x="130.0" y="390.0" width="108.6" height="18.0" fill="#1a7f64" stroke="none" rx="0"/>
+<text x="520.0" y="403.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1f2328">4/14 (29%)</text>
+<text x="120.0" y="427.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="end" font-weight="normal" fill="#1f2328">Abliterated</text>
+<rect x="130.0" y="414.0" width="380.0" height="18.0" fill="#eaeef2" stroke="none" rx="0"/>
+<rect x="130.0" y="414.0" width="380.0" height="18.0" fill="#1a7f64" stroke="none" rx="0"/>
+<text x="520.0" y="427.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1f2328">14/14 (100%)</text>
+<text x="120.0" y="451.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="end" font-weight="normal" fill="#1f2328">Heretic</text>
+<rect x="130.0" y="438.0" width="380.0" height="18.0" fill="#eaeef2" stroke="none" rx="0"/>
+<rect x="130.0" y="438.0" width="298.6" height="18.0" fill="#1a7f64" stroke="none" rx="0"/>
+<text x="520.0" y="451.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1f2328">11/14 (79%)</text>
+</svg>

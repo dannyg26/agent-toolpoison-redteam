@@ -7,9 +7,10 @@ Inputs (released, flag-free summaries only):
 - stage_e/results/ctf_v2_summary.json   frozen v2 solve counts
 - stage_c/ctf_trial_results.json        stage C per-task outcomes (main = abliterated, control = aligned)
 - paper/figures/paired_ci.json          from paper/paired_ci.py (post hoc)
+- stage_f/results/f1_summary.json, f2_summary.json   frozen stage F analyses (aggregates only)
 
 Outputs: paper/figures/fig1_architecture.svg, fig2_task_grid.svg, fig5_stagec_vs_v2.svg,
-fig4_endings.svg, fig3_paired_ci.svg. Output is deterministic (no timestamps).
+fig4_endings.svg, fig3_paired_ci.svg, fig6_willingness.svg. Output is deterministic (no timestamps).
 """
 import json
 from pathlib import Path
@@ -212,6 +213,34 @@ def fig_paired_ci(ci):
     write('fig3_paired_ci.svg', svg(600, 298, body, 'Paired differences with confidence intervals'))
 
 
+def fig_willingness(v2, f1, f2):
+    """Figure 6: capability (v2 solves) next to willingness (F1 full refusal, F2 refusal and solves)."""
+    panels = [('CTF v2: solved (CTF framing)', [(v2['arms'][a]['solved'], 14) for a in ARMS], SOLVED),
+              ('F1: full refusal, 313 harmful requests',
+               [(f1['arms'][a]['willingness_counts']['full_refusal'], f1['arms'][a]['n']) for a in ARMS], ALT),
+              ('F2: refused by rule (criminal framing)', [(f2['arms'][a]['refused'], f2['arms'][a]['observed']) for a in ARMS],
+               ALT),
+              ('F2: solved (criminal framing)', [(f2['arms'][a]['solved'], f2['arms'][a]['observed']) for a in ARMS],
+               SOLVED)]
+    x0, width, y0, bh, gap = 130, 380, 70, 18, 6
+    body = [text(20, 28, 'Figure 6. Capability and willingness, per arm (counts and share)', 15, weight='bold'),
+            text(20, 46, 'Separate runs and instruments; bars are not pooled. F2 gives less information than v2.',
+                 11, fill=MUTED)]
+    y = y0
+    for title, rows, colour in panels:
+        body.append(text(20, y + 4, title, 12, weight='bold'))
+        y += 14
+        for arm, (k, n) in zip(ARMS, rows):
+            body.append(text(x0 - 10, y + 13, arm.capitalize(), 11, 'end'))  # fig6 only
+            body.append(rect(x0, y, width, bh, UNSOLVED))
+            if k:
+                body.append(rect(x0, y, width * k / n, bh, colour))
+            body.append(text(x0 + width + 10, y + 13, '%d/%d (%d%%)' % (k, n, round(100 * k / n)), 11))
+            y += bh + gap
+        y += 16
+    write('fig6_willingness.svg', svg(620, y + 4, body, 'Capability and willingness per arm'))
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     posthoc = load('stage_e/results/posthoc_v2.json')
@@ -228,6 +257,10 @@ def main():
     assert totals == [2, 1, 9, 8, 8], totals
     fig_stagec_vs_v2(totals)
     fig_endings(summary)
+    f1 = load('stage_f/results/f1_summary.json')
+    f2 = load('stage_f/results/f2_summary.json')
+    assert [f2['arms'][a]['refused'] for a in ARMS] == [10, 0, 0]
+    fig_willingness(summary, f1, f2)
     ci_path = OUT / 'paired_ci.json'
     if ci_path.exists():
         fig_paired_ci(json.loads(ci_path.read_text(encoding='utf-8')))
