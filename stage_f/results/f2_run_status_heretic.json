@@ -1,0 +1,55 @@
+{
+  "pod_id": "cv2u8ea8myy6cw",
+  "arm": "heretic",
+  "study": "F2",
+  "quote_hourly": 2.2178,
+  "session": "f2heretic",
+  "steps": [
+    {
+      "phase": "f2",
+      "exit_code": 0
+    }
+  ],
+  "guard": {
+    "pod_id": "cv2u8ea8myy6cw",
+    "guard_pid": 175,
+    "deadline_epoch": 1795218880.206,
+    "deadline_utc": "2026-11-20T23:54:40.206000+00:00",
+    "api_base": "https://api.runpod.io/v2/pods/",
+    "counts_from": "pod createdAt, including setup"
+  },
+  "log_fetch": [
+    "v2_progress.log",
+    "v2_vllm.log",
+    "v2_install.log",
+    "v2_pip-freeze.txt",
+    "v2_download.log",
+    "v2_heartbeat",
+    "v2_nvidia-smi.txt",
+    "v2_tokenizer_hashes.json",
+    "guard.log",
+    "v2_pod.log",
+    "v2_guard_all"
+  ],
+  "log_fetch_errors": [],
+  "serving_line": "2026-11-20T22:05:48Z SERVING heretic",
+  "tokenizer_hashes": {
+    "served": {
+      "repo": "jakejb53/Qwen3.8-27B-heretic",
+      "revision": "5cc999deb3095390015c04d506278e4eb53e7d2b",
+      "sha256": {
+        "tokenizer_config.json": "5f7aa0d810000c4a0940b35c8f16e56c3439260fccc13a321826ebc3ccf2501f",
+        "chat_template.jinja": "c3cf9e34abf4f9e36c2d72165aa9c132d3e2a725b6c2586aaa3a8af9d7a81041",
+        "tokenizer.json": "06b9509352d2af50381ab2247e083b80d32d5c0aba91c272ca9ff729b6a0e523",
+        "generation_config.json": "b8eb74d15e0a56623d00ccd14950a4bb87fabbf84b5cc030dcc904b899fb1eb5"
+      }
+    },
+    "base": {
+      "repo": "Qwen/Qwen3.8-27B",
+      "error": "LocalEntryNotFoundError"
+    }
+  },
+  "terminated": true,
+  "elapsed_minutes_from_creation": 39.19,
+  "maximum_quoted_spend_before_tax": 1.449
+}

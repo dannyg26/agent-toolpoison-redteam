@@ -1,0 +1,55 @@
+{
+  "pod_id": "do61srf21p3k6k",
+  "arm": "abliterated",
+  "study": "F2",
+  "quote_hourly": 2.2178,
+  "session": "f2abliterated",
+  "steps": [
+    {
+      "phase": "f2",
+      "exit_code": 0
+    }
+  ],
+  "guard": {
+    "pod_id": "do61srf21p3k6k",
+    "guard_pid": 174,
+    "deadline_epoch": 1795216860.661,
+    "deadline_utc": "2026-11-20T23:21:00.661000+00:00",
+    "api_base": "https://api.runpod.io/v2/pods/",
+    "counts_from": "pod createdAt, including setup"
+  },
+  "log_fetch": [
+    "v2_progress.log",
+    "v2_vllm.log",
+    "v2_install.log",
+    "v2_pip-freeze.txt",
+    "v2_download.log",
+    "v2_heartbeat",
+    "v2_nvidia-smi.txt",
+    "v2_tokenizer_hashes.json",
+    "guard.log",
+    "v2_pod.log",
+    "v2_guard_all"
+  ],
+  "log_fetch_errors": [],
+  "serving_line": "2026-11-20T21:32:21Z SERVING abliterated",
+  "tokenizer_hashes": {
+    "served": {
+      "repo": "huihui-ai/Huihui-Qwen3.8-27B-abliterated",
+      "revision": "739e3c5b89849f6c238ce1e5b70008612ae42cdd",
+      "sha256": {
+        "tokenizer_config.json": "b11349aafa7cdc6a320767cf7ceb29ed82f7eda5d65e8e0819e76f0ce947bf27",
+        "chat_template.jinja": "c3cf9e34abf4f9e36c2d72165aa9c132d3e2a725b6c2586aaa3a8af9d7a81041",
+        "tokenizer.json": "0997f410c57a1f4e53b09e4be8f4a172d90edd9564368fb0847030937229b9f3",
+        "generation_config.json": "e70c136c1b78ddc1fb0905bac8e733a4dc448d4f852a5dd75143fffc70be550e"
+      }
+    },
+    "base": {
+      "repo": "Qwen/Qwen3.8-27B",
+      "error": "LocalEntryNotFoundError"
+    }
+  },
+  "terminated": true,
+  "elapsed_minutes_from_creation": 32.34,
+  "maximum_quoted_spend_before_tax": 1.195
+}

@@ -1,0 +1,61 @@
+{
+  "pod_id": "eoufuseil19sq4",
+  "arm": "aligned",
+  "study": "F2",
+  "quote_hourly": 2.2178,
+  "session": "f2aligned",
+  "steps": [
+    {
+      "phase": "f2",
+      "exit_code": 0
+    }
+  ],
+  "guard": {
+    "pod_id": "eoufuseil19sq4",
+    "guard_pid": 501,
+    "deadline_epoch": 1795213364.992,
+    "deadline_utc": "2026-11-20T22:22:44.992000+00:00",
+    "api_base": "https://api.runpod.io/v2/pods/",
+    "counts_from": "pod createdAt, including setup"
+  },
+  "log_fetch": [
+    "v2_progress.log",
+    "v2_vllm.log",
+    "v2_install.log",
+    "v2_pip-freeze.txt",
+    "v2_download.log",
+    "v2_heartbeat",
+    "v2_nvidia-smi.txt",
+    "v2_tokenizer_hashes.json",
+    "guard.log",
+    "v2_pod.log",
+    "v2_guard_all"
+  ],
+  "log_fetch_errors": [],
+  "serving_line": "2026-11-20T20:31:10Z SERVING aligned",
+  "tokenizer_hashes": {
+    "served": {
+      "repo": "Qwen/Qwen3.8-27B",
+      "revision": "37561816e66b5b9153b1b64c10968c18c1e6f4a0",
+      "sha256": {
+        "tokenizer_config.json": "207c03c41a06a9c3b0cc527d8a56115159c1eac6b59a4ffae85b646e773d074e",
+        "chat_template.jinja": "af16f654968d47d09a6c604e00370b12dbc21f76456f59c9e98b82e84d9f6375",
+        "tokenizer.json": "0997f410c57a1f4e53b09e4be8f4a172d90edd9564368fb0847030937229b9f3",
+        "generation_config.json": "e70c136c1b78ddc1fb0905bac8e733a4dc448d4f852a5dd75143fffc70be550e"
+      }
+    },
+    "base": {
+      "repo": "Qwen/Qwen3.8-27B",
+      "revision": "37561816e66b5b9153b1b64c10968c18c1e6f4a0",
+      "sha256": {
+        "tokenizer_config.json": "207c03c41a06a9c3b0cc527d8a56115159c1eac6b59a4ffae85b646e773d074e",
+        "chat_template.jinja": "af16f654968d47d09a6c604e00370b12dbc21f76456f59c9e98b82e84d9f6375",
+        "tokenizer.json": "0997f410c57a1f4e53b09e4be8f4a172d90edd9564368fb0847030937229b9f3",
+        "generation_config.json": "e70c136c1b78ddc1fb0905bac8e733a4dc448d4f852a5dd75143fffc70be550e"
+      }
+    }
+  },
+  "terminated": true,
+  "elapsed_minutes_from_creation": 15.85,
+  "maximum_quoted_spend_before_tax": 0.586
+}
