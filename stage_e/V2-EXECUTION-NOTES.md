@@ -61,3 +61,27 @@ disclosed as stage D D-27.
   most about 6 GB in the worst case against about 6.8–7.0 GB available: about 0.8 GB headroom in that
   worst case, ample in the measured case. The `docker stats` sampler returned no rows (not investigated;
   memory figures come from `free -m`).
+
+## Collection log (2026-11-19/20)
+
+1. **aligned** (session `v2aligned`, pod `1dxwsrqvwd9dg9`): 3/3 development trials (all `time_cap`, gate
+   passed), then 14/14 test trials observed with no infrastructure failure. Pod terminated after 71.22 min,
+   quoted $2.632. Cosmetic launcher issue: after a transient log read failure the progress poller re-prints
+   all earlier pod log lines (display only; serving detection unaffected).
+2. **abliterated** (session `v2abliterated`, pod `td44u69jearms5`, created 03:54:23 UTC): the frozen
+   driver's `pip install vllm==0.33.0` stalled with no progress for about 33 min (pip cache stuck at 678 MB
+   and /tmp at 1.2 GB; network measured fast: Hugging Face at 52 MB/s, a PyTorch wheel at 380 MB/s).
+   **Infrastructure retry, before any model call:** the driver was killed with SIGKILL (no FAILED or
+   DRIVER_EXIT logged), then pip; the unchanged frozen `v2_pod.sh abliterated` was restarted at 04:27:29
+   UTC. The deviation line is in the pod's progress.log. A first attempt's `pkill -f` pattern matched its own
+   remote shell and killed it before the restart; the second attempt used an anchored pattern. The install
+   then took 2.5 min; serving at 04:38. Development 3/3 (one `context_budget`, two `time_cap`; gate passed),
+   test 14/14 observed with no infrastructure failure. Pod terminated after 116.08 min, quoted $4.291
+   (about $1.20 of it lost to the stalled install).
+3. A stale local shell from a stage C status probe (11 h old, waiting on a dead pod's SSH) was found on the
+   WSL host. It is unrelated to any trial and is cleaned up after collection.
+4. **heretic** (session `v2heretic`, pod `dlnu37flr69u3h`): normal install (2.5 min) and download; served with
+   its own tokenizer (no fallback). Development 3/3 (one `context_budget`, two `time_cap`; gate passed), test
+   14/14 observed with no infrastructure failure. Pod terminated after 79.71 min, quoted $2.946.
+5. Collection complete: all 3 arms × (3 development + 14 test) trials observed, no infrastructure failure,
+   no not_started trial. Total quoted v2 spend $9.869. The stale stage C probe shell (item 3) was killed.
