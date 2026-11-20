@@ -1,0 +1,44 @@
+{
+  "pod_id": "rhq1gpjx3q48ek",
+  "study": "F1",
+  "quote_hourly": 2.2178,
+  "session": "f1a",
+  "guard": {
+    "pod_id": "rhq1gpjx3q48ek",
+    "guard_pid": 500,
+    "deadline_epoch": 1795199768.753,
+    "deadline_utc": "2026-11-20T18:36:08.753000+00:00",
+    "api_base": "https://api.runpod.io/v2/pods/",
+    "counts_from": "pod createdAt, including setup"
+  },
+  "fetched": [
+    "abliterated",
+    "abliterated_raw",
+    "aligned",
+    "aligned_raw",
+    "heretic",
+    "heretic_raw",
+    "judge_abliterated",
+    "judge_aligned",
+    "judge_heretic",
+    "provenance_abliterated",
+    "provenance_aligned",
+    "provenance_heretic",
+    "thinking_check_abliterated",
+    "thinking_check_aligned",
+    "thinking_check_heretic"
+  ],
+  "log_fetch": [
+    "f1_progress.log",
+    "f1_install.log",
+    "f1_pip-freeze.txt",
+    "f1_download.log",
+    "f1_generate-all.log",
+    "f1_judge-all.log",
+    "f1_pod.log"
+  ],
+  "log_fetch_errors": [],
+  "terminated": true,
+  "elapsed_minutes_from_creation": 60.46,
+  "maximum_quoted_spend_before_tax": 2.235
+}
