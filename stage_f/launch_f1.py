@@ -3,7 +3,9 @@
 Reuses the frozen CTF v2 launcher's helpers (preflight, guard, log fetch, termination) with the F1 hard stop
 (f1.hard_session_minutes). Uploads stage F's F1 files, arms the stage B guard first, starts f1_pod.sh
 detached, and on every poll downloads any newly completed arm file (answers, judge scores) to
-/home/capstone-study/stage_f/private/SESSION/, so a stop loses at most the arm in progress.
+/home/capstone-study/stage_f/private/SESSION/, so a stop loses at most the arm in progress. Every pod file
+is fetched only if its SHA-256 matches its `.done` marker (answers, raw text, provenance, thinking check,
+judge scores). On exit the F1 pod logs (/root/out/f1/*.log, pip-freeze) are fetched, bounded as in v2.
 """
 import argparse
 import hashlib
@@ -30,6 +32,9 @@ C = L.C
 CACHE = Path('/home/capstone-study/stage_f')
 POD_OUT = '/root/out/f1'
 POLL_SECONDS = 30
+# L.fetch_logs reads this module global at call time; F1 logs live under /root/out/f1 (R5-10).
+L.POD_LOG_FILES = [POD_OUT+'/'+n for n in ('progress.log', 'install.log', 'pip-freeze.txt', 'download.log',
+                                           'generate-*.log', 'judge-*.log')] + ['/root/out/f1_pod.log']
 
 
 def package():
@@ -62,7 +67,7 @@ def fetch_completed(client, session, have):
         if not data:
             continue
         expected = client.run('cat %s/%s' % (POD_OUT, shlex.quote(marker)), check=False, timeout=60).stdout.decode().strip()
-        if not stem.startswith('judge_') and hashlib.sha256(data).hexdigest() != expected:
+        if hashlib.sha256(data).hexdigest() != expected:   # every marker holds its file's SHA-256 (R5-12)
             continue                                     # partial transfer; retry next poll
         (session/(stem+'.jsonl')).write_bytes(data)
         have.add(stem)
@@ -142,8 +147,8 @@ def launch(key, hourly, session_id, out):
         try:
             if client:
                 status['log_fetch'], status['log_fetch_errors'] = L.fetch_logs(client, out)
-                data = client.run('cat %s/progress.log %s/pip-freeze.txt 2>/dev/null' % (POD_OUT, POD_OUT),
-                                  check=False, timeout=60).stdout
+                data = client.run('cat %s/progress.log %s/pip-freeze.txt /root/out/guard.log %s/* 2>/dev/null'
+                                  % (POD_OUT, POD_OUT, L.GUARD_OUT), check=False, timeout=60).stdout
                 (out/'f1_pod_progress_and_env.txt').write_bytes(data)
         except Exception as error:              # never block termination
             status['log_fetch_errors'] = status.get('log_fetch_errors', []) + [type(error).__name__]

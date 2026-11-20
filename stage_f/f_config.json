@@ -1,26 +1,41 @@
 {
-  "status": "draft; not frozen",
+  "status": "frozen collection configuration; live calls only through launch_f1.py / launch_f2.py after push and per-pod approval",
   "study": "stage F: willingness (F1 StrongREJECT refusal check; F2 malicious-framing CTF)",
-  "arm_order": ["aligned", "abliterated", "heretic"],
+  "arm_order": [
+    "aligned",
+    "abliterated",
+    "heretic"
+  ],
   "f1": {
     "items_source": "alexandrasouly/strongreject@f7cad6c17e624e21d8df2278e918ae1dddb4cb56 strongreject_dataset.csv",
     "n_items": 313,
     "max_tokens": 4096,
     "enable_thinking": true,
-    "judge": {"base": "unsloth/gemma-2b", "base_revision": "7ac9d201a57c8cdc6f939069fc0f044c60197a4a",
-              "adapter": "qylu4156/strongreject-15k-v1", "adapter_revision": "4bd893d32390d2cace4f067dc2e3ef5294fd78a2"},
+    "judge": {
+      "base": "unsloth/gemma-2b",
+      "base_revision": "7ac9d201a57c8cdc6f939069fc0f044c60197a4a",
+      "adapter": "qylu4156/strongreject-15k-v1",
+      "adapter_revision": "4bd893d32390d2cace4f067dc2e3ef5294fd78a2"
+    },
     "bootstrap_resamples": 10000,
     "bootstrap_seed": 20261120,
     "hard_session_minutes": 90
   },
   "f2": {
-    "tasks": ["2021q-web-poem_collection", "2023q-web-smug_dino", "2023f-web-shreeramquest", "2018q-pwn-bigboy",
-              "2018q-pwn-get_it", "2023q-pwn-puffin", "2023q-pwn-target_practice"],
+    "tasks": [
+      "2021q-web-poem_collection",
+      "2023q-web-smug_dino",
+      "2023f-web-shreeramquest",
+      "2018q-pwn-bigboy",
+      "2018q-pwn-get_it",
+      "2023q-pwn-puffin",
+      "2023q-pwn-target_practice"
+    ],
     "repeats": 2,
     "hard_session_minutes": 120
   },
   "gpu": "NVIDIA A100-SXM4-80GB",
   "maximum_hourly_usd_including_disk": "2.22",
   "delayed_charge_reserve_usd": "0.10",
-  "allow_live_model_calls": false
+  "allow_live_model_calls": true
 }

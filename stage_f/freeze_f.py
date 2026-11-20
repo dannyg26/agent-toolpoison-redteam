@@ -1,7 +1,7 @@
 """Write or verify the stage F freeze. Valid only once its commit is pushed (both launchers check).
 
 Covers: stage_f sources/config/protocol; every reused file from stages B-E that F1/F2 execute or depend on;
-the F1 item list and manifest; the passing F2 environment check; and the CTF v2 freeze, which must still
+the F1 item list and manifest; the passing F2 environment check; the F2 cue check (descriptive); and the CTF v2 freeze, which must still
 verify because F2 runs on the v2 sandbox, agent image and private cache.
 Usage: python3 freeze_f.py write | check
 """
@@ -16,7 +16,8 @@ HERE = Path(__file__).resolve().parent
 CACHE = Path('/home/capstone-study/stage_f')
 REUSED = ['stage_b/pod_guard.py', 'sr_judge.py', 'judge_templates.json', 'stage_c/launch_ctf.py',
           'stage_c/endpoint_client.py', 'stage_c/environment.py', 'stage_c/trajectory.py', 'stage_c/guard_adapter.py',
-          'stage_c/budget.py', 'stage_c/analyze_ctf.py', 'stage_d/score_run1.py', 'stage_e/trajectory_v2.py',
+          'stage_c/budget.py', 'stage_c/analyze_ctf.py', 'stage_d/score_run1.py', 'stage_d/run1_config.json',
+          'stage_d/injecagent_port.py', 'stage_e/trajectory_v2.py',
           'stage_e/environment_v2.py', 'stage_e/launch_v2.py', 'stage_e/v2_pod.sh', 'stage_e/v2_config.json',
           'stage_e/v2_freeze.json', 'stage_e/freeze_v2.py']
 
@@ -45,6 +46,15 @@ def f2_environment_check():
     return hashlib.sha256((CACHE/'f2_environment_check.json').read_bytes()).hexdigest()
 
 
+def f2_cue_check():
+    """The descriptive cue check (check_f2_cues.py) must exist for exactly the planned tasks; it is not a gate."""
+    report = json.loads((CACHE/'f2_cue_check.json').read_text())
+    planned = json.loads((HERE/'f_config.json').read_text())['f2']['tasks']
+    if sorted(report['tasks']) != sorted(planned):
+        raise ValueError('F2 cue check must cover exactly the planned tasks')
+    return hashlib.sha256((CACHE/'f2_cue_check.json').read_bytes()).hexdigest()
+
+
 def snapshot():
     manifest = json.loads((CACHE/'items_f1_manifest.json').read_text())
     if hashlib.sha256((CACHE/'items_f1.jsonl').read_bytes()).hexdigest() != manifest['sha256']:
@@ -54,6 +64,7 @@ def snapshot():
             'reused_sha256': {n: text_hash(HERE.parent/n) for n in REUSED},
             'items_f1_sha256': manifest['sha256'],
             'f2_environment_check_sha256': f2_environment_check(),
+            'f2_cue_check_sha256': f2_cue_check(),
             'v2_freeze_verifies': v2_still_verifies()}
 
 
@@ -61,7 +72,8 @@ def verify(value):
     if not value.get('externally_timestamped_before_collection'):
         raise PermissionError('Not a pushed pre-collection freeze')
     current = snapshot()
-    for key in ('sha256', 'reused_sha256', 'items_f1_sha256', 'f2_environment_check_sha256', 'v2_freeze_verifies'):
+    for key in ('sha256', 'reused_sha256', 'items_f1_sha256', 'f2_environment_check_sha256', 'f2_cue_check_sha256',
+                'v2_freeze_verifies'):
         if value.get(key) != current[key]:
             changed = (sorted(k for k in set(value[key]) | set(current[key]) if value[key].get(k) != current[key].get(k))
                        if isinstance(current[key], dict) else [key])

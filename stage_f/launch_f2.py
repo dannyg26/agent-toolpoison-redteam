@@ -4,7 +4,10 @@ Reuses the frozen CTF v2 launcher (stage_e/launch_v2.py) for preflight, packagin
 v2 pod driver (install, download, serve), the SSH tunnel, best-effort log fetching and guaranteed
 termination. Differences: hard stop f2.hard_session_minutes (120), the stage F freeze check, sessions under
 /home/capstone-study/stage_f, and the run phase calls run_arm_f2.py once (no development phase: v2 already
-validated serving and tools for all three arms; a serving health request runs first).
+validated serving and tools for all three arms; a serving health request, retried up to 5 times 5 s apart,
+runs first). Operator rule for the frozen v2_pod.sh install (R5-09, F-PROTOCOL "Execution"): if `install
+done` has not appeared 15 min after `install start`, the operator may once kill the driver and pip and
+restart the unchanged driver, before any model call, and logs it.
 """
 import argparse
 import hashlib
@@ -35,9 +38,18 @@ def check_frozen_and_pushed():
     return check()
 
 
-def health(endpoint, arm, timeout=30):
-    with urllib.request.urlopen(endpoint+'/models', timeout=timeout) as response:
-        return ('csc-'+arm) in response.read().decode(errors='replace')
+def health(endpoint, arm, timeout=30, attempts=5, pause=5, sleep=time.sleep):
+    """Serving health request through the tunnel, retried up to `attempts` times `pause` s apart (R5-17)."""
+    for attempt in range(1, attempts+1):
+        try:
+            with urllib.request.urlopen(endpoint+'/models', timeout=timeout) as response:
+                if ('csc-'+arm) in response.read().decode(errors='replace'):
+                    return True
+        except OSError:
+            pass
+        if attempt < attempts:
+            sleep(pause)
+    return False
 
 
 def launch(key, arm, hourly, session_id, out):
