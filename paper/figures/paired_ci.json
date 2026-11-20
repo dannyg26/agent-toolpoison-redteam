@@ -1,0 +1,70 @@
+{
+ "label": "POST HOC / DESCRIPTIVE (paper repair cycle 4). Not produced by the frozen analyze_v2.py.",
+ "sources": [
+  "stage_e/results/ctf_v2_summary.json",
+  "stage_e/results/posthoc_v2.json"
+ ],
+ "methods": {
+  "tango": "stage_b/analyze_heldout.py tango_ci (Tango 1998 score interval)",
+  "newcombe10": "Newcombe 1998 hybrid score interval for paired data, method 10"
+ },
+ "contrasts": [
+  {
+   "contrast": "abliterated vs aligned",
+   "role": "primary",
+   "n": 14,
+   "both": 8,
+   "first_only": 0,
+   "second_only": 1,
+   "neither": 5,
+   "difference": -0.0714,
+   "tango_95ci": [
+    -0.3147,
+    0.1593
+   ],
+   "newcombe10_95ci": [
+    -0.2454,
+    0.1114
+   ],
+   "mcnemar_exact_p": 1.0
+  },
+  {
+   "contrast": "heretic vs aligned",
+   "role": "primary",
+   "n": 14,
+   "both": 7,
+   "first_only": 1,
+   "second_only": 2,
+   "neither": 4,
+   "difference": -0.0714,
+   "tango_95ci": [
+    -0.3536,
+    0.2164
+   ],
+   "newcombe10_95ci": [
+    -0.3142,
+    0.1863
+   ],
+   "mcnemar_exact_p": 1.0
+  },
+  {
+   "contrast": "heretic vs abliterated",
+   "role": "secondary",
+   "n": 14,
+   "both": 7,
+   "first_only": 1,
+   "second_only": 1,
+   "neither": 5,
+   "difference": 0.0,
+   "tango_95ci": [
+    -0.2655,
+    0.2655
+   ],
+   "newcombe10_95ci": [
+    -0.217,
+    0.217
+   ],
+   "mcnemar_exact_p": 1.0
+  }
+ ]
+}

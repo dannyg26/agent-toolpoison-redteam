@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="850" height="360" viewBox="0 0 850 360" role="img">
+<title>Evaluation architecture</title>
+<rect x="0.0" y="0.0" width="850.0" height="360.0" fill="#ffffff" stroke="none" rx="0"/>
+<text x="20.0" y="28.0" font-family="Helvetica, Arial, sans-serif" font-size="15" text-anchor="start" font-weight="bold" fill="#1f2328">Figure 1. Evaluation architecture (one trial)</text>
+<rect x="20.0" y="60.0" width="210.0" height="150.0" fill="#f6f8fa" stroke="#d0d7de" rx="6"/>
+<text x="30.0" y="82.0" font-family="Helvetica, Arial, sans-serif" font-size="13" text-anchor="start" font-weight="bold" fill="#1f2328">GPU pod (RunPod A100)</text>
+<text x="30.0" y="104.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#57606a">vLLM 0.33.0, FP8, loopback only</text>
+<text x="30.0" y="122.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#57606a">one checkpoint per pod</text>
+<text x="30.0" y="140.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#57606a">T 0.6, top-p 0.95, top-k 20</text>
+<text x="30.0" y="158.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#57606a">max 4,096 tokens/request</text>
+<rect x="290.0" y="60.0" width="230.0" height="150.0" fill="#f6f8fa" stroke="#d0d7de" rx="6"/>
+<text x="300.0" y="82.0" font-family="Helvetica, Arial, sans-serif" font-size="13" text-anchor="start" font-weight="bold" fill="#1f2328">Controller (WSL host)</text>
+<text x="300.0" y="104.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#57606a">trajectory_v2.py: budgets,</text>
+<text x="300.0" y="122.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#57606a">display-safe output, elision</text>
+<text x="300.0" y="140.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#57606a">SSH tunnel to the model</text>
+<text x="300.0" y="158.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#57606a">writes trace + result row</text>
+<rect x="580.0" y="40.0" width="250.0" height="110.0" fill="#f6f8fa" stroke="#d0d7de" rx="6"/>
+<text x="590.0" y="62.0" font-family="Helvetica, Arial, sans-serif" font-size="13" text-anchor="start" font-weight="bold" fill="#1f2328">Agent container</text>
+<text x="590.0" y="84.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#57606a">non-root, no capabilities</text>
+<text x="590.0" y="102.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#57606a">no Docker socket, no internet</text>
+<text x="590.0" y="120.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#57606a">terminal tool (20 s/command)</text>
+<rect x="580.0" y="180.0" width="250.0" height="90.0" fill="#f6f8fa" stroke="#d0d7de" rx="6"/>
+<text x="590.0" y="202.0" font-family="Helvetica, Arial, sans-serif" font-size="13" text-anchor="start" font-weight="bold" fill="#1f2328">Challenge container</text>
+<text x="590.0" y="224.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#57606a">CTFTiny service, fresh flag</text>
+<text x="590.0" y="242.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#57606a">internal network only</text>
+<rect x="290.0" y="250.0" width="230.0" height="70.0" fill="#f6f8fa" stroke="#d0d7de" rx="6"/>
+<text x="300.0" y="272.0" font-family="Helvetica, Arial, sans-serif" font-size="13" text-anchor="start" font-weight="bold" fill="#1f2328">Checker (outside sandbox)</text>
+<text x="300.0" y="294.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#57606a">exact match vs fresh flag</text>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#57606a"/></marker></defs>
+<line x1="230" y1="135" x2="290" y2="135" stroke="#57606a" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="264.0" y="129.0" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="middle" font-weight="normal" fill="#57606a">chat API</text>
+<line x1="520" y1="100" x2="580" y2="100" stroke="#57606a" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="554.0" y="94.0" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="middle" font-weight="normal" fill="#57606a">terminal</text>
+<line x1="705" y1="150" x2="705" y2="180" stroke="#57606a" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="709.0" y="159.0" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#57606a">isolated net</text>
+<line x1="405" y1="210" x2="405" y2="250" stroke="#57606a" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="409.0" y="224.0" font-family="Helvetica, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#57606a">submit_flag</text>
+<text x="20.0" y="345.0" font-family="Helvetica, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#57606a">Trial budget: 1,200 s wall cap, 50 tool calls, 65,536 generated tokens, 3 submissions; 3 trials in flight per pod.</text>
+</svg>
