@@ -283,3 +283,32 @@ connection check, so a stage C trial could in principle have lost early steps to
 **Wording:** "Stage C had no post-health reachability check; an intermittent first-connection failure
 seen later on this host cannot be ruled out for individual stage C trials. CTF v2 adds such a gate before
 the trial clock starts."
+
+## E. CTF v2 (stage E) post-collection disclosures (REVIEW-003; frozen rules unchanged)
+
+### D-28 (R3-04): v2 arms differ in chat template and tokenizer configuration
+
+The pod records answer D-11 for CTF v2. Both uncensored repositories ship a `chat_template.jinja`
+(`c3cf9e34…`) that differs from the base model's (`af16f654…`). All three `tokenizer_config.json` files
+differ. Heretic's `tokenizer.json` and `generation_config.json` also differ from base. Effective sampling
+was identical: every request sets temperature, top-p, top-k and max_tokens, and vLLM logged the same
+generation-config defaults on all three pods. First-request prompt-token counts matched on 17/17 tasks.
+**Wording:** "The two uncensored repositories ship a chat template different from the base model's, so
+the arms differ in prompt formatting as well as weights; effective sampling settings were identical."
+
+### D-29 (R3-11): v2 collection deviations
+
+(a) The stalled abliterated `pip install` was resolved by a manual operator restart over SSH. The protocol
+has no rule for this. It happened before any model call and without outcome data, and about 33 min of the
+180-min window was lost. (b) A stale stage C probe shell was present on the WSL host during the aligned and
+abliterated collection (no trial impact). Details: `stage_e/V2-EXECUTION-NOTES.md` items 2, 3, 6 and 7.
+
+### D-30 (R3-07, R3-12): in v2 the time cap acted as a token budget; context assumption violated in development
+
+Serving speed was equal across pods (decode 36.7 / 36.7 / 36.0 tok/s). At about 36 tok/s the 1,200 s cap
+allows about 43k generated tokens, so the 65,536-token budget could not bind. 82–83% of generated tokens
+were reasoning (the thinking budget is unenforced). Replies that hit the 4,096-token limit (20 / 25 / 28
+requests; 16 / 21 / 27 of them cut-off steps with no tool call) took 29–37% of the unsolved trials' wall
+time. The 2.2 chars/token assumption failed on hipster in development (two
+`context_budget` endings). There were none in the test phase, but three test trials came within 2.6k
+tokens of the 32,768 limit.
