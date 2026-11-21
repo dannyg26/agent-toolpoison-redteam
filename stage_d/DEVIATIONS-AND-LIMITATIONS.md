@@ -16,7 +16,11 @@ contrast. Every disclosure below that concerns contrasts applies to the follow-u
 
 These fixes were made on 2026-11-19 **before any model output text was opened**. Both are outcome-blind and
 change no scoring rule. `freeze_run1.py check` now reports `score_run1.py` and `test_run1.py` as changed, as
-expected; `reviews/check_freeze_delta.py` verifies that nothing else frozen changed.
+expected. `reviews/check_freeze_delta.py` verifies that nothing else frozen changed, apart from the appended
+plan section disclosed in D-31: it checks that the two repaired files' versions before the repair commit
+(`97f850f`) match their frozen hashes and that the current files equal the repaired versions. (Until review
+cycle 7 the script compared the *committed* files with the frozen hashes, which held only before the repair
+was committed in `97f850f`, so it then failed; see D-31.)
 
 ### D-01 (R1-01, critical): crash when an arm is missing
 
@@ -312,3 +316,22 @@ requests; 16 / 21 / 27 of them cut-off steps with no tool call) took 29–37% of
 time. The 2.2 chars/token assumption failed on hipster in development (two
 `context_budget` endings). There were none in the test phase, but three test trials came within 2.6k
 tokens of the 32,768 limit.
+
+### D-31 (REVIEW-007 R7-02, 2026-11-20): post-freeze append to `EXPANDED-STUDY-PLAN.md`
+
+`stage_d/EXPANDED-STUDY-PLAN.md` is one of the files hashed in `run1_freeze.json`. Commit `418edc1`
+(2026-11-19 17:40 −05:00), after the run 1 freeze and after VERIFY-001, appended a "Decision update"
+section that cancels the B–D follow-up run and narrows the next step to CTF v2. The edit is append-only:
+the file's version before `418edc1` still matches its frozen hash, and the current file starts with those
+bytes. It changes no rule of run 1, no item and no result, but it is a post-freeze edit to a frozen file
+and was not recorded until now.
+
+As a result, `reviews/check_freeze_delta.py` failed in review cycle 7 for two reasons: the plan file was
+reported as modified, and the script required the committed `score_run1.py` and `test_run1.py` to equal
+their frozen hashes, which stopped being true when the cycle 1 repair was committed (`97f850f`), as
+intended. In cycle 7 the script was changed to check the repaired files against their pre-repair and
+repaired blobs, and to accept the plan file only as an append to its frozen version. It now passes. The
+paper uses stage D only as context (Sections 3.3 and 6); CTF v2 and stage F have their own freezes, which
+verify.
+**Wording:** "After the run 1 freeze, an append-only 'Decision update' section, cancelling the follow-up
+run, was added to the frozen stage D plan; no run 1 rule or result changed."

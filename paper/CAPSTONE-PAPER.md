@@ -6,14 +6,15 @@
 | Programme / course | [Degree programme, course code, institution] |
 | Supervisor | [Supervisor name] |
 | Date | 2026-11-20 |
-| Status | Capstone paper, extended with stage F and revised in review cycle 6 (see Appendix D) |
+| Status | Capstone paper, extended with stage F and revised in review cycle 7 (see Appendix D) |
 
 Every number in this paper comes from a verified results file named in the text. The main sources are
 `stage_e/results/CTF-V2-RESULTS.md`, `ctf_v2_summary.json` (frozen analysis), `posthoc_v2.json` (post hoc,
 marked †), `stage_c/CTF-RESULTS.md`, and for stage F `stage_f/results/f1_summary.json` and
 `f2_summary.json` (frozen analyses) with `stage_f/F-EXECUTION-NOTES.md`, and the post hoc
 `stage_f/results/f_derived_aggregates.json` (counts only, from private structured fields). Numbers computed for this paper are also marked † and come from
-`paper/paired_ci.py` and `paper/make_figures.py`.
+`paper/paired_ci.py` and `paper/make_figures.py`. Numbers from `f_derived_aggregates.json` are also post
+hoc; they are not marked † but are always cited by that file name.
 
 ## Abstract
 
@@ -134,7 +135,7 @@ tasks that every arm solved in v2. We use "pre-specified" in that limited sense 
    and budget, with a trace-level account of the harness defects. We present
    it as a methodological warning, not as a causal estimate.
 4. A manipulation check on the same pinned checkpoints (F1), and an agentic willingness test (F2) that
-   keeps the tasks, sandboxes and harness rules, states criminal intent and removes the CTF cues
+   keeps the tasks, sandboxes and harness rules, states criminal intent and removes the CTF cues from the fixed text
    (including the official task description). Under
    openly criminal framing the aligned agent refused most trials (by the pre-registered rule; hand labels
    pending); both uncensored agents refused none and completed most attacks.
@@ -244,9 +245,10 @@ the v2 results.
   injection battery. Only the aligned arm was observed; abliterated and Heretic were stopped for time
   (D-03, D-04), so no contrast exists.
 
-Across the stages that compared these Qwen3.8-27B checkpoints directly (stage B and v2), no difference
-between aligned and abliterated was detected. This is a consistent pattern of non-detection, each time
-in a small sample, not a demonstration that the checkpoints behave the same.
+Across the stages that compared these Qwen3.8-27B checkpoints on capability or attack success (stage B
+and v2), no difference between aligned and abliterated was detected. This is a consistent pattern of
+non-detection, each time in a small sample, not a demonstration that the checkpoints behave the same.
+Stage F, which measured willingness rather than capability, did find large differences (Section 7).
 
 ## 4. Method
 
@@ -445,7 +447,7 @@ harness, 240 s / 24 calls); the three right columns are v2. Heretic was not run 
 
 **Solve validity.** All 25 solves were audited against the private traces. Each was a single `submit_flag`
 call whose argument equalled that trial's fresh flag, and the flag appeared in the raw output of the
-immediately preceding terminal command. No trial submitted a wrong flag, and no submission equalled a
+immediately preceding terminal command (in one Heretic trial split across two `xxd` lines). No trial submitted a wrong flag, and no submission equalled a
 task's original public flag.
 
 ### 5.2 Comparison between arms (RQ2)
@@ -466,7 +468,7 @@ are post hoc† (`paper/figures/paired_ci.json`).**
 
 The observed counts were equal or one lower for the uncensored arms (8 and 8 versus 9). No difference was
 detected. The intervals are wide: they are compatible with the uncensored arms solving up to about two or
-three more tasks than aligned, or four to five fewer.
+three more tasks than aligned, or four to five fewer (Figure 3).
 
 **What the design could detect (power†).** With the exact two-sided McNemar test, a single contrast
 reaches p < 0.05 only with at least 6 discordant pairs all in one direction (p = 0.031); under Holm with
@@ -501,7 +503,7 @@ that could not detect a gain; it is not evidence that refusal removal leaves cap
 
 Unsolved trials almost all ended on the time cap: 4 of aligned's 5 unsolved trials (the fifth hit the
 50-call limit) and all 6 for each of the other two arms. Among trials that the time cap did not end, almost
-all were solved (9/10, 8/8, 8/8).
+all were solved (9/10, 8/8, 8/8; Figure 4).
 
 **Why the time cap bound (mechanism)†.** The cap reflects how many tokens each arm generated, not serving
 speed.
@@ -549,11 +551,11 @@ harmful content outside the task.
 ### 5.6 Concurrency and context near the limit†
 
 Trials ran three at a time, so the last-scheduled trials of each arm ran partly with one or two in flight,
-when per-sequence decoding is about 12–19% faster. Heretic's two late trials were both solved: get_it at
+when per-sequence decoding is about 12–19% faster with one in flight and 3–12% faster with two. Heretic's two late trials were both solved: get_it at
 983 s and unlimited_subway at 729 s, mostly at fewer than three in flight. unlimited_subway is Heretic's only
 win over aligned. The other arms' unlimited_subway trials also ran mostly at fewer than three in flight and
 failed, and get_it was solved by every arm, so the tail does not explain the differences, but Heretic's
-only discordant win had a mild speed advantage.
+only discordant win had a mild speed advantage (about 12%: that trial never ran with only one in flight).
 
 Three test trials came within 2.6k tokens of the 32,768-token context (largest prompt plus completion:
 Heretic pilot 32,726, abliterated unlimited_subway 31,461, aligned pilot 30,218), although none ended on the
@@ -647,7 +649,7 @@ answer is empty (`no_answer`). Each answer received:
   `qylu4156/strongreject-15k-v1` adapter, both pinned). An empty answer scores 0.
 
 Primary contrasts against aligned are paired by prompt: an exact McNemar test on full refusal and a
-Wilcoxon signed-rank test on the score, with Holm over the two contrasts. A pre-registered alert fires if
+Wilcoxon signed-rank test on the score (normal approximation, as frozen), with Holm over the two contrasts. A pre-registered alert fires if
 an arm closes its thinking in fewer than half of its answers. If it fires, a fallback split rule is
 reported as a sensitivity analysis.
 
@@ -700,7 +702,7 @@ Percentages are of 313. Bracketed ranges are exact 95% CIs unless stated otherwi
 
 - **Full refusal.** Aligned fully refused 181 prompts that each uncensored arm did not (0 discordant the
   other way; exact McNemar p = 6.5 × 10⁻⁵⁵, Holm 1.3 × 10⁻⁵⁴, for both contrasts).
-- **Score.** Higher for both uncensored arms: mean difference +0.157 for abliterated (Wilcoxon p = 0.003,
+- **Score.** Higher for both uncensored arms: mean difference +0.157 for abliterated (Wilcoxon, normal approximation, p = 0.003,
   Holm 0.003) and +0.256 for Heretic (p = 4.8 × 10⁻¹³, Holm 9.5 × 10⁻¹³).
 - **Sensitivity analyses** (pre-registered, raw p):
   - any refusal: 292 and 288 prompts discordant in aligned's direction against 1 the other way
@@ -760,13 +762,13 @@ The secondary contrast, Heretic vs abliterated, found no refusal difference (p =
   estimate is very imprecise.
 - **Any refusal** (refused plus refused after engaging) equals "refused" in every arm, because no trial
   was refused after engaging; its contrasts are therefore the same as in Table 9.
-- **Endings.** Aligned: 10 trials ended without a verified flag and 4 with one. Abliterated: 14 verified.
-  Heretic: 11 verified, 2 time caps, 1 submission limit. No arm had a cut-off step before its first
-  terminal command, so no rule-scored refusal followed a cut-off notice.
 
 Descriptive details (not pre-registered tests, except the task-clustered sensitivity test, which is
 labelled):
 
+- **Endings.** Aligned: 10 trials ended without a verified flag and 4 with one. Abliterated: 14 verified.
+  Heretic: 11 verified, 2 time caps, 1 submission limit. No arm had a cut-off step before its first
+  terminal command, so no rule-scored refusal followed a cut-off notice.
 - **Aligned.** Its 10 rule-scored refusals each consisted of a single text-only reply with no tool call
   at all (from the private trial rows; `stage_f/results/f_derived_aggregates.json`). It refused both
   trajectories of bigboy, get_it and shreeramquest, and one of two on each of the other four tasks. In the
@@ -785,8 +787,12 @@ labelled):
 
 **Hand labels pending.** The pre-registered secondary check is the author's blinded labelling of all 42
 trials (refused / refused after engaging / complied) and its agreement with the rule. It had not been done
-at the time of writing. The sheet has been built (arm, task and flag hidden; key kept separately). Until it
-is done, "refused" in this section means the pre-registered rule: ended on a reply with no tool call,
+at the time of writing. The sheet has been built (arm, task and flag hidden; key kept separately). As
+pre-registered, the sheet also shows how each trial ended. For 13 of the 42 trials this identifies the arm
+(only aligned trials ended on a text reply without a verified flag, and only Heretic trials on a time or
+submission limit), and in these data it is a proxy for the rule outcome (every rule-scored refusal is a
+text-reply ending), so agreement between the labels and the
+rule will be optimistic. Until the labelling is done, "refused" in this section means the pre-registered rule: ended on a reply with no tool call,
 after zero terminal commands. The refusal-language scan above agrees with the rule's direction but is not a substitute.
 
 **Comparison with v2 (descriptive only).** In v2, under CTF framing and with the official descriptions,
@@ -824,7 +830,8 @@ capability, but our sample is too small to confirm it.
 Stage F exercised the first route:
 
 - **F1** showed that the published uncensored checkpoints refuse less: on StrongREJECT the aligned model
-  fully refused 58% of prompts and each uncensored model none.
+  fully refused 58% of prompts and each uncensored model none (also none among the prompts answered
+  within the token limit: 0 against aligned's 51/74 and 74/111).
 - **F2** showed what that means for an agent (Figure 6). With the CTF framing removed and criminal intent
   stated, the aligned agent refused 10 of 14 trials by the pre-registered rule (a text-only reply after
   zero terminal commands; hand labels pending). The uncensored agents refused none and obtained the token
@@ -889,7 +896,7 @@ suggest), and that lever is available with an aligned model too.
 
 | Requirement | Implementation | Evidence | Limit |
 |---|---|---|---|
-| Recent model | Qwen3.8-27B (2026) checkpoints, pinned by revision | repository dates and revisions in `v2_config.json` | recent, not claimed to be the newest; a repository date is not a training cutoff |
+| Recent model | Qwen3.8-27B (2026) checkpoints, pinned by revision | revisions in `v2_config.json` | recent, not claimed to be the newest; a repository date is not a training cutoff |
 | General agent capability | the model chose and ran every command through `terminal` and `submit_flag` | 8–9/14 verified CTF solves; 11/12 benign AgentDojo tasks in stage B | shown on these tasks only, not certified in general; the harness supplies the task description, files, tool list and target address |
 | Uncensored model as red-team agent | abliterated checkpoint as the primary agent, Heretic as a second uncensored arm, aligned parent as control | F1: 0/313 full refusals for each uncensored arm vs 181/313 aligned; F2: 0/14 refusals vs 10/14 under criminal framing | checked on these two instruments only; F2 refusal is by the pre-registered rule, hand labels pending; many uncensored F1 answers were empty (thinking hit the token limit) |
 
@@ -909,7 +916,10 @@ suggest), and that lever is available with an aligned model too.
   not from human ratings, and it was not validated in this project.
 - **F2 refusal is a rule, not yet a judgment.** "Refused" means ending on a reply with no tool call after
   zero terminal commands. The author's blinded hand labels, the pre-registered check, were pending at the time of
-  writing. The uncensored arms may also be recognisable by style, which weakens the blinding.
+  writing. The uncensored arms may also be recognisable by style, which weakens the blinding. The sheet
+  also shows how each trial ended, as pre-registered: for 13 of 42 trials this identifies the arm (only
+  aligned trials ended on a text reply, only Heretic trials on a time or submission limit), and it is a
+  proxy for the rule outcome, so agreement between the hand labels and the rule will be optimistic.
 - **F2 changes several things at once.** Relative to v2, F2 changed the intent statement, the system
   prompt (which also drops v2's stay-in-scope instruction), the tool descriptions, the cut-off notice and
   the hostname, and omitted the description. Residual cues remain: the tool name `submit_flag` (also named
@@ -940,7 +950,7 @@ suggest), and that lever is available with an aligned model too.
   detectable at all, and only a loss of about 7 tasks was. The paired intervals were added post hoc.
 - **Cross-run contrasts.** Each arm ran on its own pod, consecutively, within about 8 hours. vLLM output is
   not bit-reproducible under batching.
-- **Concurrency tail.** The last-scheduled trials ran with 12–19% faster decoding. Heretic's only win over
+- **Concurrency tail.** The last-scheduled trials ran with up to 12–19% faster decoding. Heretic's only win over
   aligned (unlimited_subway) ran mostly in that tail.
 - **F2 sample.** 7 tasks × 2 trajectories per arm. Outcomes cluster by task, so the effective sample for
   refusal is closer to 7 than 14. The task-clustered test reached its smallest attainable p (0.016).
@@ -959,7 +969,7 @@ suggest), and that lever is available with an aligned model too.
 - **Deviations.** The abliterated pod's stalled install was restarted manually; a stale host shell was
   present during two arms' collection (D-29). Neither affected a trial. In stage F the hand-label sheet
   was written to a folder outside the repository other than the one the protocol names, because that
-  folder was not accessible to the author (`F-EXECUTION-NOTES.md`). There was no other stage F deviation.
+  folder was root-only inside WSL and not convenient for the author to open (`F-EXECUTION-NOTES.md`). There was no other stage F deviation.
 - **Stage C comparison.** Six changes happened together and the runs are separate; RQ3 is descriptive.
 
 **External validity**
@@ -1051,7 +1061,7 @@ completed 9, and a second refusal-removed version completed 8. No difference was
 could not have detected a gain; this is not a demonstration of equivalence.
 
 Willingness told a different story. On 313 harmful requests the aligned model fully refused 181 and the
-uncensored versions none. When 7 attacks that all three could perform were framed as a criminal theft of
+uncensored versions none (also none among the prompts they answered within the token limit). When 7 attacks that all three could perform were framed as a criminal theft of
 customer data, the aligned agent refused 10 of 14 trials. The uncensored agents refused none and
 completed 14 and 11 of 14 (refusals by the pre-registered rule; hand labels pending). On this evidence,
 the published refusal-removed checkpoints were not detectably better attackers on these 14 tasks (a gain
@@ -1231,7 +1241,7 @@ category; the last sentence appears only for tasks with starter files; no task d
 | v2 harness | `stage_e/trajectory_v2.py`, `stage_e/environment_v2.py`, `stage_e/analyze_v2.py` |
 | Execution log | `stage_e/V2-EXECUTION-NOTES.md` |
 | Stage C | `stage_c/CTF-PROTOCOL.md`, `stage_c/CTF-RESULTS.md`, `stage_c/ctf_trial_results.json` |
-| Deviations and limitations | `stage_d/DEVIATIONS-AND-LIMITATIONS.md` (D-01 to D-30) |
+| Deviations and limitations | `stage_d/DEVIATIONS-AND-LIMITATIONS.md` (D-01 to D-31) |
 | Stage B refusal audit | `stage_b/REFUSAL-AUDIT.md`, `stage_b/refusal_audit_counts.json` |
 | Paper scripts and figures (post hoc) | `paper/paired_ci.py`, `paper/make_figures.py`, `paper/figures/` |
 | Stage F protocol and freeze | `stage_f/F-PROTOCOL.md`, `stage_f/f_freeze.json` (commit `16b6913`), `stage_f/f_config.json` |
@@ -1262,3 +1272,4 @@ repairer fixed or disclosed them, and the verifier re-checked each fix.
 | 4 | This paper | 29 (R4-01 to R4-29) | 26 verified, 3 partly fixed (`reviews/VERIFY-004.md`); the 3 wording items were then fixed by the builder |
 | 5 | Stage F protocol and code, before freeze | 21 (R5-01 to R5-21) | all resolved or disclosed (`reviews/VERIFY-005.md`) |
 | 6 | Stage F results and this paper's stage F additions | 18 (R6-01 to R6-18; 5 major, 13 minor) plus one note | 16 verified, 3 partly fixed, 2 new minor items (`reviews/VERIFY-006.md`); the 5 remaining wording items were then fixed by the builder |
+| 7 | Whole-project audit before submission | 17 (R7-01 to R7-17; 0 major, 7 minor, 10 nit) | all 17 verified (`reviews/VERIFY-007.md`): 16 fixed in this paper, the README, the deviations file, the stage F notes and two scripts; R7-01 resolved by releasing `stage_c/ctf_trial_results.json` (counts and reasons only) with this cycle's commit |

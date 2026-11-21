@@ -71,6 +71,14 @@ before tax).
 - After labelling and `analyze_f.py f2labels`, the sheet and key are to be moved back into the root-only
   private directory, or deleted, so that no copy of the model text stays in the Windows home directory.
 - At the time of writing, the labels have not been entered and `analyze_f.py f2labels` has not been run.
+- **Partial unblinding through the `ended_by` column (review cycle 7, R7-03).** As the protocol
+  requires, the sheet shows how each trial ended (`solved` or the ending reason). From the ending counts in
+  `results/f2_summary.json`, a text-reply ending without a verified flag occurs only in aligned trials (10)
+  and time or submission-limit endings only in Heretic trials (3), so this column identifies the arm for
+  13 of the 42 rows. Every rule-scored refusal is such a text-reply ending, so the column is also a proxy
+  for the rule outcome. Agreement between the hand labels and the rule will therefore be optimistic. This
+  is not a deviation (the column is pre-registered) but must be stated whenever the labels are reported.
+  This note was derived from `make_label_sheet.py` and the summary only; the sheet was not opened.
 
 ## Spend
 

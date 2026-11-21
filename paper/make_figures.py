@@ -265,7 +265,7 @@ def main():
     if ci_path.exists():
         fig_paired_ci(json.loads(ci_path.read_text(encoding='utf-8')))
     else:
-        print('run paper/paired_ci.py first for figure 5')
+        print('run paper/paired_ci.py first for figure 3')
 
 
 if __name__ == '__main__':

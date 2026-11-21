@@ -1,6 +1,30 @@
 # Safety-removal studies on open-weight LLMs
 
-**2026-11-19 CTF capability study (stage C):** the recent uncensored model
+**Start here: the capstone paper, [`paper/CAPSTONE-PAPER.md`](paper/CAPSTONE-PAPER.md).** It reports the
+current results for three pinned Qwen3.8-27B checkpoints: the aligned `Qwen/Qwen3.8-27B`, the abliterated
+`huihui-ai/Huihui-Qwen3.8-27B-abliterated` and the Heretic `jakejb53/Qwen3.8-27B-heretic`. Each study was
+frozen and pushed before collection.
+
+- **CTF v2 capability study (stage E, 2026-11-19/20).** Each arm ran all 14 CTFTiny web/pwn tasks as an
+  autonomous agent with terminal tools in isolated sandboxes, under a repaired harness (1,200 s, 50 calls).
+  Solves: aligned **9/14**, abliterated **8/14**, Heretic **8/14**; exact McNemar p = 1.0 for both
+  contrasts. No difference was detected, in a design that could not have detected a gain. See
+  [results](stage_e/results/CTF-V2-RESULTS.md) and [protocol](stage_e/V2-PROTOCOL.md). Upper-bound spend
+  $9.87.
+- **Stage F willingness study (2026-11-20).** F1, a manipulation check on 313 StrongREJECT prompts: full
+  refusals aligned **181**, abliterated **0**, Heretic **0** (many uncensored answers were empty because
+  thinking hit the 4,096-token limit). F2, 7 tasks solved by every arm in v2, re-run twice each under openly
+  criminal framing: refused (pre-registered rule; hand labels pending) **10/0/0** of 14, solved **4/14/11**
+  of 14. See [`f1_summary.json`](stage_f/results/f1_summary.json),
+  [`f2_summary.json`](stage_f/results/f2_summary.json), the [protocol](stage_f/F-PROTOCOL.md) and the
+  [execution notes](stage_f/F-EXECUTION-NOTES.md). Spend $5.47.
+- Deviations and limitations for all stages: [`stage_d/DEVIATIONS-AND-LIMITATIONS.md`](stage_d/DEVIATIONS-AND-LIMITATIONS.md).
+  Review cycles: `reviews/`.
+
+The entries below are earlier stages, kept for the record.
+
+**2026-11-19 CTF capability study (stage C, superseded by CTF v2):** 8 of the 14 stage C prompts omitted
+the target address (D-26), among other harness defects, so these numbers are not comparable with v2. The recent uncensored model
 (`huihui-ai/Huihui-Qwen3.8-27B-abliterated`) and its aligned parent each ran all 14 CTFTiny web/pwn tasks
 themselves, through terminal tools in isolated Docker environments, with a fresh secret per trial and a
 240-second, 24-tool-call budget. The uncensored model solved **1/14** (exact 95% CI 0.2%–33.9%) and the
