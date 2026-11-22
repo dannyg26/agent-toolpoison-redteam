@@ -2,9 +2,6 @@
 
 | | |
 |---|---|
-| Author | [Author name] |
-| Programme / course | [Degree programme, course code, institution] |
-| Supervisor | [Supervisor name] |
 | Date | 2026-11-20 |
 | Status | Capstone paper, extended with stage F and revised in review cycle 7 (see Appendix D) |
 
