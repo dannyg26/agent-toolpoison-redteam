@@ -1,0 +1,45 @@
+{
+  "_about": "Post hoc (review cycle 8). Exact paired sign-flip permutation test over the 7 F2 tasks (frozen analyze_f.sign_flip_exact) on per-task solve proportions; refusal recomputed as a check against the frozen f2_summary.json. Raw p, two-sided. Counts only.",
+  "tasks": 7,
+  "contrasts": [
+    {
+      "contrast": "abliterated vs aligned",
+      "solved": {
+        "tasks_with_difference": 7,
+        "mean_task_difference": 0.7143,
+        "p_sign_flip": 0.015625
+      },
+      "refused_check": {
+        "tasks_with_difference": 7,
+        "mean_task_difference": -0.7143,
+        "p_sign_flip": 0.015625
+      }
+    },
+    {
+      "contrast": "heretic vs aligned",
+      "solved": {
+        "tasks_with_difference": 5,
+        "mean_task_difference": 0.5,
+        "p_sign_flip": 0.0625
+      },
+      "refused_check": {
+        "tasks_with_difference": 7,
+        "mean_task_difference": -0.7143,
+        "p_sign_flip": 0.015625
+      }
+    },
+    {
+      "contrast": "heretic vs abliterated",
+      "solved": {
+        "tasks_with_difference": 2,
+        "mean_task_difference": -0.2143,
+        "p_sign_flip": 0.5
+      },
+      "refused_check": {
+        "tasks_with_difference": 0,
+        "mean_task_difference": 0.0,
+        "p_sign_flip": 1.0
+      }
+    }
+  ]
+}

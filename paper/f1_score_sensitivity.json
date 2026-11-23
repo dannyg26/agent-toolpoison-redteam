@@ -1,0 +1,142 @@
+{
+  "_about": "Post hoc (review cycle 8). F1 StrongREJECT score among answered prompts. Counts, means, percentile-bootstrap 95% CIs (frozen settings) and Wilcoxon p (raw) only; no model text. Produced by paper/posthoc_f1_scores.py from the private F1 session.",
+  "arms": {
+    "aligned": {
+      "all_prompts": {
+        "n": 313,
+        "mean": 0.0705,
+        "ci95_bootstrap": [
+          0.0548,
+          0.0877
+        ]
+      },
+      "answered": {
+        "n": 310,
+        "mean": 0.0711,
+        "ci95_bootstrap": [
+          0.0551,
+          0.0879
+        ]
+      },
+      "answered_not_length_capped": {
+        "n": 305,
+        "mean": 0.067,
+        "ci95_bootstrap": [
+          0.0513,
+          0.0833
+        ]
+      },
+      "no_answer_count": 3,
+      "no_answer_with_nonzero_score": 0
+    },
+    "abliterated": {
+      "all_prompts": {
+        "n": 313,
+        "mean": 0.2274,
+        "ci95_bootstrap": [
+          0.1946,
+          0.2607
+        ]
+      },
+      "answered": {
+        "n": 124,
+        "mean": 0.574,
+        "ci95_bootstrap": [
+          0.5406,
+          0.607
+        ]
+      },
+      "answered_not_length_capped": {
+        "n": 74,
+        "mean": 0.6169,
+        "ci95_bootstrap": [
+          0.5799,
+          0.6545
+        ]
+      },
+      "no_answer_count": 189,
+      "no_answer_with_nonzero_score": 0
+    },
+    "heretic": {
+      "all_prompts": {
+        "n": 313,
+        "mean": 0.3264,
+        "ci95_bootstrap": [
+          0.289,
+          0.3637
+        ]
+      },
+      "answered": {
+        "n": 165,
+        "mean": 0.6192,
+        "ci95_bootstrap": [
+          0.5886,
+          0.6493
+        ]
+      },
+      "answered_not_length_capped": {
+        "n": 111,
+        "mean": 0.66,
+        "ci95_bootstrap": [
+          0.6246,
+          0.6941
+        ]
+      },
+      "no_answer_count": 148,
+      "no_answer_with_nonzero_score": 0
+    }
+  },
+  "contrasts": [
+    {
+      "contrast": "abliterated vs aligned",
+      "answered_in_both": {
+        "n_pairs": 124,
+        "mean_first": 0.574,
+        "mean_second": 0.0658,
+        "mean_difference": 0.5082,
+        "p_wilcoxon_raw": 0.0
+      },
+      "answered_not_capped_in_both": {
+        "n_pairs": 74,
+        "mean_first": 0.6169,
+        "mean_second": 0.0552,
+        "mean_difference": 0.5617,
+        "p_wilcoxon_raw": 1.0302869668521453e-13
+      }
+    },
+    {
+      "contrast": "heretic vs aligned",
+      "answered_in_both": {
+        "n_pairs": 165,
+        "mean_first": 0.6192,
+        "mean_second": 0.0637,
+        "mean_difference": 0.5555,
+        "p_wilcoxon_raw": 0.0
+      },
+      "answered_not_capped_in_both": {
+        "n_pairs": 111,
+        "mean_first": 0.66,
+        "mean_second": 0.0643,
+        "mean_difference": 0.5958,
+        "p_wilcoxon_raw": 0.0
+      }
+    },
+    {
+      "contrast": "heretic vs abliterated",
+      "answered_in_both": {
+        "n_pairs": 114,
+        "mean_first": 0.6345,
+        "mean_second": 0.5825,
+        "mean_difference": 0.052,
+        "p_wilcoxon_raw": 0.003476653160833898
+      },
+      "answered_not_capped_in_both": {
+        "n_pairs": 68,
+        "mean_first": 0.6868,
+        "mean_second": 0.612,
+        "mean_difference": 0.0748,
+        "p_wilcoxon_raw": 0.0004960108441958155
+      }
+    }
+  ]
+}

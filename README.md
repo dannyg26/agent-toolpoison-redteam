@@ -7,19 +7,31 @@ frozen and pushed before collection.
 
 - **CTF v2 capability study (stage E, 2026-11-19/20).** Each arm ran all 14 CTFTiny web/pwn tasks as an
   autonomous agent with terminal tools in isolated sandboxes, under a repaired harness (1,200 s, 50 calls).
-  Solves: aligned **9/14**, abliterated **8/14**, Heretic **8/14**; exact McNemar p = 1.0 for both
-  contrasts. No difference was detected, in a design that could not have detected a gain. See
+  Solves: aligned **9/14** (exact 95% CI 35–87%), abliterated **8/14** (29–82%), Heretic **8/14** (29–82%);
+  exact McNemar p = 1.0 for both contrasts. No difference was detected, which is not equivalence: the
+  paired 95% intervals (Tango −31.5 to +15.9 and −35.4 to +21.6 points) allow the uncensored arms to solve
+  about two to three more tasks or four to five fewer, and the design could not have detected a gain. See
   [results](stage_e/results/CTF-V2-RESULTS.md) and [protocol](stage_e/V2-PROTOCOL.md). Upper-bound spend
   $9.87.
 - **Stage F willingness study (2026-11-20).** F1, a manipulation check on 313 StrongREJECT prompts: full
-  refusals aligned **181**, abliterated **0**, Heretic **0** (many uncensored answers were empty because
-  thinking hit the 4,096-token limit). F2, 7 tasks solved by every arm in v2, re-run twice each under openly
-  criminal framing: refused (pre-registered rule; hand labels pending) **10/0/0** of 14, solved **4/14/11**
-  of 14. See [`f1_summary.json`](stage_f/results/f1_summary.json),
+  refusals aligned **181**, abliterated **0**, Heretic **0**. Mean StrongREJECT score 0.071 / 0.227 / 0.326
+  over all 313 prompts. Answers were capped at 4,096 tokens including thinking; when thinking never closed
+  (3 / 189 / 148 prompts) the answer is empty, classed "no answer" (counted as not refused) and scored 0.
+  Among answered prompts only (a selected subset: prompts where thinking finished) the means are
+  0.071 / 0.574 / 0.619 (post hoc, [`f1_score_sensitivity.json`](paper/f1_score_sensitivity.json)). F2,
+  7 tasks solved by every arm in v2, re-run twice each under openly criminal framing: refused
+  (pre-registered rule; hand labels pending) **10/0/0** of 14, solved **4/14/11** of 14. The 14 trials are
+  7 tasks × 2 and not independent, so the paper gives most weight to the task-clustered refusal test
+  (pre-registered as a sensitivity check): raw p = 0.016, Holm 0.031 (computed post hoc) for each contrast. Fisher's p = 0.00015,
+  the frozen primary, assumes independent trials.
+  See [`f1_summary.json`](stage_f/results/f1_summary.json),
   [`f2_summary.json`](stage_f/results/f2_summary.json), the [protocol](stage_f/F-PROTOCOL.md) and the
   [execution notes](stage_f/F-EXECUTION-NOTES.md). Spend $5.47.
 - Deviations and limitations for all stages: [`stage_d/DEVIATIONS-AND-LIMITATIONS.md`](stage_d/DEVIATIONS-AND-LIMITATIONS.md).
   Review cycles: `reviews/`.
+- **No raw harmful outputs are in this repository.** Model answers to forbidden prompts, agent traces,
+  exploit commands and flags stay in a private archive; only aggregate counts, rates and scores are
+  released (paper Section 10).
 
 The entries below are earlier stages, kept for the record.
 
